@@ -2,13 +2,14 @@ package io.github.unjoinable.skyblock;
 
 import io.github.unjoinable.skyblock.commands.ItemCommand;
 import io.github.unjoinable.skyblock.commands.NBTCommand;
-import io.github.unjoinable.skyblock.item.SkyblockItemProcessor;
+import io.github.unjoinable.skyblock.handlers.SkullHandler;
 import io.github.unjoinable.skyblock.listeners.AsyncPlayerConfigurationListener;
 import io.github.unjoinable.skyblock.listeners.ItemDropListener;
 import io.github.unjoinable.skyblock.listeners.PickUpItemListener;
 import io.github.unjoinable.skyblock.listeners.PlayerSpawnListener;
-import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
+import io.github.unjoinable.skyblock.time.SkyblockStandardTime;
+import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
@@ -18,18 +19,21 @@ import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.instance.block.BlockManager;
 import net.minestom.server.timer.TaskSchedule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Skyblock {
+    private static final Logger logger = LoggerFactory.getLogger(Skyblock.class);
     private static final Pos HUB_SPAWN_POINT = new Pos(-2, 71, -68).withYaw(-180F);
-    private static SkyblockItemProcessor itemProcessor;
 
     public static void main(String[] args) {
-        itemProcessor = new SkyblockItemProcessor();
         MinecraftServer server = MinecraftServer.init();
-        //MojangAuth.init();
+        MojangAuth.init();
+        new SkyblockStandardTime();
         ItemRegistry.getInstance().registerAll();
-
+        
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
         InstanceContainer hubInstance = instanceManager.createInstanceContainer();
@@ -47,6 +51,10 @@ public class Skyblock {
         manager.register(new ItemCommand("item"));
         manager.register(new NBTCommand("nbt"));
 
+        //block handlers
+        BlockManager blockManager = MinecraftServer.getBlockManager();
+        blockManager.registerHandler(SkullHandler.KEY, SkullHandler::new);
+
         //let the show begin.
         server.start("0.0.0.0", 25565);
 
@@ -58,10 +66,5 @@ public class Skyblock {
                 //player.tick();
             }
         }, TaskSchedule.seconds(2L), TaskSchedule.immediate());
-        //nom nom nom yummy this is probably for ticking scoreboards and action aka life of the da game baby.
-    }
-
-    public static SkyblockItemProcessor getItemProcessor() {
-        return itemProcessor;
     }
 }

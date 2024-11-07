@@ -1,4 +1,4 @@
-package io.github.unjoinable.skyblock.enums;
+package io.github.unjoinable.skyblock.item;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

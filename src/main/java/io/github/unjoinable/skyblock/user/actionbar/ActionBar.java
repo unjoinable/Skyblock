@@ -1,12 +1,11 @@
 package io.github.unjoinable.skyblock.user.actionbar;
 
+import io.github.unjoinable.skyblock.util.StringUtils;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.util.*;
-
-import static io.github.unjoinable.skyblock.util.MiniMessageTemplate.MM;
 
 /**
  * @author Swofty
@@ -72,7 +71,7 @@ public class ActionBar {
             Component display = getDisplayForSection(section);
             if (display != Component.empty()) {
                 if (content != Component.empty()) {
-                    content = content.append(MM."     ");
+                    content = content.append(StringUtils.toComponent("     "));
                 }
                 content = content.append(display);
             }

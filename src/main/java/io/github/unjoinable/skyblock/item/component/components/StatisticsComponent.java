@@ -1,12 +1,10 @@
 package io.github.unjoinable.skyblock.item.component.components;
 
 import io.github.unjoinable.skyblock.item.SkyblockItem;
-import io.github.unjoinable.skyblock.item.component.BasicComponent;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.LoreableComponent;
 import io.github.unjoinable.skyblock.item.component.StatComponent;
 import io.github.unjoinable.skyblock.statistics.StatModifier;
-import io.github.unjoinable.skyblock.statistics.StatValueType;
 import io.github.unjoinable.skyblock.statistics.Statistic;
 import io.github.unjoinable.skyblock.util.Utils;
 import net.kyori.adventure.text.Component;
@@ -17,16 +15,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-public record StatisticsComponent(Map<Statistic, Integer> statistics) implements BasicComponent, StatComponent, LoreableComponent {
-
-    @Override
-    public @NotNull Map<Statistic, List<StatModifier>> statModifiers() {
-        Map<Statistic, List<StatModifier>> modifiers = new EnumMap<>(Statistic.class);
-        statistics.forEach((statistic, value) -> {
-            modifiers.put(statistic, List.of(new StatModifier(StatValueType.BASE, value)));
-        });
-        return modifiers;
-    }
+public record StatisticsComponent(Map<Statistic, Integer> statistics) implements LoreableComponent {
 
     @Override
     public int priority() {
@@ -34,8 +23,25 @@ public record StatisticsComponent(Map<Statistic, Integer> statistics) implements
     }
 
     @Override
-    public void applyData(@NotNull ComponentContainer container) {
+    public @NotNull List<Component> lore(SkyblockItem item) {
+        List<Component> lore = new ArrayList<>();
+        addAllStatistics(item).forEach((statistic, value) -> {
+            if (value != 0) {
+                lore.add(Utils.generateStatisticLore(statistic, value));
+            }
+        });
+        return lore;
+    }
+
+    public static @NotNull Map<Statistic, Integer> addAllStatistics(SkyblockItem item) {
+        ComponentContainer container = item.container();
+
         Map<Statistic, Integer> statistics = new EnumMap<>(Statistic.class);
+
+        if (container.hasComponent(StatisticsComponent.class)) {
+            statistics = container.getComponent(StatisticsComponent.class).statistics();
+        }
+
         Map<Statistic, List<StatModifier>> modifiers = new EnumMap<>(Statistic.class);
 
         //merging stat modifiers from all components to 1
@@ -46,15 +52,15 @@ public record StatisticsComponent(Map<Statistic, Integer> statistics) implements
                 .forEach(component -> (component).statModifiers()
                         .forEach((statistic, statModifiers) ->
                                 modifiers.computeIfAbsent(statistic, _ -> new ArrayList<>())
-                .addAll(statModifiers)));
+                                        .addAll(statModifiers)));
         //merged
         for (Statistic statistic : Statistic.getValues()) {
             List<StatModifier> statModifiers = modifiers.get(statistic);
             int additiveValue = 0;
             int multiplicativeValue = 1;
-            int baseValue = this.statistics.getOrDefault(statistic, 0);
+            int baseValue = statistics.getOrDefault(statistic, 0);
 
-            if (!statModifiers.isEmpty()) {
+            if (statModifiers != null && !statModifiers.isEmpty()) {
                 for (StatModifier modifier : statModifiers) {
                     switch (modifier.type()) {
                         case ADDITIVE ->  additiveValue += modifier.value();
@@ -64,17 +70,6 @@ public record StatisticsComponent(Map<Statistic, Integer> statistics) implements
                 }}
             statistics.put(statistic, baseValue*(1 + additiveValue)*multiplicativeValue);
         }
-        container.addComponent(new StatisticsComponent(statistics));
-    }
-
-    @Override
-    public @NotNull List<Component> lore(SkyblockItem item) {
-        List<Component> lore = new ArrayList<>();
-        statistics.forEach((statistic, value) -> {
-            if (value != 0) {
-                lore.add(Utils.generateStatisticLore(statistic, value));
-            }
-        });
-        return lore;
+        return statistics;
     }
 }

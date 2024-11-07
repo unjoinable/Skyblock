@@ -1,50 +1,51 @@
 package io.github.unjoinable.skyblock.statistics;
 
 
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-/**
- * @since 1.0.0
- */
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+
 public enum Statistic {
-    HEALTH("Health", "green", "red", false, "❤", 100),
-    DEFENSE("Defense", "green", "green", false, "❈" , 0),
-    STRENGTH("Strength", "red", "red", false, "❁", 0),
-    INTELLIGENCE("Intelligence", "green", "aqua", false, "✎", 100),
-    CRIT_CHANCE("Crit Chance", "red", "blue", true, "☣", 30),
-    CRIT_DAMAGE("Crit Damage", "red", "blue", true, "☠", 50),
-    BONUS_ATTACK_SPEED("Bonus Attack Speed", "red", "yellow", true, "⚔", 0),
-    ABILITY_DAMAGE("ItemAbility Damage", "red", "red", true, "๑", 0),
-    TRUE_DEFENSE("True Defense", "green", "white", false, "❂", 0),
-    FEROCITY("Ferocity", "green", "red", false, "⫽", 0),
-    HEALTH_REGEN("Health Regen", "green", "red", false, "❣", 100),
-    VITALITY("Vitality", "green", "dark_red",  false, "♨", 100),
-    MENDING("Mending", "green", "green", false, "☄", 100),
-    SWING_RANGE("Swing Range", "yellow", "yellow", false, "Ⓢ", 3),
-    MINING_SPEED("Mining Speed", "green", "gold", false, "⸕", 0),
-    MINING_FORTUNE("Mining Fortune", "green", "gold", false, "☘", 0),
-    FARMING_FORTUNE("Farming Fortune", "green", "gold", false, "☘", 0),
-    FORAGING_FORTUNE("Foraging Fortune", "green", "gold", false, "☘", 0),
-    BREAKING_POWER("Breaking Power", "green", "dark_green", false, "Ⓟ", 0),
-    PRISTINE("Pristine", "green", "dark_purple", false, "✧", 0),
-    SPEED("Speed", "green", "white", false, "✦", 100),
-    MAGIC_FIND("Magic Find", "green", "aqua", false, "✯", 0),
-    PET_LUCK("Pet Luck", "green", "light_purple", false, "♣", 0),
-    SEA_CREATURE_CHANCE("Sea Creature Chance", "red", "dark_blue", true, "α", 2),
-    FISHING_SPEED("Fishing Speed", "green", "aqua", false, "☂", 0),
-    COLD_RESISTANCE("Cold Resistance", "green", "aqua", false, "❄", 0),
-    BONUS_PEST_CHANCE("Bonus Pest Chance", "green", "dark_green", true, "ൠ", 0),
+    HEALTH("Health", GREEN, RED, false, "❤", 100),
+    DEFENSE("Defense", GREEN, GREEN, false, "❈" , 0),
+    STRENGTH("Strength", RED, RED, false, "❁", 0),
+    INTELLIGENCE("Intelligence", GREEN, AQUA, false, "✎", 100),
+    CRIT_CHANCE("Crit Chance", RED, BLUE, true, "☣", 30),
+    CRIT_DAMAGE("Crit Damage", RED, BLUE, true, "☠", 50),
+    BONUS_ATTACK_SPEED("Bonus Attack Speed", RED, YELLOW, true, "⚔", 0),
+    ABILITY_DAMAGE("ItemAbility Damage", RED, RED, true, "๑", 0),
+    TRUE_DEFENSE("True Defense", GREEN, WHITE, false, "❂", 0),
+    FEROCITY("Ferocity", GREEN, RED, false, "⫽", 0),
+    HEALTH_REGEN("Health Regen", GREEN, RED, false, "❣", 100),
+    VITALITY("Vitality", GREEN, DARK_RED,  false, "♨", 100),
+    MENDING("Mending", GREEN, GREEN, false, "☄", 100),
+    SWING_RANGE("Swing Range", YELLOW, YELLOW, false, "Ⓢ", 3),
+    MINING_SPEED("Mining Speed", GREEN, GOLD, false, "⸕", 0),
+    MINING_FORTUNE("Mining Fortune", GREEN, GOLD, false, "☘", 0),
+    FARMING_FORTUNE("Farming Fortune", GREEN, GOLD, false, "☘", 0),
+    FORAGING_FORTUNE("Foraging Fortune", GREEN, GOLD, false, "☘", 0),
+    BREAKING_POWER("Breaking Power", GREEN, DARK_GREEN, false, "Ⓟ", 0),
+    PRISTINE("Pristine", GREEN, DARK_PURPLE, false, "✧", 0),
+    SPEED("Speed", GREEN, WHITE, false, "✦", 100),
+    MAGIC_FIND("Magic Find", GREEN, AQUA, false, "✯", 0),
+    PET_LUCK("Pet Luck", GREEN, LIGHT_PURPLE, false, "♣", 0),
+    SEA_CREATURE_CHANCE("Sea Creature Chance", RED, DARK_PURPLE, true, "α", 2),
+    FISHING_SPEED("Fishing Speed", GREEN, AQUA, false, "☂", 0),
+    COLD_RESISTANCE("Cold Resistance", GREEN, AQUA, false, "❄", 0),
+    BONUS_PEST_CHANCE("Bonus Pest Chance", GREEN, DARK_GREEN, true, "ൠ", 0),
 
     // Other Stats
-    DAMAGE("Damage", "red", "red", false, "❁", 5),
+    DAMAGE("Damage", RED, RED, false, "❁", 5),
     ;
 
 
     private final String displayName;
-    private final String loreColor;
-    private final String displayColor;
+    private final TextColor loreColor;
+    private final TextColor displayColor;
     private final Boolean isPercentage;
     private final String symbol;
 
@@ -53,8 +54,8 @@ public enum Statistic {
     private static final Collection<Statistic> VALUES = Arrays.asList(values());
 
     Statistic(@NotNull String displayName,
-              @NotNull String loreColor,
-              @NotNull String displayColor,
+              @NotNull NamedTextColor loreColor,
+              @NotNull NamedTextColor displayColor,
               boolean isPercentage,
               @NotNull String symbol,
               int baseValue) {
@@ -100,20 +101,19 @@ public enum Statistic {
     }
 
     /**
-     * @return Display color of that statistic,  <color> return is color
+     * @return Display color of that statistic
      * @since 1.0.0
      */
-    public @NotNull String getDisplayColor() {
+    public @NotNull TextColor getDisplayColor() {
         return displayColor;
     }
 
     /**
      * @return Returns color based on if its passive or aggressive.
      *         RED/GREEN (Yellow for Swing Range)
-     *         <color> return is color.
      * @since 1.0.0
      */
-    public @NotNull String getLoreColor() {
+    public @NotNull TextColor getLoreColor() {
         return loreColor;
     }
 

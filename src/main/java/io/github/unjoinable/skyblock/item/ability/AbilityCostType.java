@@ -1,4 +1,4 @@
-package io.github.unjoinable.skyblock.enums;
+package io.github.unjoinable.skyblock.item.ability;
 
 public enum AbilityCostType {
     MANA,

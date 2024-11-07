@@ -7,6 +7,7 @@ import io.github.unjoinable.skyblock.statistics.Statistic;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,11 +17,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Set;
-
-import static io.github.unjoinable.skyblock.util.MiniMessageTemplate.MM;
 
 public class Utils {
     private static final Set<Material> LEATHER_MATERIAL = ImmutableSet.of(
@@ -60,13 +58,13 @@ public class Utils {
     public static Component generateStatisticLore(Statistic statistic, int value) {
         String plus = statistic.getPercentage() ? "" : "+";
         String percentage = statistic.getPercentage() ? "%" : "";
-        Component line = Component.text(statistic.getDisplayName() + ": ",
-                        NamedTextColor.GRAY)
+        Component line = Component.text(statistic.getDisplayName() + ": ", NamedTextColor.GRAY)
                 .append(Component.text(plus + value + percentage ,
-                        NamedTextColor.GRAY));
+                        statistic.getLoreColor()));
 
-        return MM."<gray>\{statistic.getDisplayName()}: </gray><\{statistic.getLoreColor()}>\{(statistic.getPercentage() ? "" : "+")
-                + value + (statistic.getPercentage() ? "%" : "")}";
+        //return MM."<gray>\{statistic.getDisplayName()}: </gray><\{statistic.getLoreColor()}>\{(statistic.getPercentage() ? "" : "+")
+                //+ value + (statistic.getPercentage() ? "%" : "")}";
+        return line.decoration(TextDecoration.ITALIC, false);
     }
 
 

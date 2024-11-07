@@ -1,35 +1,61 @@
 package io.github.unjoinable.skyblock.item;
 
 import com.google.gson.annotations.SerializedName;
-import io.github.unjoinable.skyblock.Skyblock;
-import io.github.unjoinable.skyblock.enums.ItemCategory;
-import io.github.unjoinable.skyblock.enums.Rarity;
 import io.github.unjoinable.skyblock.item.component.BasicComponent;
+import io.github.unjoinable.skyblock.item.component.Component;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.components.*;
+import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
 import io.github.unjoinable.skyblock.statistics.Statistic;
+import io.github.unjoinable.skyblock.user.SkyblockPlayer;
+import io.github.unjoinable.skyblock.util.NamespacedId;
+import io.github.unjoinable.skyblock.util.NamespacedObject;
 import io.github.unjoinable.skyblock.util.Utils;
-import net.kyori.adventure.text.Component;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.component.AttributeList;
+import net.minestom.server.tag.Tag;
+import net.minestom.server.utils.Unit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-public record SkyblockItem(String id, ComponentContainer container) {
+public record SkyblockItem(NamespacedId id, ComponentContainer container) implements NamespacedObject {
 
-    public static SkyblockItem AIR = new SkyblockItem("AIR", null);
+    public static final SkyblockItem AIR = new SkyblockItem(NamespacedId.AIR, new ComponentContainer());
 
-    public ItemStack toItemStack() {
-        return Skyblock.getItemProcessor().toItemStack(this);
+    private static final Tag<String> ID_TAG = Tag.String("id");
+
+    public @NotNull ItemStack toItemStack(@Nullable SkyblockPlayer player) {
+        ItemStack.Builder builder = ItemStack.builder(Material.AIR);
+        Map<Class<? extends Component>, Component> components = container().getAllComponents();
+
+        for (io.github.unjoinable.skyblock.item.component.Component component : components.values()) {
+            if (component instanceof BasicComponent) {
+                ((BasicComponent) component).applyEffect(this, builder);
+            }
+        }
+
+        builder.set(ID_TAG, id.toString());
+        builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+        builder.set(ItemComponent.ATTRIBUTE_MODIFIERS, new AttributeList(List.of(), false));
+        builder.lore(new LoreSystem(this, player).build());
+        return builder.build();
     }
 
-
-    public Builder builder() {
-        return new Builder(this);
+    public static @NotNull SkyblockItem fromItemStack(@NotNull ItemStack item) {
+        if (!item.hasTag(ID_TAG)) return SkyblockItem.AIR;
+        SkyblockItem skyblockItem = ItemRegistry.getInstance().getItem(item.getTag(ID_TAG));
+        // TODO: Load item from item stack using gson
+        return skyblockItem;
     }
 
     public static class Builder {
-        private String id = "AIR";
+        private NamespacedId id = NamespacedId.AIR;
         private Material material = Material.AIR;
         private String name = null;
         private @SerializedName("tier") Rarity rarity = Rarity.UNOBTAINABLE;
@@ -41,7 +67,7 @@ public record SkyblockItem(String id, ComponentContainer container) {
         private @SerializedName("dungeon_item") boolean isDungeonItem = false;
 
         private ComponentContainer container = new ComponentContainer();
-        private List<Component> description = null;
+        private List<net.kyori.adventure.text.Component> description = null;
 
         public Builder() {} //default constructor for gson
 
@@ -98,12 +124,8 @@ public record SkyblockItem(String id, ComponentContainer container) {
             if (statistics != null && !statistics.isEmpty()) {
                 container.addComponent(new StatisticsComponent(statistics));
             }
-
-            container.getAllComponents().values().stream()
-                    .filter(BasicComponent.class::isInstance).map(BasicComponent.class::cast)
-                    .forEach(component -> component.applyData(container));
-            //done
             return new SkyblockItem(id, container);
         }
     }
-}
+ }
+

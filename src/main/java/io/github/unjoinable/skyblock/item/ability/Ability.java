@@ -1,6 +1,5 @@
 package io.github.unjoinable.skyblock.item.ability;
 
-import io.github.unjoinable.skyblock.enums.AbilityCostType;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import net.kyori.adventure.text.Component;

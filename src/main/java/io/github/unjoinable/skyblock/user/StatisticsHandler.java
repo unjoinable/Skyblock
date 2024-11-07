@@ -5,6 +5,7 @@ import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.components.StatisticsComponent;
 import io.github.unjoinable.skyblock.statistics.StatModifier;
 import io.github.unjoinable.skyblock.statistics.Statistic;
+import io.github.unjoinable.skyblock.util.NamespacedId;
 
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class StatisticsHandler {
         this.itemStatistics.clear();
         for (SkyblockItem item : PlayerItemCache.fromCache(player).getAll().values()) {
             ComponentContainer container = item.container();
-            if (!item.id().equalsIgnoreCase("AIR") && container.hasComponent(StatisticsComponent.class)) {
+            if (!item.id().equals(NamespacedId.AIR) && container.hasComponent(StatisticsComponent.class)) {
                 StatisticsComponent component = container.getComponent(StatisticsComponent.class);
                 this.itemStatistics.put(item, component.statistics());
             }

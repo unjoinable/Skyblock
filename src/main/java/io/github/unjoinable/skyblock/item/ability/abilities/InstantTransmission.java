@@ -1,6 +1,6 @@
 package io.github.unjoinable.skyblock.item.ability.abilities;
 
-import io.github.unjoinable.skyblock.enums.AbilityCostType;
+import io.github.unjoinable.skyblock.item.ability.AbilityCostType;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.ability.Ability;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
@@ -14,16 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.unjoinable.skyblock.util.MiniMessageTemplate.MM;
-
 public class InstantTransmission implements Ability {
     private static final List<Component> LORE = new ArrayList<>();
-
-    static {
-        LORE.add(MM."§7Teleport §a8 blocks§7 ahead of");
-        LORE.add(MM."§7you and gain §a+50 §f✦ Speed§7");
-        LORE.add(MM."§7for §a3 seconds§7.");
-    }
 
     @Override
     public @NotNull String name() {

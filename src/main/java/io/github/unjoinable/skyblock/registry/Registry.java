@@ -1,5 +1,9 @@
 package io.github.unjoinable.skyblock.registry;
 
+import io.github.unjoinable.skyblock.util.StringUtils;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +35,7 @@ public abstract class Registry<K, V> implements Iterable<V> {
         if (objects.containsKey(key)) {
             return objects.get(key);
         } else {
-            throw new IllegalArgumentException(STR."Object \{key} does not exist in the registry");
+            throw new IllegalArgumentException(StringUtils.formatString("Object {} does not exist in the registry", key));
         }
     }
 
@@ -54,7 +58,7 @@ public abstract class Registry<K, V> implements Iterable<V> {
      */
     public void add(K key, V value) {
         if (objects.containsKey(key)) {
-            throw new IllegalArgumentException(STR."Object already exists in the registry \{key} \{value}");
+            throw new IllegalArgumentException(StringUtils.formatString("Object already exists in the registry {} {}", key, value));
         } else {
             objects.put(key, value);
         }
@@ -90,9 +94,8 @@ public abstract class Registry<K, V> implements Iterable<V> {
         return objects;
     }
 
-    /**
-     * Registry all objects of registry
-     * @since 1.0.0
-     */
-    public abstract void registerAll();
+    @Override
+    public @NotNull Iterator<V> iterator() {
+        return objects.values().iterator();
+    }
 }

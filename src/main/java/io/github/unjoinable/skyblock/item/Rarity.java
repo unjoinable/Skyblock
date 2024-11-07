@@ -1,4 +1,4 @@
-package io.github.unjoinable.skyblock.enums;
+package io.github.unjoinable.skyblock.item;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
