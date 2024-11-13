@@ -18,7 +18,7 @@ public class AbilityHandler {
 
     public boolean canUseAbility(@NotNull Ability ability) {
         NamespacedId id = ability.id();
-        return cooldowns.containsKey(id) && cooldowns.get(id) > 0;
+        return !cooldowns.containsKey(id) || getRemainingCooldown(ability) == 0;
     }
 
     public long getRemainingCooldown(@NotNull Ability ability) {
@@ -26,7 +26,7 @@ public class AbilityHandler {
         long cooldown = ability.cooldownInMs();
         long current = System.currentTimeMillis();
 
-        long remaining = current - lastUse - cooldown;
+        long remaining = (lastUse + cooldown) - current;
 
         return remaining < 0 ? 0 : remaining;
     }

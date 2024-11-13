@@ -81,7 +81,7 @@ public class SkyblockPlayer extends Player {
         AbilityCostType costType = ability.costType();
 
         switch (costType) {
-            case MANA -> actionBar.addReplacement(ActionBarSection.DEFENSE, NOT_ENOUGH_MANA_REPLACEMENT);
+            case MANA -> actionBar.addReplacement(ActionBarSection.MANA, NOT_ENOUGH_MANA_REPLACEMENT);
         }
     }
 
