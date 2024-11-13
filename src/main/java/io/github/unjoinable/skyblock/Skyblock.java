@@ -3,7 +3,7 @@ package io.github.unjoinable.skyblock;
 import io.github.unjoinable.skyblock.commands.ItemCommand;
 import io.github.unjoinable.skyblock.commands.NBTCommand;
 import io.github.unjoinable.skyblock.commands.ServerResourcesCommand;
-import io.github.unjoinable.skyblock.handlers.SkullHandler;
+import io.github.unjoinable.skyblock.handlers.*;
 import io.github.unjoinable.skyblock.listeners.*;
 import io.github.unjoinable.skyblock.registry.registries.AbilityRegistry;
 import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
@@ -61,6 +61,21 @@ public class Skyblock {
         //block handlers
         BlockManager blockManager = MinecraftServer.getBlockManager();
         blockManager.registerHandler(SkullHandler.KEY, SkullHandler::new);
+        blockManager.registerHandler(SignHandler.KEY, SkullHandler::new);
+        blockManager.registerHandler(JukeBoxHandler.KEY, JukeBoxHandler::new);
+        blockManager.registerHandler(HopperHandler.KEY, HopperHandler::new);
+        blockManager.registerHandler(FurnaceHandler.KEY, FurnaceHandler::new);
+        blockManager.registerHandler(EndPortalHandler.KEY, EndPortalHandler::new);
+        blockManager.registerHandler(EnchantingTableHandler.KEY, EnchantingTableHandler::new);
+        blockManager.registerHandler(DropperHandler.KEY, DropperHandler::new);
+        blockManager.registerHandler(DispenserHandler.KEY, DispenserHandler::new);
+        blockManager.registerHandler(ComparatorHandler.KEY, ComparatorHandler::new);
+        blockManager.registerHandler(ChestHandler.KEY, ChestHandler::new);
+        blockManager.registerHandler(BrewingStandHandler.KEY, BrewingStandHandler::new);
+        blockManager.registerHandler(BedHandler.KEY, BedHandler::new);
+        blockManager.registerHandler(BeaconHandler.KEY, BeaconHandler::new);
+        blockManager.registerHandler(BannerHandler.KEY, BannerHandler::new);
+
 
         //let the show begin.
         server.start("0.0.0.0", 25565);
