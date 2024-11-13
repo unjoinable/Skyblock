@@ -15,6 +15,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.network.player.PlayerConnection;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class SkyblockPlayer extends Player {
     private static final ActionBarDisplayReplacement NOT_ENOUGH_MANA_REPLACEMENT = new ActionBarDisplayReplacement(
             NOT_ENOUGH_MANA,
             40,
-            5,
+            10,
             ActionBarPurpose.ABILITY
     );
 
@@ -103,9 +104,10 @@ public class SkyblockPlayer extends Player {
         updateItemCache();
         statsHandler.taskLoop();
 
-        actionBar.setDefaultDisplay(ActionBarSection.HEALTH, Component.text(statsHandler.getHealth() + "/" + statsHandler.getStat(Statistic.HEALTH) + "❤", RED));
-        actionBar.setDefaultDisplay(ActionBarSection.DEFENSE, Component.text(statsHandler.getStat(Statistic.DEFENSE) + "❈ Defense", GREEN));
-        actionBar.setDefaultDisplay(ActionBarSection.MANA, Component.text(statsHandler.getMana() + "/" + statsHandler.getStat(Statistic.INTELLIGENCE) + "✎ Mana", AQUA));
+        DecimalFormat df = new DecimalFormat("#");
+        actionBar.setDefaultDisplay(ActionBarSection.HEALTH, Component.text(df.format(statsHandler.getHealth()) + "/" + df.format(statsHandler.getStat(Statistic.HEALTH)) + "❤", RED));
+        actionBar.setDefaultDisplay(ActionBarSection.DEFENSE, Component.text(df.format(statsHandler.getStat(Statistic.DEFENSE)) + "❈ Defense", GREEN));
+        actionBar.setDefaultDisplay(ActionBarSection.MANA, Component.text(df.format(statsHandler.getMana()) + "/" + df.format(statsHandler.getStat(Statistic.INTELLIGENCE) )+ "✎ Mana", AQUA));
         sendActionBar(actionBar.build());
     }
 
@@ -115,7 +117,7 @@ public class SkyblockPlayer extends Player {
                         .append(Component.text(ability.name(), GOLD))
                         .append(Component.text(")", AQUA).decoration(ITALIC, false)),
                 100,
-                10,
+                5,
                 ActionBarPurpose.ABILITY);
     }
     //override methods

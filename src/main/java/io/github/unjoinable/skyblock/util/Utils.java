@@ -55,15 +55,13 @@ public class Utils {
         return LEATHER_MATERIAL.contains(material);
     }
 
-    public static Component generateStatisticLore(Statistic statistic, int value) {
+    public static Component generateStatisticLore(Statistic statistic, double value) {
         String plus = statistic.getPercentage() ? "" : "+";
         String percentage = statistic.getPercentage() ? "%" : "";
         Component line = Component.text(statistic.getDisplayName() + ": ", NamedTextColor.GRAY)
                 .append(Component.text(plus + value + percentage ,
                         statistic.getLoreColor()));
 
-        //return MM."<gray>\{statistic.getDisplayName()}: </gray><\{statistic.getLoreColor()}>\{(statistic.getPercentage() ? "" : "+")
-                //+ value + (statistic.getPercentage() ? "%" : "")}";
         return line.decoration(TextDecoration.ITALIC, false);
     }
 

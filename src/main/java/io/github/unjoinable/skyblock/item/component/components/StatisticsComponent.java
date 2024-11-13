@@ -38,8 +38,8 @@ public record StatisticsComponent(Map<Statistic, StatModifiers> statistics) impl
     public @NotNull List<Component> lore(SkyblockItem item) {
         List<Component> lore = new ArrayList<>();
         statistics.forEach((statistic, modifiers) -> {
-            int value = modifiers.getEffectiveValue();
-            if (value != 0) {
+            double value = modifiers.getEffectiveValue();
+            if (value != 0D) {
                 lore.add(Utils.generateStatisticLore(statistic, value));
             }
         });

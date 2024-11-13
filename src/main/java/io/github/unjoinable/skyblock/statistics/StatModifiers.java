@@ -8,7 +8,7 @@ import java.util.List;
 
 public class StatModifiers {
     private final List<StatModifier> modifiers;
-    private int effectiveValue;
+    private double effectiveValue;
 
     public StatModifiers(@NotNull List<StatModifier> modifiers) {
         this.modifiers = modifiers;
@@ -56,7 +56,7 @@ public class StatModifiers {
         calculateEffectiveValue();
     }
 
-    public int getEffectiveValue() {
+    public double getEffectiveValue() {
         return effectiveValue;
     }
 }

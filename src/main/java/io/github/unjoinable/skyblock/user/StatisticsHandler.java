@@ -13,11 +13,11 @@ import java.util.*;
 public class StatisticsHandler {
     private final SkyblockPlayer player;
     private final Map<SkyblockItem, Map<Statistic, StatModifiers>> itemStatistics;
-    private final Map<Statistic, Integer> overallStatistics;
+    private final Map<Statistic, Double> overallStatistics;
 
     //current
-    private int health;
-    private int mana;
+    private double health;
+    private double mana;
 
     public StatisticsHandler(SkyblockPlayer player) {
         this.player = player;
@@ -36,20 +36,20 @@ public class StatisticsHandler {
         }
     }
 
-    public int getStat(Statistic stat) {
-        return this.overallStatistics.getOrDefault(stat, 0);
+    public double getStat(Statistic stat) {
+        return this.overallStatistics.getOrDefault(stat, 0D);
     }
 
     public void updateOverallStats() {
         this.overallStatistics.clear();
 
         for (Statistic value : Statistic.getValues()) {
-            overallStatistics.put(value, value.getBaseValue());
+            overallStatistics.put(value, ((double) value.getBaseValue()));
         }
 
         for (Map<Statistic, StatModifiers> itemStat : itemStatistics.values()) {
             itemStat.forEach((statistic, statModifiers) -> {
-                int value = overallStatistics.get(statistic);
+                double value = overallStatistics.get(statistic);
                 value += statModifiers.getEffectiveValue();
                 overallStatistics.put(statistic, value);
             });
@@ -61,15 +61,15 @@ public class StatisticsHandler {
         updateOverallStats();
     }
 
-    public Map<Statistic, Integer> getOverallStats() {
+    public Map<Statistic, Double> getOverallStats() {
         return overallStatistics;
     }
 
-    public int getHealth() {
+    public double getHealth() {
         return health;
     }
 
-    public int getMana() {
+    public double getMana() {
         return mana;
     }
 
@@ -79,10 +79,10 @@ public class StatisticsHandler {
         mana += calcManaRegen();
     }
 
-    public int calcHealthRegen() {
-        int healthRegen = overallStatistics.get(Statistic.HEALTH_REGEN);
-        int maxHealth = overallStatistics.get(Statistic.HEALTH);
-        int healthGain = (int) ((1.5 + (double) maxHealth /100) * healthRegen/100);
+    public double calcHealthRegen() {
+        double healthRegen = overallStatistics.get(Statistic.HEALTH_REGEN);
+        double maxHealth = overallStatistics.get(Statistic.HEALTH);
+        double healthGain = ((1.5 + (maxHealth /100)) * (healthRegen/100));
 
         if (healthGain + this.health > maxHealth) {
             return maxHealth - health;
@@ -91,9 +91,9 @@ public class StatisticsHandler {
         }
     }
 
-    public int calcManaRegen() {
-        int intelligence = overallStatistics.get(Statistic.INTELLIGENCE);
-        int manaGain = (int) (intelligence * 0.02);
+    public double calcManaRegen() {
+        double intelligence = overallStatistics.get(Statistic.INTELLIGENCE);
+        double manaGain = (intelligence * 0.02);
 
         if (this.mana + manaGain > intelligence) {
             return intelligence - mana;
@@ -102,11 +102,11 @@ public class StatisticsHandler {
         }
     }
 
-    public void setHealth(int health) {
+    public void setHealth(double health) {
         this.health = health;
     }
 
-    public void setMana(int mana) {
+    public void setMana(double mana) {
         this.mana = mana;
     }
 }
