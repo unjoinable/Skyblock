@@ -3,9 +3,11 @@ package io.github.unjoinable.skyblock;
 import io.github.unjoinable.skyblock.commands.ItemCommand;
 import io.github.unjoinable.skyblock.commands.NBTCommand;
 import io.github.unjoinable.skyblock.commands.ServerResourcesCommand;
+import io.github.unjoinable.skyblock.commands.TestCommand;
 import io.github.unjoinable.skyblock.handlers.*;
 import io.github.unjoinable.skyblock.listeners.*;
 import io.github.unjoinable.skyblock.registry.registries.AbilityRegistry;
+import io.github.unjoinable.skyblock.registry.registries.ClickableButtonRegistry;
 import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
 import io.github.unjoinable.skyblock.time.SkyblockStandardTime;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
@@ -37,6 +39,7 @@ public class Skyblock {
 
         AbilityRegistry.getInstance().registerAll();
         ItemRegistry.getInstance().registerAll();
+        ClickableButtonRegistry.getInstance().registerAll();
 
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
@@ -51,12 +54,14 @@ public class Skyblock {
         globalEventHandler.addListener(new PlayerSpawnListener());
         globalEventHandler.addListener(new PlayerUseItemListener());
         globalEventHandler.addListener(new SkyblockAbilityUseListener());
+        globalEventHandler.addListener(new InventoryPreClickListener());
 
         //commands
         CommandManager manager =  MinecraftServer.getCommandManager();
         manager.register(new ItemCommand("item"));
         manager.register(new NBTCommand("nbt"));
         manager.register(new ServerResourcesCommand());
+        manager.register(new TestCommand());
 
         //block handlers
         BlockManager blockManager = MinecraftServer.getBlockManager();

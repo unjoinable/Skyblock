@@ -8,7 +8,7 @@ plugins {
 group = "io.github.unjoinable"
 version = "1.0-SNAPSHOT"
 var api = "https://api.github.com/repos/Minestom/Minestom/commits"
-var minestomVersion = getLatestCommitHash(api)
+var minestomVersion = "f71ab6d851"
 
 repositories {
     mavenCentral()

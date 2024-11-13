@@ -22,7 +22,6 @@ public class ItemCommand extends Command {
         Argument<String> idArg = ArgumentType.String("item_id").setSuggestionCallback((_, _, suggestion) -> {
             ItemRegistry.getInstance().forEach(item -> {
                 suggestion.addEntry(new SuggestionEntry(item.id().toString()));
-                suggestion.addEntry(new SuggestionEntry(item.id().key()));
             });
         });
         //syntax

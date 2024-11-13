@@ -24,12 +24,17 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
+/**
+ * Represents a player in the Skyblock game, extending the base Player class.
+ * This class manages player-specific data such as coins, bits, skills, abilities etc.
+ * It also handles the player's action bar and statistics.
+ */
 public class SkyblockPlayer extends Player {
     private final ActionBar actionBar;
     private final StatisticsHandler statsHandler;
     private final AbilityHandler abilityHandler;
 
-    //statics
+    // Static components for action bar messages
     private static final Component NOT_ENOUGH_MANA = Component.text("NOT ENOUGH MANA", RED, BOLD).decoration(ITALIC, false);
     private static final ActionBarDisplayReplacement NOT_ENOUGH_MANA_REPLACEMENT = new ActionBarDisplayReplacement(
             NOT_ENOUGH_MANA,
@@ -38,11 +43,10 @@ public class SkyblockPlayer extends Player {
             ActionBarPurpose.ABILITY
     );
 
-    //player data
+    // Player data
     private long coins = 0;
     private long bits = 0;
     private Map<Skill, Long> skills = new EnumMap<>(Skill.class);
-
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -66,6 +70,12 @@ public class SkyblockPlayer extends Player {
         }
     }
 
+    /**
+     * Determines if the player can use a specified ability based on its cost type and cost.
+     *
+     * @param ability the ability to check, which contains the cost type and cost.
+     * @return true if the player has enough resources (mana, health, or coins) to use the ability; false otherwise.
+     */
     public boolean canUseAbility(@NotNull Ability ability) {
         AbilityCostType costType = ability.costType();
         int abilityCost = ability.abilityCost();
@@ -77,6 +87,12 @@ public class SkyblockPlayer extends Player {
         };
     }
 
+    /**
+     * Handles the scenario where an ability cannot be used due to insufficient resources.
+     * Displays an appropriate message on the action bar.
+     *
+     * @param ability the ability that failed to be used.
+     */
     public void abilityFailed(@NotNull Ability ability) {
         AbilityCostType costType = ability.costType();
 
@@ -85,6 +101,12 @@ public class SkyblockPlayer extends Player {
         }
     }
 
+    /**
+     * Uses a specified ability, deducting the appropriate resource cost from the player.
+     * Updates the action bar to reflect the ability usage.
+     *
+     * @param ability the ability to use.
+     */
     public void useAbility(@NotNull Ability ability) {
         AbilityCostType costType = ability.costType();
         int abilityCost = ability.abilityCost();
@@ -100,6 +122,10 @@ public class SkyblockPlayer extends Player {
         }
     }
 
+    /**
+     * Executes the player's task loop, updating the item cache and statistics.
+     * Updates the action bar with the player's current health, defense, and mana.
+     */
     public void taskLoop() {
         updateItemCache();
         statsHandler.taskLoop();
@@ -111,6 +137,13 @@ public class SkyblockPlayer extends Player {
         sendActionBar(actionBar.build());
     }
 
+    /**
+     * Creates an action bar display replacement for when an ability is used.
+     *
+     * @param ability the ability being used.
+     * @param abilityCost the cost of the ability.
+     * @return an ActionBarDisplayReplacement reflecting the ability usage.
+     */
     private ActionBarDisplayReplacement abilityUseReplacement(Ability ability, int abilityCost) {
         return new ActionBarDisplayReplacement(
                 Component.text("-" + abilityCost + " Mana (", AQUA)
@@ -120,56 +153,100 @@ public class SkyblockPlayer extends Player {
                 5,
                 ActionBarPurpose.ABILITY);
     }
-    //override methods
 
-    @Override
-    public void closeInventory() {
-        super.closeInventory();
-    }
+    // Getters
 
-
-    //getters
-
+    /**
+     * Gets the number of bits the player has.
+     *
+     * @return the number of bits.
+     */
     public long getBits() {
         return bits;
     }
 
+    /**
+     * Gets the number of coins the player has.
+     *
+     * @return the number of coins.
+     */
     public long getCoins() {
         return coins;
     }
 
+    /**
+     * Gets all the skills and their corresponding experience points for the player.
+     *
+     * @return a map of skills to experience points.
+     */
     public @NotNull Map<Skill, Long> getAllSkillsXP() {
         return skills;
     }
 
+    /**
+     * Gets the experience points for a specific skill.
+     *
+     * @param skill the skill to retrieve experience points for.
+     * @return the experience points for the specified skill.
+     */
     public long getSkillXP(@NotNull Skill skill) {
         return skills.getOrDefault(skill, 0L);
     }
 
+    /**
+     * Gets the player's action bar.
+     *
+     * @return the action bar.
+     */
     public ActionBar getActionBar() {
         return actionBar;
     }
 
+    /**
+     * Gets the player's statistics handler.
+     *
+     * @return the statistics handler.
+     */
     public StatisticsHandler getStatsHandler() {
         return statsHandler;
     }
 
+    /**
+     * Gets the player's ability handler.
+     *
+     * @return the ability handler.
+     */
     public AbilityHandler getAbilityHandler() {
         return abilityHandler;
     }
 
-    //setters
+    // Setters
 
+    /**
+     * Sets the number of bits the player has.
+     *
+     * @param bits the number of bits to set.
+     */
     public void setBits(long bits) {
         this.bits = bits;
     }
 
+    /**
+     * Sets the number of coins the player has.
+     *
+     * @param coins the number of coins to set.
+     */
     public void setCoins(long coins) {
         this.coins = coins;
     }
 
+    /**
+     * Sets the experience points for a specific skill.
+     *
+     * @param skill the skill to set experience points for.
+     * @param value the experience points to set.
+     */
     public void setSkillXP(@NotNull Skill skill, long value) {
         this.skills.put(skill, value);
     }
-
 }

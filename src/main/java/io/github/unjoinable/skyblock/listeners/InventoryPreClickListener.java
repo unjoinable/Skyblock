@@ -1,8 +1,8 @@
 package io.github.unjoinable.skyblock.listeners;
 
-import io.github.unjoinable.skyblock.gui.Button;
-import io.github.unjoinable.skyblock.gui.InventoryGUI;
-import io.github.unjoinable.skyblock.registry.registries.ButtonRegistry;
+import io.github.unjoinable.skyblock.gui.ClickableItem;
+import io.github.unjoinable.skyblock.gui.SkyblockInventory;
+import io.github.unjoinable.skyblock.registry.registries.ClickableButtonRegistry;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import io.github.unjoinable.skyblock.util.StringUtils;
@@ -24,20 +24,20 @@ public class InventoryPreClickListener implements EventListener<InventoryPreClic
     public @NotNull Result run(@NotNull InventoryPreClickEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         ItemStack item = event.getClickedItem();
+        SkyblockInventory inventory = ((SkyblockInventory) event.getInventory());
 
-        //no need to worry about air
-        if (item.isAir()) return Result.SUCCESS;
+        //no need to worry about air or tag less
+        if (item.isAir() || !item.hasTag(SkyblockInventory.BUTTON_TAG)) return Result.SUCCESS;
 
         //logic
         try {
-            NamespacedId id = NamespacedId.fromString(item.getTag(InventoryGUI.BUTTON_TAG));
-            Button button = ButtonRegistry.getInstance().get(id);
-            //button.task().accept()
-            
+            NamespacedId id = NamespacedId.fromString(item.getTag(SkyblockInventory.BUTTON_TAG));
+            ClickableItem button = ClickableButtonRegistry.getInstance().get(id);
+
+            button.onClick().accept(player, event);
         } catch (Exception e) {
             player.sendMessage(INVALID_ACTION);
         }
-
 
         return Result.SUCCESS;
     }

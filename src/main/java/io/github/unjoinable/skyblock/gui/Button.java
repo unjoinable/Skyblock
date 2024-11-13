@@ -3,11 +3,11 @@ package io.github.unjoinable.skyblock.gui;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import io.github.unjoinable.skyblock.util.NamespacedObject;
+import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -19,10 +19,11 @@ import java.util.function.Function;
  */
 public record Button(@NotNull NamespacedId id,
                      @NotNull Function<SkyblockPlayer, ItemStack> item,
-                     @NotNull BiConsumer<SkyblockPlayer, InventoryGUI> task
+                     @NotNull BiConsumer<SkyblockPlayer, InventoryPreClickEvent> task
                      ) implements NamespacedObject, ClickableItem {
+
     @Override
-    public @NotNull BiConsumer<SkyblockPlayer, InventoryGUI> onClick() {
+    public @NotNull BiConsumer<SkyblockPlayer, InventoryPreClickEvent> onClick() {
         return task;
     }
 }

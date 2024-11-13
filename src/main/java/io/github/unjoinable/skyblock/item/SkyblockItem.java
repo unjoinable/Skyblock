@@ -1,7 +1,6 @@
 package io.github.unjoinable.skyblock.item;
 
 import com.google.gson.annotations.SerializedName;
-import io.github.unjoinable.skyblock.item.ability.abilities.InstantTransmission;
 import io.github.unjoinable.skyblock.item.component.BasicComponent;
 import io.github.unjoinable.skyblock.item.component.Component;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
@@ -129,7 +128,6 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
             if (sellPrice != 0) {
                 container.addComponent(new NpcSellPriceComponent(sellPrice));
             }
-            container.addComponent(new AbilityComponent(new InstantTransmission()));
             return new SkyblockItem(id, container);
         }
     }

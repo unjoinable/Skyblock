@@ -18,6 +18,8 @@ public record RarityComponent(Rarity rarity) implements LoreableComponent {
 
     @Override
     public @NotNull List<Component> lore(SkyblockItem item) {
+        if (rarity == Rarity.UNOBTAINABLE) return List.of();
+
         String s1 = rarity.name().replaceAll("_", "");
         String s2 = item.container().getComponent(ItemCategoryComponent.class).category().getName();
 

@@ -2,11 +2,10 @@ package io.github.unjoinable.skyblock.item.component.components;
 
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.ability.Ability;
+import io.github.unjoinable.skyblock.item.ability.SilentAbility;
 import io.github.unjoinable.skyblock.item.component.BasicComponent;
 import io.github.unjoinable.skyblock.item.component.LoreableComponent;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
@@ -34,9 +33,13 @@ public record AbilityComponent(@NotNull Ability ability) implements BasicCompone
     @Override
     public @NotNull List<Component> lore(SkyblockItem item) {
         List<Component> lore = new ArrayList<>();
+
+        if (ability instanceof SilentAbility) return lore;
+
         lore.add(Component.text("Ability: " + ability.name() + " ", GOLD).decoration(ITALIC, false).append(Component.text(ability.type().toString(), YELLOW, BOLD)));
         lore.addAll(ability.lore());
         lore.add(Component.text(ability.costType() + " Cost: ", DARK_GRAY).decoration(ITALIC, false).append(Component.text(ability().abilityCost(), DARK_AQUA)));
+
         return lore;
     }
 }

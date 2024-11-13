@@ -17,10 +17,12 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Set;
 
 public class Utils {
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#");
     private static final Set<Material> LEATHER_MATERIAL = ImmutableSet.of(
             Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS);
 
@@ -59,11 +61,13 @@ public class Utils {
         String plus = statistic.getPercentage() ? "" : "+";
         String percentage = statistic.getPercentage() ? "%" : "";
         Component line = Component.text(statistic.getDisplayName() + ": ", NamedTextColor.GRAY)
-                .append(Component.text(plus + value + percentage ,
+                .append(Component.text(plus + decimalFormat.format(value) + percentage ,
                         statistic.getLoreColor()));
 
         return line.decoration(TextDecoration.ITALIC, false);
     }
 
-
+    public static DecimalFormat getDecimalFormat() {
+        return decimalFormat;
+    }
 }

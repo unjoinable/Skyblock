@@ -1,11 +1,21 @@
 package io.github.unjoinable.skyblock.item.ability;
 
+/**
+ * Represents the different types of cost associated with abilities in the game.
+ * Each enum constant represents a specific cost type.
+ */
 public enum AbilityCostType {
     MANA,
     HEALTH,
     COINS,
     ;
 
+    /**
+     * Converts the enum constant to a human-readable string.
+     *
+     * @return A string representation of the enum constant in title case,
+     *         with underscores replaced by spaces.
+     */
     @Override
     public String toString() {
         String[] words = name().toLowerCase().split("_");

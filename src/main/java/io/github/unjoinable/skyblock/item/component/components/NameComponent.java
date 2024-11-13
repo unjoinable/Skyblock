@@ -13,7 +13,10 @@ public record NameComponent(String name) implements BasicComponent {
     @Override
     public void applyEffect(@NotNull SkyblockItem item, ItemStack.@NotNull Builder builder) {
         Rarity rarity = item.container().getComponent(RarityComponent.class).rarity();
-        builder.customName(Component.text(name).color(rarity.getColor()).decoration(TextDecoration.ITALIC, false));
+        Component colouredName = Component.text(name).decoration(TextDecoration.ITALIC, false);
+
+        if (rarity == Rarity.UNOBTAINABLE) builder.customName(colouredName);
+        builder.customName(colouredName.color(rarity.getColor()));
     }
 
 }

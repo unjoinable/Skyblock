@@ -7,14 +7,35 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Represents a Skyblock sidebar interface.
+ */
 public interface SkyblockSidebar {
 
+   /**
+    * Returns the title of the sidebar.
+    *
+    * @return the title of the sidebar
+    */
    @NotNull Component title();
 
+   /**
+    * Returns the lines of the sidebar.
+    *
+    * @return the lines of the sidebar
+    */
    @NotNull List<Component> lines();
 
+   /**
+    * Initializes the sidebar.
+    */
    void init();
 
+   /**
+    * Builds and returns a Scoreboard instance based on the sidebar's title and lines.
+    *
+    * @return the Scoreboard instance
+    */
    default @NotNull Scoreboard build() {
        Sidebar sidebar = new Sidebar(title());
        List<Component> lines = lines().reversed();
