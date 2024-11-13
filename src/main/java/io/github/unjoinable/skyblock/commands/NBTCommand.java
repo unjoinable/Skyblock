@@ -9,11 +9,12 @@ public class NBTCommand extends Command {
 
     public NBTCommand(@NotNull String name) {
         super(name);
-
-        addSyntax((sender, context) -> {
+        //syntax
+        addSyntax((sender, _) -> {
             ItemStack item = ((SkyblockPlayer) sender).getItemInMainHand();
-            System.out.println(item.toItemNBT());
+            if (!item.isAir()) {
+                System.out.println(item.toItemNBT());
+            }
         });
     }
-
 }

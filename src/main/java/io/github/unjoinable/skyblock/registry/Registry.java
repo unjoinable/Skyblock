@@ -94,6 +94,8 @@ public abstract class Registry<K, V> implements Iterable<V> {
         return objects;
     }
 
+    public void registerAll() {} //method ran to register the registries.
+
     @Override
     public @NotNull Iterator<V> iterator() {
         return objects.values().iterator();

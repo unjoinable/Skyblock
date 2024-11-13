@@ -1,11 +1,13 @@
 package io.github.unjoinable.skyblock.item;
 
 import com.google.gson.annotations.SerializedName;
+import io.github.unjoinable.skyblock.item.ability.abilities.InstantTransmission;
 import io.github.unjoinable.skyblock.item.component.BasicComponent;
 import io.github.unjoinable.skyblock.item.component.Component;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.components.*;
 import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
+import io.github.unjoinable.skyblock.statistics.StatModifiers;
 import io.github.unjoinable.skyblock.statistics.Statistic;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.util.NamespacedId;
@@ -50,7 +52,7 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
     public static @NotNull SkyblockItem fromItemStack(@NotNull ItemStack item) {
         if (!item.hasTag(ID_TAG)) return SkyblockItem.AIR;
         SkyblockItem skyblockItem = ItemRegistry.getInstance().getItem(item.getTag(ID_TAG));
-        // TODO: Load item from item stack using gson
+        // TODO: Load item from item stack
         return skyblockItem;
     }
 
@@ -60,7 +62,7 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
         private String name = null;
         private @SerializedName("tier") Rarity rarity = Rarity.UNOBTAINABLE;
         private ItemCategory category = ItemCategory.NONE;
-        private @SerializedName("stats") Map<Statistic, Integer> statistics = null;
+        private @SerializedName("stats") Map<Statistic, StatModifiers> statistics = null;
         private String skin = null;
         private String color = null;
         private @SerializedName("npc_sell_price") int sellPrice = -1;
@@ -105,7 +107,6 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
             container.addComponent(new NameComponent(name));
             container.addComponent(new RarityComponent(rarity));
             container.addComponent(new ItemCategoryComponent(category));
-            container.addComponent(new NpcSellPriceComponent(sellPrice));
             container.addComponent(new DungeonItemComponent(isDungeonItem));
 
             //conditional components
@@ -124,6 +125,11 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
             if (statistics != null && !statistics.isEmpty()) {
                 container.addComponent(new StatisticsComponent(statistics));
             }
+
+            if (sellPrice != 0) {
+                container.addComponent(new NpcSellPriceComponent(sellPrice));
+            }
+            container.addComponent(new AbilityComponent(new InstantTransmission()));
             return new SkyblockItem(id, container);
         }
     }

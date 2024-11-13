@@ -20,29 +20,28 @@ import java.util.Map;
 public class ItemRegistry extends Registry<NamespacedId, SkyblockItem> {
     private static final ItemRegistry INSTANCE = new ItemRegistry();
 
-    public static final JsonObject ITEMS_JSON;
-    public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Material.class, new AdapterMaterial())
-            .registerTypeAdapter(Map.class, new AdapterStatistic())
-            .registerTypeAdapter(List.class, new AdapterDescription())
-            .registerTypeAdapter(NamespacedId.class, new AdapterId())
-            .create();
-
-    static {
-        try {
-            ITEMS_JSON = GSON.fromJson(new FileReader("skyblock-items.txt"), JsonObject.class);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    @Override
     public void registerAll() {
-        JsonArray items = ITEMS_JSON.getAsJsonArray("items");
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Material.class, new AdapterMaterial())
+                .registerTypeAdapter(Map.class, new AdapterStatistic())
+                .registerTypeAdapter(List.class, new AdapterDescription())
+                .registerTypeAdapter(NamespacedId.class, new AdapterId())
+                .create();
+        JsonObject itemsJson;
+
+        try {
+             itemsJson = gson.fromJson(new FileReader("skyblock-items.txt"), JsonObject.class);
+        } catch (FileNotFoundException e) {
+            return;
+        }
+
+        JsonArray items = itemsJson.getAsJsonArray("items");
         for (JsonElement item : items) {
-            SkyblockItem skyblockItem = GSON.fromJson(item, SkyblockItem.Builder.class).build();
+            SkyblockItem skyblockItem = gson.fromJson(item, SkyblockItem.Builder.class).build();
             this.add(skyblockItem.id(), skyblockItem);
        }
-       System.out.println(StringUtils.formatString("Registered {} items", this.getAllObjects().size()));
+       System.out.println(StringUtils.formatString("Registered {} skyblock items in the registry", this.getAllObjects().size()));
     }
 
     // getters
@@ -55,7 +54,7 @@ public class ItemRegistry extends Registry<NamespacedId, SkyblockItem> {
     }
 
     public @NotNull SkyblockItem getItem(@NotNull String id) {
-        return this.getItem(NamespacedId.fromSkyblockNamespace(id));
+        return this.getItem(NamespacedId.fromString(id));
     }
 
 }

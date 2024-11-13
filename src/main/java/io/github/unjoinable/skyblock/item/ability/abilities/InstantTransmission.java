@@ -3,7 +3,9 @@ package io.github.unjoinable.skyblock.item.ability.abilities;
 import io.github.unjoinable.skyblock.item.ability.AbilityCostType;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.ability.Ability;
+import io.github.unjoinable.skyblock.item.ability.AbilityType;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
+import io.github.unjoinable.skyblock.util.NamespacedId;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InstantTransmission implements Ability {
+    private static final NamespacedId NAMESPACED_ID = new NamespacedId("ability", "instant_transmission");
     private static final List<Component> LORE = new ArrayList<>();
 
     @Override
@@ -23,8 +26,8 @@ public class InstantTransmission implements Ability {
     }
 
     @Override
-    public @NotNull String id() {
-        return "instant_transmission";
+    public @NotNull NamespacedId id() {
+        return NAMESPACED_ID;
     }
 
     @Override
@@ -33,7 +36,17 @@ public class InstantTransmission implements Ability {
     }
 
     @Override
+    public @NotNull AbilityType type() {
+        return AbilityType.RIGHT_CLICK;
+    }
+
+    @Override
     public int abilityCost() {
+        return 50;
+    }
+
+    @Override
+    public long cooldownInMs() {
         return 50;
     }
 

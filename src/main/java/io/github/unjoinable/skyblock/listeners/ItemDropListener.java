@@ -29,10 +29,10 @@ public class ItemDropListener implements EventListener<ItemDropEvent> {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         double sin = Math.sin(Math.toRadians(pos.yaw()));
         double cos = Math.cos(Math.toRadians(pos.pitch()));
-        double pi = Math.PI*2;
-        double deltaX = -sin * cos * 0.3F * Math.cos((random.nextFloat() * pi) * 0.02F * random.nextFloat());
+        double tau = Math.PI*2;
+        double deltaX = -sin * cos * 0.3F * Math.cos((random.nextFloat() * tau) * 0.02F * random.nextFloat());
         double deltaY = -Math.sin(Math.toRadians(pos.pitch())) * 0.3F + 0.1F + (random.nextFloat() - random.nextFloat()) * 0.1F;
-        double deltaZ =  Math.cos(Math.toRadians(pos.yaw())) * cos * 0.3F + Math.sin(random.nextFloat() * pi * (double) 0.02F * random.nextFloat());
+        double deltaZ =  Math.cos(Math.toRadians(pos.yaw())) * cos * 0.3F + Math.sin(random.nextFloat() * tau * (double) 0.02F * random.nextFloat());
         Vec vec = new Vec(deltaX, deltaY, deltaZ).mul(20D);
 
         entity.setPickupDelay(Duration.ofSeconds(2L));

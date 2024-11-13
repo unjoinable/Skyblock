@@ -112,9 +112,9 @@ public class SkyblockStandardTime {
      */
     public @NotNull String getTime() {
         if (hours > 12) {
-            return (hours - 12) + ":" + StringUtils.toDoubleDigit(minutes) + " PM";
+            return (hours - 12) + ":" + StringUtils.toDoubleDigit(minutes) + "pm";
         }
-        return hours + ":" + StringUtils.toDoubleDigit(minutes);
+        return hours + ":" + StringUtils.toDoubleDigit(minutes) + "am";
     }
 
     /**
