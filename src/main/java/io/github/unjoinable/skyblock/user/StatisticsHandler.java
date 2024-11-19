@@ -6,6 +6,8 @@ import io.github.unjoinable.skyblock.item.component.components.StatisticsCompone
 import io.github.unjoinable.skyblock.statistics.StatModifiers;
 import io.github.unjoinable.skyblock.statistics.Statistic;
 import io.github.unjoinable.skyblock.util.NamespacedId;
+import io.github.unjoinable.skyblock.util.Utils;
+import it.unimi.dsi.fastutil.Pair;
 import net.minestom.server.entity.attribute.Attribute;
 
 import java.util.*;
@@ -19,7 +21,7 @@ public class StatisticsHandler {
     private final Map<Statistic, Double> overallStatistics;
 
     //current
-    private double health;
+    private double currentHealth;
     private double mana;
 
     /**
@@ -31,6 +33,8 @@ public class StatisticsHandler {
         this.player = player;
         this.itemStatistics = new HashMap<>();
         this.overallStatistics = new EnumMap<>(Statistic.class);
+
+        update();
     }
 
     /**
@@ -39,6 +43,7 @@ public class StatisticsHandler {
      */
     public void updateItemStats() {
         this.itemStatistics.clear();
+
         for (SkyblockItem item : PlayerItemCache.fromCache(player).getAll().values()) {
             ComponentContainer container = item.container();
             if (!item.id().equals(NamespacedId.AIR) && container.hasComponent(StatisticsComponent.class)) {
@@ -95,14 +100,14 @@ public class StatisticsHandler {
         return overallStatistics;
     }
 
-    /**
-     * Gets the current health of the player.
-     *
-     * @return The current health value.
-     */
-    public double getHealth() {
-        return health;
+    public void healHealth() {
+        setCurrentHealth(overallStatistics.get(Statistic.HEALTH));
     }
+
+    public void healMana() {
+        setMana(overallStatistics.get(Statistic.INTELLIGENCE));
+    }
+
 
     /**
      * Gets the current mana of the player.
@@ -113,14 +118,31 @@ public class StatisticsHandler {
         return mana;
     }
 
+    public double getCurrentHealth() {
+        return currentHealth;
+    }
+
+    public void subtractCurrentHealth(double currentHealth) {
+        setCurrentHealth(getCurrentHealth() - currentHealth);
+    }
+
+    public void addCurrentHealth(double currentHealth) {
+        setCurrentHealth(Math.min(getCurrentHealth() + currentHealth, overallStatistics.get(Statistic.HEALTH)));
+    }
+
     /**
      * Performs periodic updates on player statistics, health, mana, and movement speed.
      * This method should be called regularly to keep the player's stats up-to-date.
      */
     public void taskLoop() {
         update();
-        health += calcHealthRegen();
         mana += calcManaRegen();
+
+        //health
+        double healthRegen = calcHealthRegen();
+        if (healthRegen != 0) {
+            addCurrentHealth(healthRegen);
+        }
 
         //speed
         player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(overallStatistics.get(Statistic.SPEED) / 1000);
@@ -136,8 +158,8 @@ public class StatisticsHandler {
         double maxHealth = overallStatistics.get(Statistic.HEALTH);
         double healthGain = ((1.5 + (maxHealth /100)) * (healthRegen/100));
 
-        if (healthGain + this.health > maxHealth) {
-            return maxHealth - health;
+        if (healthGain + this.currentHealth > maxHealth) {
+            return maxHealth - currentHealth;
         } else {
             return healthGain;
         }
@@ -161,20 +183,16 @@ public class StatisticsHandler {
     }
 
     /**
-     * Sets the current health of the player.
-     *
-     * @param health The new health value to set.
-     */
-    public void setHealth(double health) {
-        this.health = health;
-    }
-
-    /**
      * Sets the current mana of the player.
      *
      * @param mana The new mana value to set.
      */
     public void setMana(double mana) {
         this.mana = mana;
+    }
+
+    public void setCurrentHealth(double currentHealth) {
+        this.currentHealth = currentHealth;
+        player.setHealth((float) currentHealth);
     }
 }

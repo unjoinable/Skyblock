@@ -1,6 +1,5 @@
-package io.github.unjoinable.skyblock.skill.reward;
+package io.github.unjoinable.skyblock.user.reward;
 
-import io.github.unjoinable.skyblock.skill.RewardType;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 
 public interface Reward {

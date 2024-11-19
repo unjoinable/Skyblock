@@ -9,6 +9,6 @@ import java.util.Map;
 
 public interface StatComponent extends Component {
 
-    @NotNull Map<Statistic, List<StatModifier>> statModifiers();
+    @NotNull Map<Statistic, List<StatModifier>> statModifiers(@NotNull ComponentContainer container);
 
 }

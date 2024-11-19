@@ -4,6 +4,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class StringUtils {
 
     /**
@@ -40,10 +43,18 @@ public class StringUtils {
      * @return The formatted string.
      */
     public static String formatString(String str, Object... args) {
-        for (Object arg : args) {
-            str = str.replaceFirst("\\{}", arg.toString());
+        StringBuilder sb = new StringBuilder();
+        int argIndex = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '{' && i + 1 < str.length() && str.charAt(i + 1) == '}') {
+                if (argIndex < args.length) {
+                    sb.append(args[argIndex]); argIndex++;
+                } i++;
+        } else {
+                sb.append(str.charAt(i));
+            }
         }
-        return str;
+        return sb.toString();
     }
 
     /**
@@ -62,7 +73,7 @@ public class StringUtils {
 
      /**
      * Formats a given day number with its appropriate ordinal suffix (st, nd, rd, or th).
-     * 
+     *
      * @param day The day number to be formatted. Should be a positive byte.
      * @return A string representation of the day number with its ordinal suffix.
      *         For example, 1 becomes "1st", 2 becomes "2nd", 3 becomes "3rd",
@@ -77,5 +88,12 @@ public class StringUtils {
             case 3 -> day + "rd";
             default -> day + "th";
         };
+    }
+
+    public static String makeRepresentable(double number) {
+        // Remove decimals by converting to long
+         long roundedNumber = Math.round(number);
+         NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+         return numberFormat.format(roundedNumber);
     }
 }

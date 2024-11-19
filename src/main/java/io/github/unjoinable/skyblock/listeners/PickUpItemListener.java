@@ -17,7 +17,9 @@ public class PickUpItemListener implements EventListener<PickupItemEvent> {
     public @NotNull Result run(@NotNull PickupItemEvent event) {
         ItemStack item = event.getItemStack();
         if (event.getEntity() instanceof final Player player) {
-            player.getInventory().addItemStack(item);
+            if (item.getTag(ItemDropListener.DROPPED_BY_PLAYER) == player) {
+                player.getInventory().addItemStack(item);
+            }
         }
         return Result.SUCCESS;
     }

@@ -1,6 +1,6 @@
 package io.github.unjoinable.skyblock.skill;
 
-import io.github.unjoinable.skyblock.skill.reward.Reward;
+import io.github.unjoinable.skyblock.user.reward.Reward;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 

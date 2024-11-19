@@ -44,6 +44,11 @@ public class Utils {
         }
     }
 
+    public static boolean probabilityCheck(int percentage) {
+        Random rand = new Random();
+        return rand.nextInt(100) < percentage;
+    }
+
     public static int[] strArtoIntArray(String str) {
         String[] strs = str.split(",");
         int[] ints = new int[strs.length];

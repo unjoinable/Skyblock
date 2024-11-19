@@ -1,7 +1,6 @@
 package io.github.unjoinable.skyblock.listeners;
 
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
-import io.github.unjoinable.skyblock.user.sidebar.DefaultScoreboard;
 import io.github.unjoinable.skyblock.user.sidebar.DefaultSidebar;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerSpawnEvent;

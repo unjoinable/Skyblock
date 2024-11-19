@@ -20,7 +20,7 @@ public class ActionBar {
      */
     public ActionBar() {
         this.replacements = new EnumMap<>(ActionBarSection.class);
-        this. defaultDisplays = new EnumMap<>(ActionBarSection.class);
+        this.defaultDisplays = new EnumMap<>(ActionBarSection.class);
         ActionBarSection.getValues().forEach(section -> replacements.put(section, new ArrayList<>()));
     }
 

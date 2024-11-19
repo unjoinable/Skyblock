@@ -1,9 +1,9 @@
 package io.github.unjoinable.skyblock.skill.skills;
 
 import io.github.unjoinable.skyblock.skill.SkyblockSkill;
-import io.github.unjoinable.skyblock.skill.reward.Reward;
-import io.github.unjoinable.skyblock.skill.reward.SkyblockXPReward;
-import io.github.unjoinable.skyblock.skill.reward.StatReward;
+import io.github.unjoinable.skyblock.user.reward.Reward;
+import io.github.unjoinable.skyblock.user.reward.rewards.SkyblockXPReward;
+import io.github.unjoinable.skyblock.user.reward.rewards.StatReward;
 import io.github.unjoinable.skyblock.statistics.Statistic;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;

@@ -117,14 +117,14 @@ public class ComponentContainer {
         Map<Statistic, StatModifiers> statistics = statComponent.statistics();
 
         //adding
-        component.statModifiers().forEach((statistic, statModifiers) -> {
+        component.statModifiers(this).forEach((statistic, statModifiers) -> {
             StatModifiers mainModifiers = statistics.getOrDefault(statistic, new StatModifiers());
             mainModifiers.addModifiers(statModifiers);
         });
     }
 
     private void removeOldStatisticComponent(StatComponent oldComponent) {
-        Map<Statistic, List<StatModifier>> modifiers = oldComponent.statModifiers();
+        Map<Statistic, List<StatModifier>> modifiers = oldComponent.statModifiers(this);
         StatisticsComponent statComponent = getComponent(StatisticsComponent.class);
         Map<Statistic, StatModifiers> statistics = statComponent.statistics();
 

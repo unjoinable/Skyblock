@@ -25,10 +25,13 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 public class SkyblockMenu extends SkyblockInventory {
+    //stat display order for menu
     private static final Set<Statistic> displayedStats = ImmutableSet.of(
             HEALTH, DEFENSE, STRENGTH, SPEED, CRIT_CHANCE, CRIT_DAMAGE, INTELLIGENCE, MINING_SPEED, BONUS_ATTACK_SPEED,
-            SEA_CREATURE_CHANCE, MAGIC_FIND, PET_LUCK, TRUE_DEFENSE, FEROCITY, ABILITY_DAMAGE, MINING_FORTUNE,
-            FARMING_FORTUNE, FORAGING_FORTUNE, PRISTINE);
+            SEA_CREATURE_CHANCE, MAGIC_FIND, PET_LUCK, TRUE_DEFENSE, FEROCITY, ABILITY_DAMAGE, MINING_FORTUNE, FARMING_FORTUNE,
+            FORAGING_FORTUNE, PRISTINE);
+
+
     private static final Component YOUR_SKYBLOCK_PROFILE = Component.text("Your Skyblock Profile", GREEN).decoration(ITALIC, false);
     private static final Component EQUIP_STATS = Component.text("View your equipment, stats,", GRAY).decoration(ITALIC, false);
     private static final Component AND_MORE = Component.text("and more!", GRAY).decoration(ITALIC, false);
@@ -44,7 +47,6 @@ public class SkyblockMenu extends SkyblockInventory {
 
     public @NotNull ItemStack getStatsHead(SkyblockPlayer player) {
         PlayerSkin skin = player.getSkin();
-        assert skin != null;
         HeadProfile profile = new HeadProfile(skin);
         ItemStack.Builder builder = ItemStack.of(Material.PLAYER_HEAD).builder();
         Map<Statistic, Double> statistics = player.getStatsHandler().getOverallStats();
@@ -53,6 +55,7 @@ public class SkyblockMenu extends SkyblockInventory {
         lore.add(EQUIP_STATS);
         lore.add(AND_MORE);
         lore.add(Component.empty());
+
         for (Statistic stat : displayedStats) {
             double value = statistics.get(stat);
             Component line = Component.text(stat.getSymbol() + " " + stat.getDisplayName() + " ", stat.getDisplayColor())

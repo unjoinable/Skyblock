@@ -1,9 +1,6 @@
 package io.github.unjoinable.skyblock;
 
-import io.github.unjoinable.skyblock.commands.ItemCommand;
-import io.github.unjoinable.skyblock.commands.NBTCommand;
-import io.github.unjoinable.skyblock.commands.ServerResourcesCommand;
-import io.github.unjoinable.skyblock.commands.TestCommand;
+import io.github.unjoinable.skyblock.commands.*;
 import io.github.unjoinable.skyblock.handlers.*;
 import io.github.unjoinable.skyblock.listeners.*;
 import io.github.unjoinable.skyblock.registry.registries.AbilityRegistry;
@@ -11,6 +8,7 @@ import io.github.unjoinable.skyblock.registry.registries.ClickableButtonRegistry
 import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
 import io.github.unjoinable.skyblock.time.SkyblockStandardTime;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
+
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
@@ -25,6 +23,7 @@ import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.TaskSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class Skyblock {
     private static final Logger logger = LoggerFactory.getLogger(Skyblock.class);
@@ -55,6 +54,8 @@ public class Skyblock {
         globalEventHandler.addListener(new PlayerUseItemListener());
         globalEventHandler.addListener(new SkyblockAbilityUseListener());
         globalEventHandler.addListener(new InventoryPreClickListener());
+        globalEventHandler.addListener(new EntityAttackListener());
+        globalEventHandler.addListener(new SkyblockDamageListener());
 
         //commands
         CommandManager manager =  MinecraftServer.getCommandManager();
@@ -62,6 +63,8 @@ public class Skyblock {
         manager.register(new NBTCommand("nbt"));
         manager.register(new ServerResourcesCommand());
         manager.register(new TestCommand());
+        manager.register(new SpawnCustomMobCommand());
+        manager.register(new MenuCommand());
 
         //block handlers
         BlockManager blockManager = MinecraftServer.getBlockManager();
@@ -96,9 +99,9 @@ public class Skyblock {
         }, ExecutionType.TICK_END);
     }
 
-
     //getters
     public static SkyblockStandardTime getSkyblockStandardTime() {
         return skyblockStandardTime;
     }
+
 }

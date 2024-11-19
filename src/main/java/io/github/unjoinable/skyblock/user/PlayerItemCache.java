@@ -35,6 +35,7 @@ public record PlayerItemCache (Map<ItemSlot, SkyblockItem> cache) {
             throw new IllegalArgumentException("Skyblock player is already cached");
         } else {
             playerItemCache.put(player, new PlayerItemCache(new ConcurrentHashMap<>()));
+            player.updateItemCache();
         }
     }
 
@@ -48,6 +49,16 @@ public record PlayerItemCache (Map<ItemSlot, SkyblockItem> cache) {
         } else {
             throw new IllegalArgumentException("Skyblock player is not cached");
         }
+    }
+    
+    /**
+     * Checks if the specified player is present in the item cache.
+     *
+     * @param player The player to check in the cache.
+     * @return {@code true} if the player is present in the cache, {@code false} otherwise.
+     */
+    public static boolean contains(SkyblockPlayer player) {
+        return playerItemCache.containsKey(player);
     }
 
     /**

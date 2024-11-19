@@ -1,4 +1,4 @@
-package io.github.unjoinable.skyblock.skill;
+package io.github.unjoinable.skyblock.user.reward;
 
 public enum RewardType {
     COINS,
@@ -7,4 +7,5 @@ public enum RewardType {
     ITEM,
     STATISTIC
     ;
+
 }

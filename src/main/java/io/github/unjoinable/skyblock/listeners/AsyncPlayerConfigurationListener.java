@@ -1,6 +1,5 @@
 package io.github.unjoinable.skyblock.listeners;
 
-import io.github.unjoinable.skyblock.user.PlayerItemCache;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.EventListener;
@@ -28,8 +27,6 @@ public class AsyncPlayerConfigurationListener implements EventListener<AsyncPlay
         event.setSpawningInstance(spawnInstance);
         player.setRespawnPoint(spawnPos);
 
-        //cache
-        PlayerItemCache.addToCache(player);
         return Result.SUCCESS;
     }
 }

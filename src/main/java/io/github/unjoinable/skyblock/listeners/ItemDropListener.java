@@ -1,5 +1,7 @@
 package io.github.unjoinable.skyblock.listeners;
 
+import io.github.unjoinable.skyblock.collections.SkyblockCollection;
+import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.ItemEntity;
@@ -7,12 +9,14 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemDropListener implements EventListener<ItemDropEvent> {
+    public static final Tag<SkyblockPlayer> DROPPED_BY_PLAYER = Tag.Transient("dropped_by_player");
 
     @Override
     public @NotNull Class<ItemDropEvent> eventType() {
@@ -22,7 +26,9 @@ public class ItemDropListener implements EventListener<ItemDropEvent> {
     @Override
     public @NotNull Result run(@NotNull ItemDropEvent event) {
         ItemStack item = event.getItemStack();
-        Player player = event.getPlayer();
+        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+
+        item = item.withTag(DROPPED_BY_PLAYER, player);
         ItemEntity entity = new ItemEntity(item);
 
         Pos pos = player.getPosition();
