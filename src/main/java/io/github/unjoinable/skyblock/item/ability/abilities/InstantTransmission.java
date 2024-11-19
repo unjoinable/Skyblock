@@ -5,6 +5,7 @@ import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.ability.Ability;
 import io.github.unjoinable.skyblock.item.ability.AbilityType;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
+import io.github.unjoinable.skyblock.util.MiniString;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Point;
@@ -19,6 +20,11 @@ import java.util.List;
 public class InstantTransmission implements Ability {
     private static final NamespacedId NAMESPACED_ID = new NamespacedId("ability", "instant_transmission");
     private static final List<Component> LORE = new ArrayList<>();
+
+    static {
+        LORE.add(MiniString.toComponent("Teleport <green>8 blocks</green> ahead of you and"));
+        LORE.add(MiniString.toComponent("gain <green>+50</green> for <white>✦ Speed</white> <green>3 seconds</green>"));
+    }
 
     @Override
     public @NotNull String name() {

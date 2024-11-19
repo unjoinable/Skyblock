@@ -1,6 +1,7 @@
 package io.github.unjoinable.skyblock.item;
 
 import com.google.gson.annotations.SerializedName;
+import io.github.unjoinable.skyblock.item.ability.Ability;
 import io.github.unjoinable.skyblock.item.component.BasicComponent;
 import io.github.unjoinable.skyblock.item.component.Component;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
@@ -66,6 +67,7 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
         private String color = null;
         private @SerializedName("npc_sell_price") int sellPrice = -1;
         private @SerializedName("dungeon_item") boolean isDungeonItem = false;
+        private Ability ability = null;
 
         private ComponentContainer container = new ComponentContainer();
         private List<net.kyori.adventure.text.Component> description = null;
@@ -99,6 +101,10 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
             if (container.hasComponent(StatisticsComponent.class)) {
                 statistics = container.getComponent(StatisticsComponent.class).statistics();
             }
+
+            if (container.hasComponent(AbilityComponent.class)) {
+                ability = container.getComponent(AbilityComponent.class).ability();
+            }
         }
 
         public SkyblockItem build() {
@@ -123,6 +129,10 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
 
             if (statistics != null && !statistics.isEmpty()) {
                 container.addComponent(new StatisticsComponent(statistics));
+            }
+
+            if (ability!= null) {
+                container.addComponent(new AbilityComponent(ability));
             }
 
             if (sellPrice != 0) {

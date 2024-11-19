@@ -2,10 +2,8 @@ package io.github.unjoinable.skyblock.registry.registries;
 
 import com.google.gson.*;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
-import io.github.unjoinable.skyblock.item.adapters.AdapterDescription;
-import io.github.unjoinable.skyblock.item.adapters.AdapterId;
-import io.github.unjoinable.skyblock.item.adapters.AdapterMaterial;
-import io.github.unjoinable.skyblock.item.adapters.AdapterStatistic;
+import io.github.unjoinable.skyblock.item.ability.Ability;
+import io.github.unjoinable.skyblock.item.adapters.*;
 import io.github.unjoinable.skyblock.registry.Registry;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import io.github.unjoinable.skyblock.util.StringUtils;
@@ -27,6 +25,7 @@ public class ItemRegistry extends Registry<NamespacedId, SkyblockItem> {
                 .registerTypeAdapter(Map.class, new AdapterStatistic())
                 .registerTypeAdapter(List.class, new AdapterDescription())
                 .registerTypeAdapter(NamespacedId.class, new AdapterId())
+                .registerTypeAdapter(Ability.class, new AdapterAbility())
                 .create();
         JsonObject itemsJson;
 
