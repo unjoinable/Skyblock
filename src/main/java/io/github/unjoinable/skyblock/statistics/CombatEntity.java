@@ -20,7 +20,7 @@ public interface CombatEntity {
 
     void setInvunerable(boolean invulnerable);
 
-    void meleeDamage(@NotNull CombatEntity target);
+    void meleeDamage(@NotNull CombatEntity target, @NotNull DamageReason reason);
 
     void applyDamage(@NotNull SkyblockDamage damage);
 

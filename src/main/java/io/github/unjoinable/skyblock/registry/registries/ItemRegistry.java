@@ -5,6 +5,7 @@ import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.ability.Ability;
 import io.github.unjoinable.skyblock.item.adapters.*;
 import io.github.unjoinable.skyblock.registry.Registry;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiersMap;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import io.github.unjoinable.skyblock.util.StringUtils;
 import net.minestom.server.item.Material;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
-import java.util.Map;
 
 public class ItemRegistry extends Registry<NamespacedId, SkyblockItem> {
     private static final ItemRegistry INSTANCE = new ItemRegistry();
@@ -22,7 +22,7 @@ public class ItemRegistry extends Registry<NamespacedId, SkyblockItem> {
     public void registerAll() {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Material.class, new AdapterMaterial())
-                .registerTypeAdapter(Map.class, new AdapterStatistic())
+                .registerTypeAdapter(StatModifiersMap.class, new AdapterStatistic())
                 .registerTypeAdapter(List.class, new AdapterDescription())
                 .registerTypeAdapter(NamespacedId.class, new AdapterId())
                 .registerTypeAdapter(Ability.class, new AdapterAbility())

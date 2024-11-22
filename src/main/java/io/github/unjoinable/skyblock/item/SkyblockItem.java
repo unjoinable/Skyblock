@@ -7,8 +7,9 @@ import io.github.unjoinable.skyblock.item.component.Component;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.components.*;
 import io.github.unjoinable.skyblock.registry.registries.ItemRegistry;
-import io.github.unjoinable.skyblock.statistics.StatModifiers;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiers;
 import io.github.unjoinable.skyblock.statistics.Statistic;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiersMap;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import io.github.unjoinable.skyblock.util.NamespacedObject;
@@ -62,7 +63,7 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
         private String name = null;
         private @SerializedName("tier") Rarity rarity = Rarity.UNOBTAINABLE;
         private ItemCategory category = ItemCategory.NONE;
-        private @SerializedName("stats") Map<Statistic, StatModifiers> statistics = null;
+        private @SerializedName("stats") StatModifiersMap statistics = null;
         private String skin = null;
         private String color = null;
         private @SerializedName("npc_sell_price") int sellPrice = -1;
@@ -127,7 +128,7 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
                 container.addComponent(new DescriptionComponent(description));
             }
 
-            if (statistics != null && !statistics.isEmpty()) {
+            if (statistics != null) {
                 container.addComponent(new StatisticsComponent(statistics));
             }
 

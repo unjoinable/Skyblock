@@ -12,14 +12,14 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 public enum Statistic {
     DAMAGE("Damage", RED, RED, false, "❁", 0),
     STRENGTH("Strength", RED, RED, false, "❁", 0),
-    CRIT_CHANCE("Crit Chance", RED, BLUE, true, "☣", 30),
+    CRIT_CHANCE("Crit Chance", RED, BLUE, true, "☣", 30, 100),
     CRIT_DAMAGE("Crit Damage", RED, BLUE, true, "☠", 50),
     BONUS_ATTACK_SPEED("Bonus Attack Speed", RED, YELLOW, true, "⚔", 0),
     ABILITY_DAMAGE("Ability Damage", RED, RED, true, "๑", 0),
     SWING_RANGE("Swing Range", YELLOW, YELLOW, false, "Ⓢ", 3),
     HEALTH("Health", GREEN, RED, false, "❤", 100),
     DEFENSE("Defense", GREEN, GREEN, false, "❈" , 0),
-    SPEED("Speed", GREEN, WHITE, false, "✦", 100),
+    SPEED("Speed", GREEN, WHITE, false, "✦", 100, 600),
     INTELLIGENCE("Intelligence", GREEN, AQUA, false, "✎", 100),
     MAGIC_FIND("Magic Find", GREEN, AQUA, false, "✯", 0),
     PET_LUCK("Pet Luck", GREEN, LIGHT_PURPLE, false, "♣", 0),
@@ -67,6 +67,8 @@ public enum Statistic {
     private final String symbol;
 
     private final int baseValue;
+    private final boolean isCapped;
+    private final int capValue;
 
     private static final Collection<Statistic> VALUES = Arrays.asList(values());
 
@@ -82,6 +84,25 @@ public enum Statistic {
         this.isPercentage = isPercentage;
         this.symbol = symbol;
         this.baseValue = baseValue;
+        this.isCapped = false;
+        this.capValue = 0;
+    }
+
+    Statistic(@NotNull String displayName,
+              @NotNull NamedTextColor loreColor,
+              @NotNull NamedTextColor displayColor,
+              boolean isPercentage,
+              @NotNull String symbol,
+              int baseValue,
+              int capValue) {
+        this.displayName = displayName;
+        this.loreColor = loreColor;
+        this.displayColor = displayColor;
+        this.isPercentage = isPercentage;
+        this.symbol = symbol;
+        this.baseValue = baseValue;
+        this.isCapped = true;
+        this.capValue = capValue;
     }
 
     /**
@@ -140,5 +161,17 @@ public enum Statistic {
      */
     public int getBaseValue() {
         return baseValue;
+    }
+
+    public boolean isCapped() {
+        return isCapped;
+    }
+
+    public int getCapValue() {
+        return capValue;
+    }
+
+    public static Statistic byOrdinal(int ordinal) {
+        return values()[ordinal];
     }
 }

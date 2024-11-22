@@ -1,7 +1,6 @@
 package io.github.unjoinable.skyblock.entity;
 
 import io.github.unjoinable.skyblock.entity.holograms.DamageIndicator;
-import io.github.unjoinable.skyblock.events.SkyblockDamageEvent;
 import io.github.unjoinable.skyblock.statistics.CombatEntity;
 import io.github.unjoinable.skyblock.statistics.DamageReason;
 import io.github.unjoinable.skyblock.statistics.SkyblockDamage;
@@ -17,7 +16,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.entity.attribute.Attribute;
-import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -135,17 +133,8 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public void meleeDamage(@NotNull CombatEntity target) {
-        EventDispatcher.call(new SkyblockDamageEvent(
-                new SkyblockDamage(
-                        false,
-                        calcAbsoluteDamageDealt(level),
-                        false,
-                        DamageReason.MELEE,
-                        this,
-                        target
-                )
-        ));
+    public void meleeDamage(@NotNull CombatEntity target, DamageReason reason) {
+        target.applyDamage(new SkyblockDamage(false, calcAbsoluteDamageDealt(level), false, reason, this, target));
     }
 
     @Override
@@ -180,5 +169,14 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "SkyblockEntity{" +
+                "level=" + level +
+                ", currentHealth=" + currentHealth +
+                ", isInvulnerable=" + isInvulnerable +
+                '}';
     }
 }

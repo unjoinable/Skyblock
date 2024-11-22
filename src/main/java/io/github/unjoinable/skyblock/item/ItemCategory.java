@@ -1,7 +1,10 @@
 package io.github.unjoinable.skyblock.item;
 
+import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public enum ItemCategory {
     NONE(""),
@@ -45,6 +48,12 @@ public enum ItemCategory {
     VACUUM;
 
     private final String name;
+    private static final Set<ItemCategory> ARMOR_CATEGORIES = ImmutableSet.of(
+            ItemCategory.HELMET,
+            ItemCategory.CHESTPLATE,
+            ItemCategory.LEGGINGS,
+            ItemCategory.BOOTS
+    );
 
     ItemCategory() {
         name = name().replaceAll("_", "");
@@ -58,12 +67,7 @@ public enum ItemCategory {
         return name;
     }
 
-    public static ItemCategory getItemCategory(@Nullable String str) {
-        if (str == null) return ItemCategory.NONE;
-        try {
-            return ItemCategory.valueOf(str.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            return ItemCategory.NONE;
-        }
+    public boolean isArmor() {
+        return ARMOR_CATEGORIES.contains(this);
     }
 }

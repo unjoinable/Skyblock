@@ -1,9 +1,10 @@
 package io.github.unjoinable.skyblock.item.component;
 
 import io.github.unjoinable.skyblock.item.component.components.StatisticsComponent;
-import io.github.unjoinable.skyblock.statistics.StatModifier;
-import io.github.unjoinable.skyblock.statistics.StatModifiers;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifier;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiers;
 import io.github.unjoinable.skyblock.statistics.Statistic;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiersMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -111,29 +112,22 @@ public class ComponentContainer {
 
     public void addStatisticComponent(StatComponent component) {
         if (!hasComponent(StatisticsComponent.class)) {
-            addComponent(new StatisticsComponent(new EnumMap<>(Statistic.class)));
+            addComponent(new StatisticsComponent(new StatModifiersMap()));
         }
         StatisticsComponent statComponent = getComponent(StatisticsComponent.class);
-        Map<Statistic, StatModifiers> statistics = statComponent.statistics();
+        StatModifiersMap statistics = statComponent.statistics();
 
         //adding
-        component.statModifiers(this).forEach((statistic, statModifiers) -> {
-            StatModifiers mainModifiers = statistics.getOrDefault(statistic, new StatModifiers());
-            mainModifiers.addModifiers(statModifiers);
-        });
+        statistics.addAll(component.statModifiers(this));
     }
 
     private void removeOldStatisticComponent(StatComponent oldComponent) {
-        Map<Statistic, List<StatModifier>> modifiers = oldComponent.statModifiers(this);
+        StatModifiersMap modifiers = oldComponent.statModifiers(this);
         StatisticsComponent statComponent = getComponent(StatisticsComponent.class);
-        Map<Statistic, StatModifiers> statistics = statComponent.statistics();
+        StatModifiersMap statistics = statComponent.statistics();
 
         //removing old ones
-        modifiers.forEach((statistic, statModifiers) -> {
-            StatModifiers mainModifiers = statistics.get(statistic);
-            mainModifiers.removeModifiers(statModifiers);
-        });
-        //removed their stats
+        statistics.removeAll(modifiers);
         removeComponent(oldComponent); //wipe them from here.
     }
 

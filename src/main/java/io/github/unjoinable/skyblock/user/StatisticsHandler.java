@@ -3,11 +3,11 @@ package io.github.unjoinable.skyblock.user;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.components.StatisticsComponent;
-import io.github.unjoinable.skyblock.statistics.StatModifiers;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiers;
 import io.github.unjoinable.skyblock.statistics.Statistic;
+import io.github.unjoinable.skyblock.statistics.holders.StatModifiersMap;
+import io.github.unjoinable.skyblock.statistics.holders.StatValueMap;
 import io.github.unjoinable.skyblock.util.NamespacedId;
-import io.github.unjoinable.skyblock.util.Utils;
-import it.unimi.dsi.fastutil.Pair;
 import net.minestom.server.entity.attribute.Attribute;
 
 import java.util.*;
@@ -17,8 +17,8 @@ import java.util.*;
  */
 public class StatisticsHandler {
     private final SkyblockPlayer player;
-    private final Map<SkyblockItem, Map<Statistic, StatModifiers>> itemStatistics;
-    private final Map<Statistic, Double> overallStatistics;
+    private final Map<SkyblockItem, StatModifiersMap> itemStatistics;
+    private final StatValueMap overallStatistics;
 
     //current
     private double currentHealth;
@@ -32,7 +32,7 @@ public class StatisticsHandler {
     public StatisticsHandler(SkyblockPlayer player) {
         this.player = player;
         this.itemStatistics = new HashMap<>();
-        this.overallStatistics = new EnumMap<>(Statistic.class);
+        this.overallStatistics = new StatValueMap();
 
         update();
     }
@@ -55,13 +55,13 @@ public class StatisticsHandler {
 
     /**
      * Retrieves the value of a specific statistic.
-     * By default it is 0
+     * By default, it is 0
      *
      * @param stat The Statistic to retrieve.
      * @return The current value of the specified statistic.
      */
     public double getStat(Statistic stat) {
-        return this.overallStatistics.getOrDefault(stat, 0D);
+        return this.overallStatistics.get(stat);
     }
 
     /**
@@ -71,15 +71,24 @@ public class StatisticsHandler {
         this.overallStatistics.clear();
 
         for (Statistic value : Statistic.getValues()) {
-            overallStatistics.put(value, ((double) value.getBaseValue()));
+            overallStatistics.put(value, value.getBaseValue());
         }
 
-        for (Map<Statistic, StatModifiers> itemStat : itemStatistics.values()) {
-            itemStat.forEach((statistic, statModifiers) -> {
-                double value = overallStatistics.get(statistic);
-                value += statModifiers.getEffectiveValue();
-                overallStatistics.put(statistic, value);
-            });
+        for (StatModifiersMap itemStats : itemStatistics.values()) {
+            StatModifiers[] modifiers = itemStats.getAll();
+            for (int i = 0; i < itemStats.getAll().length; i++) {
+                Statistic stat = Statistic.byOrdinal(i);
+                StatModifiers statModifiers = modifiers[i];
+                double value = overallStatistics.get(i);
+                if (statModifiers != null) value += statModifiers.getEffectiveValue();
+
+                if (stat.isCapped()) {
+                    int capValue = stat.getCapValue();
+                    value = Math.min(value, capValue);
+                }
+
+                overallStatistics.put(stat, value);
+            }
         }
     }
 
@@ -96,7 +105,7 @@ public class StatisticsHandler {
      *
      * @return A map of all statistics and their current values.
      */
-    public Map<Statistic, Double> getOverallStats() {
+    public StatValueMap getOverallStats() {
         return overallStatistics;
     }
 
@@ -146,6 +155,8 @@ public class StatisticsHandler {
 
         //speed
         player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(overallStatistics.get(Statistic.SPEED) / 1000);
+        //swing range
+        player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE).setBaseValue(overallStatistics.get(Statistic.SWING_RANGE));
     }
 
     /**

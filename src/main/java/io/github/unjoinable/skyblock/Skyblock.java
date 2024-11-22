@@ -2,6 +2,7 @@ package io.github.unjoinable.skyblock;
 
 import io.github.unjoinable.skyblock.commands.*;
 import io.github.unjoinable.skyblock.handlers.*;
+import io.github.unjoinable.skyblock.island.Island;
 import io.github.unjoinable.skyblock.listeners.*;
 import io.github.unjoinable.skyblock.registry.registries.AbilityRegistry;
 import io.github.unjoinable.skyblock.registry.registries.ClickableButtonRegistry;
@@ -11,7 +12,6 @@ import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.extras.MojangAuth;
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 public class Skyblock {
     private static final Logger logger = LoggerFactory.getLogger(Skyblock.class);
-    private static final Pos HUB_SPAWN_POINT = new Pos(-2, 71, -68).withYaw(-180F);
     private static SkyblockStandardTime skyblockStandardTime;
 
     public static void main(String[] args) {
@@ -48,19 +47,17 @@ public class Skyblock {
         //listeners
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
         globalEventHandler.addListener(new ItemDropListener());
-        globalEventHandler.addListener(new AsyncPlayerConfigurationListener(hubInstance, HUB_SPAWN_POINT));
+        globalEventHandler.addListener(new AsyncPlayerConfigurationListener(hubInstance, Island.HUB.spawn()));
         globalEventHandler.addListener(new PickUpItemListener());
         globalEventHandler.addListener(new PlayerSpawnListener());
         globalEventHandler.addListener(new PlayerUseItemListener());
         globalEventHandler.addListener(new SkyblockAbilityUseListener());
         globalEventHandler.addListener(new InventoryPreClickListener());
         globalEventHandler.addListener(new EntityAttackListener());
-        globalEventHandler.addListener(new SkyblockDamageListener());
 
         //commands
         CommandManager manager =  MinecraftServer.getCommandManager();
-        manager.register(new ItemCommand("item"));
-        manager.register(new NBTCommand("nbt"));
+        manager.register(new ItemCommand());
         manager.register(new ServerResourcesCommand());
         manager.register(new TestCommand());
         manager.register(new SpawnCustomMobCommand());

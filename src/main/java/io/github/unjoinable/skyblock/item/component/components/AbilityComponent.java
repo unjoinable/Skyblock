@@ -38,7 +38,7 @@ public record AbilityComponent(@NotNull Ability ability) implements BasicCompone
 
         lore.add(Component.text("Ability: " + ability.name() + " ", GOLD).decoration(ITALIC, false).append(Component.text(ability.type().toString(), YELLOW, BOLD)));
         lore.addAll(ability.lore());
-        lore.add(Component.text(ability.costType() + " Cost: ", DARK_GRAY).decoration(ITALIC, false).append(Component.text(ability().abilityCost(), DARK_AQUA)));
+        lore.add(Component.text(ability.costType() + " Cost: ", DARK_GRAY).decoration(ITALIC, false).append(Component.text(ability().abilityCost(null), DARK_AQUA)));
 
         return lore;
     }

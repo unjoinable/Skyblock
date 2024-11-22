@@ -24,6 +24,8 @@ dependencies {
     implementation("com.google.guava:guava:33.2.1-jre")
     implementation("ch.qos.logback:logback-classic:1.4.12")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
+    implementation("org.joml:joml:1.10.8")
+
 }
 
 //auto updater

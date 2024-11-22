@@ -13,6 +13,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.utils.block.BlockIterator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class InstantTransmission implements Ability {
     }
 
     @Override
-    public int abilityCost() {
+    public int abilityCost(@Nullable SkyblockPlayer player) {
         return 50;
     }
 

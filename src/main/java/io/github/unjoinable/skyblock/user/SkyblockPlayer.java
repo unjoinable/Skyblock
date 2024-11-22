@@ -1,17 +1,13 @@
 package io.github.unjoinable.skyblock.user;
 
 import io.github.unjoinable.skyblock.entity.SkyblockEntity;
-import io.github.unjoinable.skyblock.events.SkyblockDamageEvent;
 import io.github.unjoinable.skyblock.island.Island;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.ability.Ability;
 import io.github.unjoinable.skyblock.item.ability.AbilityCostType;
 import io.github.unjoinable.skyblock.skill.Skill;
 import io.github.unjoinable.skyblock.statistics.*;
-import io.github.unjoinable.skyblock.user.actionbar.ActionBar;
-import io.github.unjoinable.skyblock.user.actionbar.ActionBarDisplayReplacement;
-import io.github.unjoinable.skyblock.user.actionbar.ActionBarPurpose;
-import io.github.unjoinable.skyblock.user.actionbar.ActionBarSection;
+import io.github.unjoinable.skyblock.user.actionbar.*;
 import io.github.unjoinable.skyblock.util.MiniString;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import io.github.unjoinable.skyblock.util.Utils;
@@ -23,7 +19,6 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
-import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
@@ -118,12 +113,13 @@ public class SkyblockPlayer extends Player implements CombatEntity {
      */
     public boolean canUseAbility(@NotNull Ability ability) {
         AbilityCostType costType = ability.costType();
-        int abilityCost = ability.abilityCost();
+        int abilityCost = ability.abilityCost(this);
 
         return switch (costType) {
             case MANA -> statsHandler.getMana() > abilityCost;
             case HEALTH -> getHealth() > abilityCost;
             case COINS -> coins > abilityCost;
+            case NONE -> true;
         };
     }
 
@@ -159,7 +155,7 @@ public class SkyblockPlayer extends Player implements CombatEntity {
     }
 
     @Override
-    public void meleeDamage(@NotNull CombatEntity target) {
+    public void meleeDamage(@NotNull CombatEntity target, DamageReason reason) {
         double baseDamage = statsHandler.getStat(Statistic.DAMAGE);
         double strength = statsHandler.getStat(Statistic.STRENGTH);
         double critDamage = statsHandler.getStat(Statistic.CRIT_DAMAGE);
@@ -172,17 +168,9 @@ public class SkyblockPlayer extends Player implements CombatEntity {
         if (isCriticalHit) {
             damage *= critDamage;
         }
+        target.applyDamage(new SkyblockDamage(false, damage, isCriticalHit, reason, this,target));
 
-        EventDispatcher.call(new SkyblockDamageEvent(
-                new SkyblockDamage(
-                        false,
-                        damage,
-                        isCriticalHit,
-                        DamageReason.MELEE,
-                        this,
-                        target
-                )
-        ));
+        //ferocity
         double ferocity = statsHandler.getStat(Statistic.FEROCITY);
         if (ferocity == 0) return;
         int conditionalLoop = Utils.probabilityCheck((int) (ferocity % 100)) ? 1 : 0;
@@ -191,10 +179,9 @@ public class SkyblockPlayer extends Player implements CombatEntity {
 
         AtomicInteger i = new AtomicInteger();
         MinecraftServer.getSchedulerManager().submitTask(() -> {
-            i.getAndIncrement();
             if (i.get() == loops || target.getEntity().getInstance() == null) return TaskSchedule.stop();
-            EventDispatcher.call(new SkyblockDamageEvent(feroDamage));
-            playFerocity();
+            target.applyDamage(feroDamage);
+            i.getAndIncrement();
             return TaskSchedule.millis(50);
         });
     }
@@ -245,7 +232,7 @@ public class SkyblockPlayer extends Player implements CombatEntity {
      */
     public void useAbility(@NotNull Ability ability) {
         AbilityCostType costType = ability.costType();
-        int abilityCost = ability.abilityCost();
+        int abilityCost = ability.abilityCost(this);
 
         switch (costType) {
             case MANA -> {

@@ -2,6 +2,7 @@ package io.github.unjoinable.skyblock.registry.registries;
 
 import io.github.unjoinable.skyblock.item.ability.Ability;
 import io.github.unjoinable.skyblock.item.ability.abilities.InstantTransmission;
+import io.github.unjoinable.skyblock.item.ability.abilities.Throw;
 import io.github.unjoinable.skyblock.registry.Registry;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ public class AbilityRegistry extends Registry<NamespacedId, Ability> {
     @Override
     public void registerAll() {
         registerAbility(new InstantTransmission());
+        registerAbility(new Throw());
     }
 
     public static AbilityRegistry getInstance() {

@@ -11,13 +11,12 @@ import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 public class ItemCommand extends Command {
     private static final Component NO_ITEM_FOUND = StringUtils.toComponent("<red>No item found with that name");
 
-    public ItemCommand(@NotNull String name) {
-        super(name);
+    public ItemCommand() {
+        super("item");
         //arguments
         Argument<String> idArg = ArgumentType.String("item_id").setSuggestionCallback((_, _, suggestion) -> {
             ItemRegistry.getInstance().forEach(item -> {

@@ -8,6 +8,7 @@ public enum AbilityCostType {
     MANA,
     HEALTH,
     COINS,
+    NONE,
     ;
 
     /**

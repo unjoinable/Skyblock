@@ -1,4 +1,4 @@
-package io.github.unjoinable.skyblock.statistics;
+package io.github.unjoinable.skyblock.statistics.holders;
 
 /**
  * @param type The value type we want to modify i.e., BASE, ADDITIVE OR MULTIPLICATIVE.

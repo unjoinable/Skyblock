@@ -1,6 +1,7 @@
 package io.github.unjoinable.skyblock.listeners;
 
 import io.github.unjoinable.skyblock.statistics.CombatEntity;
+import io.github.unjoinable.skyblock.statistics.DamageReason;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.entity.EntityAttackEvent;
@@ -19,7 +20,7 @@ public class EntityAttackListener implements EventListener<EntityAttackEvent> {
         Entity attacker = entityAttackEvent.getEntity();
 
         if (target instanceof CombatEntity && attacker instanceof CombatEntity) {
-            ((CombatEntity) attacker).meleeDamage((CombatEntity) target);
+            ((CombatEntity) attacker).meleeDamage((CombatEntity) target, DamageReason.MELEE);
         }
 
         return Result.SUCCESS;

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import io.github.unjoinable.skyblock.gui.ClickableItem;
 import io.github.unjoinable.skyblock.gui.SkyblockInventory;
 import io.github.unjoinable.skyblock.statistics.Statistic;
+import io.github.unjoinable.skyblock.statistics.holders.StatValueMap;
 import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.util.Utils;
 import net.kyori.adventure.text.Component;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static io.github.unjoinable.skyblock.statistics.Statistic.*;
@@ -49,7 +49,7 @@ public class SkyblockMenu extends SkyblockInventory {
         PlayerSkin skin = player.getSkin();
         HeadProfile profile = new HeadProfile(skin);
         ItemStack.Builder builder = ItemStack.of(Material.PLAYER_HEAD).builder();
-        Map<Statistic, Double> statistics = player.getStatsHandler().getOverallStats();
+        StatValueMap statistics = player.getStatsHandler().getOverallStats();
 
         List<Component> lore = new ArrayList<>();
         lore.add(EQUIP_STATS);

@@ -5,6 +5,7 @@ import io.github.unjoinable.skyblock.user.SkyblockPlayer;
 import io.github.unjoinable.skyblock.util.NamespacedObject;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public interface Ability extends NamespacedObject {
      *
      * @return the cost of the ability
      */
-    int abilityCost();
+    int abilityCost(@Nullable SkyblockPlayer player);
 
     /**
      * Returns the cooldown of the ability in milliseconds.
