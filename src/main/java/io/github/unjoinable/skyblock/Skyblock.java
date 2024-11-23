@@ -54,6 +54,7 @@ public class Skyblock {
         globalEventHandler.addListener(new SkyblockAbilityUseListener());
         globalEventHandler.addListener(new InventoryPreClickListener());
         globalEventHandler.addListener(new EntityAttackListener());
+        globalEventHandler.addListener(new SkyblockStatUpdateListener());
 
         //commands
         CommandManager manager =  MinecraftServer.getCommandManager();

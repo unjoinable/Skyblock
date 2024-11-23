@@ -1,5 +1,6 @@
 package io.github.unjoinable.skyblock.user;
 
+import io.github.unjoinable.skyblock.events.SkyblockStatUpdateEvent;
 import io.github.unjoinable.skyblock.item.SkyblockItem;
 import io.github.unjoinable.skyblock.item.component.ComponentContainer;
 import io.github.unjoinable.skyblock.item.component.components.StatisticsComponent;
@@ -9,6 +10,7 @@ import io.github.unjoinable.skyblock.statistics.holders.StatModifiersMap;
 import io.github.unjoinable.skyblock.statistics.holders.StatValueMap;
 import io.github.unjoinable.skyblock.util.NamespacedId;
 import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.event.EventDispatcher;
 
 import java.util.*;
 
@@ -18,11 +20,14 @@ import java.util.*;
 public class StatisticsHandler {
     private final SkyblockPlayer player;
     private final Map<SkyblockItem, StatModifiersMap> itemStatistics;
-    private final StatValueMap overallStatistics;
+    private StatValueMap overallStatistics;
 
     //current
     private double currentHealth;
     private double mana;
+
+    //misc
+    private final StatModifiersMap modifiers;
 
     /**
      * Constructs a new StatisticsHandler for the given SkyblockPlayer.
@@ -33,6 +38,7 @@ public class StatisticsHandler {
         this.player = player;
         this.itemStatistics = new HashMap<>();
         this.overallStatistics = new StatValueMap();
+        this.modifiers = new StatModifiersMap();
 
         update();
     }
@@ -68,28 +74,30 @@ public class StatisticsHandler {
      * Updates the overall statistics by combining base values and item stats.
      */
     public void updateOverallStats() {
-        this.overallStatistics.clear();
+        StatValueMap updatedStats = new StatValueMap();
 
         for (Statistic value : Statistic.getValues()) {
-            overallStatistics.put(value, value.getBaseValue());
+            updatedStats.put(value, value.getBaseValue());
         }
 
-        for (StatModifiersMap itemStats : itemStatistics.values()) {
-            StatModifiers[] modifiers = itemStats.getAll();
-            for (int i = 0; i < itemStats.getAll().length; i++) {
-                Statistic stat = Statistic.byOrdinal(i);
-                StatModifiers statModifiers = modifiers[i];
-                double value = overallStatistics.get(i);
-                if (statModifiers != null) value += statModifiers.getEffectiveValue();
+        StatModifiersMap allModifiers = new StatModifiersMap(); //combining all modifiers
 
-                if (stat.isCapped()) {
-                    int capValue = stat.getCapValue();
-                    value = Math.min(value, capValue);
-                }
-
-                overallStatistics.put(stat, value);
-            }
+        for (StatModifiersMap value : itemStatistics.values()) {
+            allModifiers.addAll(value);
         }
+
+        StatModifiers[] modifiers = allModifiers.getAll();
+
+        for (int i = 0; i < modifiers.length; i++) {
+            Statistic stat = Statistic.byOrdinal(i);
+            StatModifiers statModifiers = modifiers[i];
+            double value = updatedStats.get(i);
+            if (statModifiers != null) value += statModifiers.getEffectiveValue();
+            updatedStats.put(stat, value);
+        }
+
+        SkyblockStatUpdateEvent event = new SkyblockStatUpdateEvent(player, updatedStats);
+        EventDispatcher.callCancellable(event, () -> this.overallStatistics = updatedStats);
     }
 
     /**
@@ -205,5 +213,9 @@ public class StatisticsHandler {
     public void setCurrentHealth(double currentHealth) {
         this.currentHealth = currentHealth;
         player.setHealth((float) currentHealth);
+    }
+
+    public StatModifiersMap getModifiers() {
+        return modifiers;
     }
 }

@@ -1,5 +1,7 @@
 package io.github.unjoinable.skyblock.statistics.holders;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents a collection of stat modifiers.
  * <p>
@@ -22,20 +24,18 @@ public class StatModifiers {
     private static final double DEFAULT_ADDITIVE_VALUE = 0.0;
 
     /**
+     * The default bonus value.
+     */
+    private static final double DEFAULT_BONUS_VALUE = 0.0;
+
+    /**
      * The values of the stat modifiers.
      * <p> Index 0: base modifier
      * <p> Index 1: multiplicative modifier
      * <p> Index 2: additive modifier
+     * <p> Index 3: bonus modifier
      */
     private final double[] values;
-
-    /**
-     * The modifiers that have been added to this collection.
-     * <p> Index 0: base modifier
-     * <p> Index 1: multiplicative modifier
-     * <p> Index 2: additive modifier
-     */
-    private final Object[] modifiers;
 
     /**
      * The cached effective value of the modifiers.
@@ -51,12 +51,11 @@ public class StatModifiers {
      * Constructs a new StatModifiers instance with default values.
      */
     public StatModifiers() {
-        values = new double[3];
+        values = new double[4];
         values[0] = DEFAULT_BASE_VALUE;
         values[1] = DEFAULT_MULTIPLY_VALUE;
         values[2] = DEFAULT_ADDITIVE_VALUE;
-        modifiers = new Object[3];
-        effectiveValue = (values[0] + values[2]) * values[1];
+        values[3] = DEFAULT_BONUS_VALUE;
         isEffectiveValueDirty = true;
     }
 
@@ -66,13 +65,12 @@ public class StatModifiers {
      * @param modifier the modifier to add
      */
     public void addModifier(StatModifier modifier) {
-        int index = modifier.type().getIndex();
+        int index = modifier.type().ordinal();
         if (index == 1) {
             values[index] *= modifier.value();
         } else {
             values[index] += modifier.value();
         }
-        modifiers[index] = modifier;
         isEffectiveValueDirty = true;
     }
 
@@ -82,13 +80,12 @@ public class StatModifiers {
      * @param modifier the modifier to remove
      */
     public void removeModifier(StatModifier modifier) {
-        int index = modifier.type().getIndex();
+        int index = modifier.type().ordinal();
         if (index == 1) {
             values[index] /= modifier.value();
         } else {
             values[index] -= modifier.value();
         }
-        modifiers[index] = null;
         isEffectiveValueDirty = true;
     }
 
@@ -99,13 +96,12 @@ public class StatModifiers {
      */
     public void addModifiers(StatModifier[] modifiers) {
         for (StatModifier modifier : modifiers) {
-            int index = modifier.type().getIndex();
+            int index = modifier.type().ordinal();
             if (index == 1) {
                 values[index] *= modifier.value();
             } else {
                 values[index] += modifier.value();
             }
-            this.modifiers[index] = modifier;
         }
         isEffectiveValueDirty = true;
     }
@@ -117,14 +113,11 @@ public class StatModifiers {
      */
     public void removeModifiers(StatModifier[] modifiers) {
         for (StatModifier modifier : modifiers) {
-            int index = modifier.type().getIndex();
+            int index = modifier.type().ordinal();
             if (index == 1) {
                 values[index] /= modifier.value();
             } else {
                 values[index] -= modifier.value();
-            }
-            if (this.modifiers[index] == modifier) {
-                this.modifiers[index] = null;
             }
         }
         isEffectiveValueDirty = true;
@@ -147,16 +140,8 @@ public class StatModifiers {
      * Updates the effective value of the modifiers.
      */
     private void updateEffectiveValue() {
-        effectiveValue = (values[0] + values[2]) * values[1];
-    }
-
-    /**
-     * Returns the modifiers that have been added to this collection.
-     *
-     * @return an array of StatModifier instances
-     */
-    public StatModifier[] getModifiers() {
-        return (StatModifier[]) modifiers;
+        //effectiveValue = baseValue * (1 + additiveValue) * multiplicativeValue + bonusValue
+        effectiveValue = ((values[0] * (1 + values[2])) * values[1]) + values[3];
     }
 
     /**
@@ -164,14 +149,12 @@ public class StatModifiers {
      *
      * @param statModifiers the StatModifiers instance to add modifiers from
      */
-    public void addStatModifiers(StatModifiers statModifiers) {
-        if (statModifiers != null) {
-            for (Object modifier : statModifiers.modifiers) {
-                if (modifier != null) {
-                    addModifier((StatModifier) modifier);
-                }
-            }
-        }
+    public void addStatModifiers(@NotNull StatModifiers statModifiers) {
+        double[] toBeAddedValues = statModifiers.values;
+        values[0] += toBeAddedValues[0];
+        values[1] *= toBeAddedValues[1];
+        values[2] += toBeAddedValues[2];
+        values[3] += toBeAddedValues[3];
+        isEffectiveValueDirty = true;
     }
-
 }

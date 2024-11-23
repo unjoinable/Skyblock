@@ -32,7 +32,10 @@ public class StatModifiersMap {
      * @param modifiers the StatModifiers instance to put into the StatMap
      */
     public void put(@NotNull Statistic statistic, @NotNull StatModifiers modifiers) {
-        statModifiers[statistic.ordinal()] = modifiers;
+        if (statModifiers[statistic.ordinal()] == null) {
+            statModifiers[statistic.ordinal()] = new StatModifiers();
+        }
+        statModifiers[statistic.ordinal()].addStatModifiers(modifiers);
     }
 
     /**
