@@ -12,15 +12,12 @@ import com.github.unjoinable.skyblock.user.SkyblockPlayer;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
-import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.BlockManager;
-import net.minestom.server.timer.ExecutionType;
-import net.minestom.server.timer.TaskSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,15 +58,6 @@ public class Skyblock {
 
         //let the show begin.
         server.start("0.0.0.0", 25565);
-
-        MinecraftServer.getSchedulerManager().submitTask(() -> {
-            for (Player serverPlayer : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-                if (!serverPlayer.isPlayer()) continue;
-                SkyblockPlayer player = ((SkyblockPlayer) serverPlayer);
-                player.taskLoop();
-            }
-            return TaskSchedule.seconds(1L);
-        }, ExecutionType.TICK_END);
     }
 
     //register

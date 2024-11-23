@@ -115,7 +115,7 @@ public record SkyblockItem(NamespacedId id, ComponentContainer container) implem
 
             //conditional components
             if (color != null) {
-                container.addComponent(new ArmorColorComponent(Utils.strArtoIntArray(color)));
+                container.addComponent(new ArmorColorComponent(Utils.convertStringArrayToIntArray(color)));
             }
 
             if (skin != null) {

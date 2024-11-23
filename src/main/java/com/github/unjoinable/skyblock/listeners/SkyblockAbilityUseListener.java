@@ -33,13 +33,13 @@ public class SkyblockAbilityUseListener implements EventListener<SkyblockAbility
             return Result.INVALID;
         }
 
-        if (!player.canUseAbility(ability)) {
+        if (!abilityHandler.canAffordAbilityCost(ability)) {
             event.setCancelled(true);
-            player.abilityFailed(ability);
+            abilityHandler.abilityFailed(ability);
             return Result.INVALID;
         }
 
-        player.useAbility(ability); //taxes for using ability
+        abilityHandler.useAbility(ability); //taxes for using ability
         abilityHandler.startCooldown(ability);
         ability.run(player, event.getItem());
         return Result.SUCCESS;

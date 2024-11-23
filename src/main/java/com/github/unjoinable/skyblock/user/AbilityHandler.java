@@ -1,7 +1,14 @@
 package com.github.unjoinable.skyblock.user;
 
 import com.github.unjoinable.skyblock.item.ability.Ability;
+import com.github.unjoinable.skyblock.item.ability.AbilityCostType;
+import com.github.unjoinable.skyblock.user.actionbar.ActionBarDisplayReplacement;
+import com.github.unjoinable.skyblock.user.actionbar.ActionBarPurpose;
+import com.github.unjoinable.skyblock.user.actionbar.ActionBarSection;
+import com.github.unjoinable.skyblock.util.MiniString;
 import com.github.unjoinable.skyblock.util.NamespacedId;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -12,6 +19,10 @@ import java.util.Map;
  * This class tracks when abilities are used and ensures that they respect their cooldown periods.
  */
 public class AbilityHandler {
+    // Static components for action bar messages
+    private static final Component NOT_ENOUGH_MANA = MiniString.toComponent("<red><bold>NOT ENOUGH MANA");
+    private static final ActionBarDisplayReplacement NOT_ENOUGH_MANA_REPLACEMENT = new ActionBarDisplayReplacement(NOT_ENOUGH_MANA, 40, 10, ActionBarPurpose.ABILITY);
+
     private final SkyblockPlayer player;
     private final Map<NamespacedId, Long> cooldowns;
 
@@ -62,5 +73,77 @@ public class AbilityHandler {
     public void startCooldown(@NotNull Ability ability) {
         if (ability.cooldownInMs() == 0) return;
         cooldowns.put(ability.id(), System.currentTimeMillis());
+    }
+
+    /**
+     * Determines if the player can use a specified ability based on its cost type and cost.
+     *
+     * @param ability the ability to check, which contains the cost type and cost.
+     * @return true if the player has enough resources (mana, health, or coins) to use the ability; false otherwise.
+     */
+    public boolean canAffordAbilityCost(@NotNull Ability ability) {
+        AbilityCostType costType = ability.costType();
+        int abilityCost = ability.abilityCost(player);
+
+        return switch (costType) {
+            case MANA -> player.getStatsHandler().getMana() > abilityCost;
+            case HEALTH -> player.getStatsHandler().getCurrentHealth() > abilityCost;
+            case COINS -> player.getCoins() > abilityCost;
+            case NONE -> true;
+        };
+    }
+
+    /**
+     * Handles the scenario where an ability cannot be used due to insufficient resources.
+     * Displays an appropriate message on the action bar.
+     *
+     * @param ability the ability that failed to be used.
+     */
+    public void abilityFailed(@NotNull Ability ability) {
+        AbilityCostType costType = ability.costType();
+
+        switch (costType) {
+            case MANA -> player.getActionBar().addReplacement(ActionBarSection.MANA, NOT_ENOUGH_MANA_REPLACEMENT);
+            default -> { return; } //TODO
+        }
+    }
+
+    /**
+     * Uses a specified ability, deducting the appropriate resource cost from the player.
+     * Updates the action bar to reflect the ability usage.
+     *
+     * @param ability the ability to use.
+     */
+    public void useAbility(@NotNull Ability ability) {
+        AbilityCostType costType = ability.costType();
+        int abilityCost = ability.abilityCost(player);
+        StatisticsHandler statsHandler = player.getStatsHandler();
+
+        switch (costType) {
+            case MANA -> {
+                statsHandler.setMana(statsHandler.getMana() - abilityCost);
+                ActionBarDisplayReplacement replacement = abilityUseReplacement(ability, abilityCost);
+                player.getActionBar().addReplacement(ActionBarSection.DEFENSE, replacement);
+            }
+            case HEALTH -> statsHandler.subtractCurrentHealth(abilityCost);
+            case COINS ->  {
+                long coins = player.getCoins();
+                player.setCoins(coins - abilityCost);
+            }
+        }
+    }
+
+    /**
+     * Creates an action bar display replacement for when an ability is used.
+     *
+     * @param ability the ability being used.
+     * @param abilityCost the cost of the ability.
+     * @return an ActionBarDisplayReplacement reflecting the ability usage.
+     */
+    private ActionBarDisplayReplacement abilityUseReplacement(Ability ability, int abilityCost) {
+        Component text =  MiniString.toComponent("<aqua>-<ability_cost> Mana (<gold><ability_name></gold>)",
+                Placeholder.parsed("ability_cost", String.valueOf(abilityCost)),
+                Placeholder.parsed("ability_name", ability.name()));
+        return new ActionBarDisplayReplacement(text, 100, 5, ActionBarPurpose.ABILITY);
     }
 }

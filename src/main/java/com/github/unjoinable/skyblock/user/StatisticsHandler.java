@@ -179,9 +179,8 @@ public class StatisticsHandler {
 
         if (healthGain + this.currentHealth > maxHealth) {
             return maxHealth - currentHealth;
-        } else {
-            return healthGain;
         }
+        return healthGain;
     }
 
 

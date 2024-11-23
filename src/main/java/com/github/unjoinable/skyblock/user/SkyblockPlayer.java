@@ -27,6 +27,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
 import net.minestom.server.network.player.PlayerConnection;
+import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,12 +47,6 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
  * It also handles the player's action bar and statistics.
  */
 public class SkyblockPlayer extends Player implements CombatEntity {
-    private final ActionBar actionBar;
-    private final StatisticsHandler statsHandler;
-    private final AbilityHandler abilityHandler;
-
-    private boolean isInvulnerable;
-
     // Static components for action bar messages
     private static final Component NOT_ENOUGH_MANA = Component.text("NOT ENOUGH MANA", RED, BOLD).decoration(ITALIC, false);
     private static final ActionBarDisplayReplacement NOT_ENOUGH_MANA_REPLACEMENT = new ActionBarDisplayReplacement(
@@ -60,6 +55,23 @@ public class SkyblockPlayer extends Player implements CombatEntity {
             10,
             ActionBarPurpose.ABILITY
     );
+
+    static {
+        MinecraftServer.getSchedulerManager().submitTask(() -> {
+            for (Player serverPlayer : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
+                if (!serverPlayer.isPlayer()) continue;
+                SkyblockPlayer player = ((SkyblockPlayer) serverPlayer);
+                player.taskLoop();
+            }
+            return TaskSchedule.seconds(1L);
+        }, ExecutionType.TICK_END);
+    }
+
+    private final ActionBar actionBar;
+    private final StatisticsHandler statsHandler;
+    private final AbilityHandler abilityHandler;
+
+    private boolean isInvulnerable;
 
     // Player data
     private Island island = Island.HUB;
@@ -109,24 +121,6 @@ public class SkyblockPlayer extends Player implements CombatEntity {
     public void heal() {
         statsHandler.healHealth();
         statsHandler.healMana();
-    }
-
-    /**
-     * Determines if the player can use a specified ability based on its cost type and cost.
-     *
-     * @param ability the ability to check, which contains the cost type and cost.
-     * @return true if the player has enough resources (mana, health, or coins) to use the ability; false otherwise.
-     */
-    public boolean canUseAbility(@NotNull Ability ability) {
-        AbilityCostType costType = ability.costType();
-        int abilityCost = ability.abilityCost(this);
-
-        return switch (costType) {
-            case MANA -> statsHandler.getMana() > abilityCost;
-            case HEALTH -> getHealth() > abilityCost;
-            case COINS -> coins > abilityCost;
-            case NONE -> true;
-        };
     }
 
     @Override
@@ -217,41 +211,6 @@ public class SkyblockPlayer extends Player implements CombatEntity {
     }
 
     /**
-     * Handles the scenario where an ability cannot be used due to insufficient resources.
-     * Displays an appropriate message on the action bar.
-     *
-     * @param ability the ability that failed to be used.
-     */
-    public void abilityFailed(@NotNull Ability ability) {
-        AbilityCostType costType = ability.costType();
-
-        switch (costType) {
-            case MANA -> actionBar.addReplacement(ActionBarSection.MANA, NOT_ENOUGH_MANA_REPLACEMENT);
-        }
-    }
-
-    /**
-     * Uses a specified ability, deducting the appropriate resource cost from the player.
-     * Updates the action bar to reflect the ability usage.
-     *
-     * @param ability the ability to use.
-     */
-    public void useAbility(@NotNull Ability ability) {
-        AbilityCostType costType = ability.costType();
-        int abilityCost = ability.abilityCost(this);
-
-        switch (costType) {
-            case MANA -> {
-                statsHandler.setMana(statsHandler.getMana() - abilityCost);
-                ActionBarDisplayReplacement replacement = abilityUseReplacement(ability, abilityCost);
-                actionBar.addReplacement(ActionBarSection.DEFENSE, replacement);
-            }
-            case HEALTH -> statsHandler.subtractCurrentHealth(abilityCost);
-            case COINS -> coins -= abilityCost;
-        }
-    }
-
-    /**
      * Executes the player's task loop, updating the item cache and statistics.
      * Updates the action bar with the player's current health, defense, and mana.
      */
@@ -264,23 +223,6 @@ public class SkyblockPlayer extends Player implements CombatEntity {
         actionBar.setDefaultDisplay(ActionBarSection.DEFENSE, Component.text(df.format(statsHandler.getStat(Statistic.DEFENSE)) + "❈ Defense", GREEN));
         actionBar.setDefaultDisplay(ActionBarSection.MANA, Component.text(df.format(statsHandler.getMana()) + "/" + df.format(statsHandler.getStat(Statistic.INTELLIGENCE) )+ "✎ Mana", AQUA));
         sendActionBar(actionBar.build());
-    }
-
-    /**
-     * Creates an action bar display replacement for when an ability is used.
-     *
-     * @param ability the ability being used.
-     * @param abilityCost the cost of the ability.
-     * @return an ActionBarDisplayReplacement reflecting the ability usage.
-     */
-    private ActionBarDisplayReplacement abilityUseReplacement(Ability ability, int abilityCost) {
-        return new ActionBarDisplayReplacement(
-                Component.text("-" + abilityCost + " Mana (", AQUA)
-                        .append(Component.text(ability.name(), GOLD))
-                        .append(Component.text(")", AQUA).decoration(ITALIC, false)),
-                100,
-                5,
-                ActionBarPurpose.ABILITY);
     }
 
     private void looseCoinsOnDeath() {
