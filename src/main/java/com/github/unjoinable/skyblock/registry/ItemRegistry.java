@@ -28,6 +28,7 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
             .registerTypeAdapter(ItemCategory.class, new ItemCategoryAdapter())
             .registerTypeAdapter(Material.class, new MaterialAdapter())
             .registerTypeAdapter(Component.class, new ComponentAdapter())
+            .registerTypeAdapter(SkyblockItem.class, new SkyblockItemAdapter())
             .create();
 
     private static final File ITEM_FILE = new File("skyblock_items.json");
@@ -46,7 +47,7 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
 
         try (FileReader reader = new FileReader(ITEM_FILE)) {
             System.out.println("Parsing JSON...");
-            List<SkyblockItem.Builder> items = parseItemsFromJson(reader);
+            List<SkyblockItem> items = parseItemsFromJson(reader);
 
             System.out.println("Successfully parsed " + items.size() + " items");
             registerItems(items);
@@ -73,12 +74,12 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
      * Parses the list of item builders from JSON.
      *
      * @param reader A reader for the item JSON file.
-     * @return A list of {@link SkyblockItem.Builder} instances.
-     * @throws Exception if parsing fails.
+     * @return A list of {@link SkyblockItem} instances.
+     * @throws RuntimeException if parsing fails.
      */
-    private List<SkyblockItem.Builder> parseItemsFromJson(FileReader reader) throws Exception {
-        Type listType = new TypeToken<List<SkyblockItem.Builder>>() {}.getType();
-        List<SkyblockItem.Builder> items = gson.fromJson(reader, listType);
+    private List<SkyblockItem> parseItemsFromJson(FileReader reader)  {
+        Type listType = new TypeToken<List<SkyblockItem>>() {}.getType();
+        List<SkyblockItem> items = gson.fromJson(reader, listType);
 
         if (items == null) {
             throw new RuntimeException("Failed to parse items file — JSON is null");
@@ -90,15 +91,14 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
     /**
      * Attempts to register each item from the list of item builders.
      *
-     * @param items A list of {@link SkyblockItem.Builder} objects to build and register.
+     * @param items A list of {@link SkyblockItem} objects to build and register.
      */
-    private void registerItems(List<SkyblockItem.Builder> items) {
+    private void registerItems(List<SkyblockItem> items) {
         int successCount = 0;
         int failureCount = 0;
 
-        for (SkyblockItem.Builder builder : items) {
+        for (SkyblockItem item : items) {
             try {
-                SkyblockItem item = builder.build();
                 String itemId = item.itemId() != null ? item.itemId() : "unknown";
                 System.out.println("Registering item: " + itemId);
                 register(itemId, item);

@@ -4,39 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b099a4c8-afa0-4b28-bbe7-879b66ca3eec" name="Changes" comment="Re-write">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/StatModifierManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/StatLoreGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/StatsCalculator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/adapters/ComponentAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/BaseStatsComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/event/ComponentChangeListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/DeserializableComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/LorePrioritized.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/LoreProvider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/NonPersistentComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/SerializableComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/service/CategoryResolver.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/ComponentRegistry.java" afterDir="false" />
+    <list default="true" id="b099a4c8-afa0-4b28-bbe7-879b66ca3eec" name="Changes" comment="Changed how component system works to follow SOLID">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/Skyblock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/Skyblock.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/ComponentContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/ComponentContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/DescriptionComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/DescriptionComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/ItemCategoryComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/ItemCategoryComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/ItemStatsComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/ItemStatsComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/MaterialComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/MaterialComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/NameComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/NameComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/RarityComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/RarityComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/LoreComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/LoreComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/NBTReadable.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/NBTWritable.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/StatModifierComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/StatModifierComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/TransientComponent.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/ItemRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/ItemRegistry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/ReadableComponentRegistry.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/Registries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/Registries.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/Registry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/Registry.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,6 +61,7 @@
   "keyToString": {
     "Gradle.Download Sources.executor": "Run",
     "Gradle.Skyblock [:com.github.unjoinable.skyblock.Skyblock.main()].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
@@ -160,7 +131,8 @@
       <workItem from="1745065040124" duration="754000" />
       <workItem from="1745152674361" duration="1277000" />
       <workItem from="1745155356116" duration="150000" />
-      <workItem from="1745155577040" duration="3954000" />
+      <workItem from="1745155577040" duration="4510000" />
+      <workItem from="1745160727715" duration="690000" />
     </task>
     <task id="LOCAL-00001" summary="Re-write">
       <option name="closed" value="true" />
@@ -170,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745153059535</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Changed how component system works to follow SOLID">
+      <option name="closed" value="true" />
+      <created>1745160051449</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1745160051449</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -178,6 +158,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Re-write" />
-    <option name="LAST_COMMIT_MESSAGE" value="Re-write" />
+    <MESSAGE value="Changed how component system works to follow SOLID" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed how component system works to follow SOLID" />
   </component>
 </project>

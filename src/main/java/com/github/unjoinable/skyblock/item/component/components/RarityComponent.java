@@ -79,6 +79,7 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
         ItemCategory category = categoryResolver.resolveCategory(container);
 
         // Implementation to generate rarity lore based on category
+        lore.add(Component.text(rarity.name() + category.getName()));
 
         return lore;
     }

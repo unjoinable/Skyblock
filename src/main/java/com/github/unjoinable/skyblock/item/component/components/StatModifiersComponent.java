@@ -1,4 +1,4 @@
-package com.github.unjoinable.skyblock.item;
+package com.github.unjoinable.skyblock.item.component.components;
 
 import com.github.unjoinable.skyblock.item.component.trait.NonPersistentComponent;
 import com.github.unjoinable.skyblock.item.component.trait.StatModifierComponent;
@@ -13,13 +13,13 @@ import java.util.List;
 /**
  * Component that manages stat modifiers for an item.
  */
-public final class StatModifierManager implements NonPersistentComponent {
+public final class StatModifiersComponent implements NonPersistentComponent {
     private final List<StatModifierComponent> modifiers;
 
     /**
      * Creates a new StatModifierManager with no modifiers
      */
-    public StatModifierManager() {
+    public StatModifiersComponent() {
         this.modifiers = new ArrayList<>();
     }
 
@@ -27,7 +27,7 @@ public final class StatModifierManager implements NonPersistentComponent {
      * Creates a new StatModifierManager with initial modifiers
      * @param modifiers The initial stat modifiers
      */
-    public StatModifierManager(@NotNull List<StatModifierComponent> modifiers) {
+    public StatModifiersComponent(@NotNull List<StatModifierComponent> modifiers) {
         this.modifiers = new ArrayList<>(modifiers);
     }
 
@@ -44,10 +44,10 @@ public final class StatModifierManager implements NonPersistentComponent {
      * @param modifier The stat modifier to add
      * @return A new manager with the modifier
      */
-    public StatModifierManager withModifier(@NotNull StatModifierComponent modifier) {
+    public StatModifiersComponent withModifier(@NotNull StatModifierComponent modifier) {
         List<StatModifierComponent> newModifiers = new ArrayList<>(modifiers);
         newModifiers.add(modifier);
-        return new StatModifierManager(newModifiers);
+        return new StatModifiersComponent(newModifiers);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class StatModifierManager implements NonPersistentComponent {
      * @param type The type of modifiers to remove
      * @return A new manager without the modifiers
      */
-    public StatModifierManager withoutModifier(@NotNull ModifierType type) {
+    public StatModifiersComponent withoutModifier(@NotNull ModifierType type) {
         List<StatModifierComponent> newModifiers = new ArrayList<>(modifiers.size());
 
         for (StatModifierComponent modifier : modifiers) {
@@ -64,7 +64,7 @@ public final class StatModifierManager implements NonPersistentComponent {
             }
         }
 
-        return new StatModifierManager(newModifiers);
+        return new StatModifiersComponent(newModifiers);
     }
 
     /**

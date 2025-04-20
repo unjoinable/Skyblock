@@ -1,4 +1,4 @@
-package com.github.unjoinable.skyblock.item.component;
+package com.github.unjoinable.skyblock.item;
 
 import com.github.unjoinable.skyblock.item.component.ComponentContainer;
 import com.github.unjoinable.skyblock.item.component.trait.LoreComponent;
@@ -64,7 +64,7 @@ public final class StatLoreGenerator implements LoreComponent {
                 .content(stat.getSymbol() + " ")
                 .color(stat.getLoreColor())
                 .append(Component.text(stat.getDisplayName() + ": ", stat.getLoreColor()))
-                .append(Component.text(formattedValue, stat.getValueColor()));
+                .append(Component.text(formattedValue, stat.getLoreColor()));
 
         return builder.build();
     }

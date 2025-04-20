@@ -11,7 +11,6 @@ public class Skyblock {
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
 
         // Registries
-        Registry.READABLE_COMPONENT_REGISTRY.init();
         Registry.ITEM_REGISTRY.init();
         Registry.COMPONENT_REGISTRY.init();
 

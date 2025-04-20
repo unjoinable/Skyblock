@@ -1,6 +1,7 @@
-package com.github.unjoinable.skyblock.item.component;
+package com.github.unjoinable.skyblock.item;
 
-import com.github.unjoinable.skyblock.item.StatModifierManager;
+import com.github.unjoinable.skyblock.item.component.ComponentContainer;
+import com.github.unjoinable.skyblock.item.component.components.StatModifiersComponent;
 import com.github.unjoinable.skyblock.item.component.components.BaseStatsComponent;
 import com.github.unjoinable.skyblock.stats.StatProfile;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public final class StatsCalculator {
                 .orElseGet(() -> new StatProfile(false));
 
         // Apply modifiers if present
-        return container.get(StatModifierManager.class)
+        return container.get(StatModifiersComponent.class)
                 .map(manager -> manager.applyModifiers(baseStats))
                 .orElse(baseStats);
     }
