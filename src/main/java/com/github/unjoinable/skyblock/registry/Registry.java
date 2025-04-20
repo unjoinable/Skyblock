@@ -8,64 +8,124 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 /**
- * Thread-safe base registry for all Skyblock registries
- * @param <K> Key type (String, NamespacedID, etc)
- * @param <V> Value type (Material, Component, etc)
+ * A thread-safe, bidirectional, generic registry.
+ * Supports key-to-value and value-to-key lookups.
+ *
+ * @param <K> The key type (e.g., String, NamespacedID)
+ * @param <V> The value type (e.g., Component, SkyblockItem)
  */
 public abstract class Registry<K, V> implements Registries {
-    protected final Map<K, V> registry = new ConcurrentHashMap<>();
+    protected final Map<K, V> keyToValue = new ConcurrentHashMap<>();
+    protected final Map<V, K> valueToKey = new ConcurrentHashMap<>();
     private boolean locked = false;
 
     /**
-     * Registers a new entry
-     * @throws IllegalStateException if registry is locked
-     * @throws IllegalArgumentException if key already exists
+     * Registers a new entry.
+     *
+     * @param key   The key to register
+     * @param value The value to associate
+     * @throws IllegalStateException    if registry is locked
+     * @throws IllegalArgumentException if the key is already registered
      */
     public void register(@NotNull K key, @NotNull V value) {
         checkLock();
-        if (registry.containsKey(key)) {
+        if (keyToValue.containsKey(key)) {
             throw new IllegalArgumentException("Key already registered: " + key);
         }
-        registry.put(key, value);
+        keyToValue.put(key, value);
+        valueToKey.put(value, key);
     }
 
     /**
-     * Gets a registered value
+     * Retrieves a value by its key.
+     *
+     * @param key The key to search
      * @return The value, or null if not found
      */
     public @Nullable V get(@NotNull K key) {
-        return registry.get(key);
+        return keyToValue.get(key);
     }
 
     /**
-     * Finds first value matching predicate
+     * Retrieves a key by its value.
+     *
+     * @param value The value to search
+     * @return The key, or null if not found
+     */
+    public @Nullable K getKey(@NotNull V value) {
+        return valueToKey.get(value);
+    }
+
+    /**
+     * Finds the first value matching the given predicate.
+     *
+     * @param predicate Predicate to apply
+     * @return Optional containing the value, or empty if none match
      */
     public @NotNull Optional<V> find(@NotNull Predicate<V> predicate) {
-        return registry.values().stream()
-                .filter(predicate)
-                .findFirst();
+        return keyToValue.values().stream().filter(predicate).findFirst();
     }
 
     /**
-     * Finds key for a registered value
+     * Finds the first key matching the given predicate on values.
+     *
+     * @param predicate Predicate to apply
+     * @return Optional containing the key, or empty if none match
      */
-    public @NotNull Optional<K> findKey(@NotNull V value) {
-        return registry.entrySet().stream()
-                .filter(e -> Objects.equals(e.getValue(), value))
+    public @NotNull Optional<K> findKey(@NotNull Predicate<V> predicate) {
+        return keyToValue.entrySet().stream()
+                .filter(e -> predicate.test(e.getValue()))
                 .map(Map.Entry::getKey)
                 .findFirst();
     }
 
-    protected void checkLock() {
-        if (locked) throw new IllegalStateException("Registry is locked");
-    }
-
+    /**
+     * Initializes the registry.
+     * Override in subclasses to populate entries.
+     */
     public void init() {}
 
     /**
-     * Locks the registry from modifications
+     * Locks the registry to prevent further registration.
      */
     public void lock() {
         this.locked = true;
+    }
+
+    /**
+     * Checks if the registry is locked and throws if it is.
+     */
+    protected void checkLock() {
+        if (locked) {
+            throw new IllegalStateException("Registry is locked");
+        }
+    }
+
+    /**
+     * Checks if a key exists in the registry.
+     */
+    public boolean containsKey(@NotNull K key) {
+        return keyToValue.containsKey(key);
+    }
+
+    /**
+     * Checks if a value exists in the registry.
+     */
+    public boolean containsValue(@NotNull V value) {
+        return valueToKey.containsKey(value);
+    }
+
+    /**
+     * Returns an unmodifiable view of all registered keys.
+     */
+    public @NotNull Set<K> keys() {
+        return Collections.unmodifiableSet(keyToValue.keySet());
+    }
+
+    /**
+     * Returns an unmodifiable view of all registered values.
+     */
+    public @NotNull Collection<V> values() {
+        return Collections.unmodifiableCollection(keyToValue.values());
     }
 }

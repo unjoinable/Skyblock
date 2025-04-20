@@ -13,6 +13,7 @@ public class Skyblock {
         // Registries
         Registry.READABLE_COMPONENT_REGISTRY.init();
         Registry.ITEM_REGISTRY.init();
+        Registry.COMPONENT_REGISTRY.init();
 
         // Start
         server.start("0.0.0.0", 25565);

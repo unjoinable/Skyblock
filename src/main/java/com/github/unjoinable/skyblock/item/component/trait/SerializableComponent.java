@@ -7,12 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.UnaryOperator;
 
 /**
- * Marker interface for all components that can be serialized to NBT
+ * Interface for components that can be serialized to persistent storage.
  */
-public interface NBTWritable extends Component {
-
+public interface SerializableComponent extends Component {
     /**
-     * Returns a function that applies this component's NBT data to an ItemStack builder
+     * Returns a function that applies this component's data to an ItemStack builder
      */
     @NotNull UnaryOperator<ItemStack.Builder> nbtWriter();
 }

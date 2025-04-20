@@ -5,6 +5,7 @@ import com.github.unjoinable.skyblock.item.component.trait.LoreComponent;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,19 +16,17 @@ public final class DescriptionComponent implements LoreComponent {
 
     /**
      * Constructs a DescriptionComponent with the specified description.
-     *
      * @param description A list of {@link Component} objects representing the description lines.
      */
-    public DescriptionComponent(List<Component> description) {
-        this.description = description;
+    public DescriptionComponent(@NotNull List<Component> description) {
+        this.description = Collections.unmodifiableList(description);
     }
 
     /**
      * Gets the description associated with this component.
-     *
      * @return A list of {@link Component} objects representing the description lines.
      */
-    public List<Component> getDescription() {
+    public @NotNull List<Component> getDescription() {
         return description;
     }
 

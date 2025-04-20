@@ -1,7 +1,7 @@
 package com.github.unjoinable.skyblock.item.component.components;
 
+import com.github.unjoinable.skyblock.item.component.trait.NonPersistentComponent;
 import com.github.unjoinable.skyblock.item.component.trait.StatModifierComponent;
-import com.github.unjoinable.skyblock.item.component.trait.TransientComponent;
 import com.github.unjoinable.skyblock.item.enums.ModifierType;
 import com.github.unjoinable.skyblock.stats.StatProfile;
 import com.github.unjoinable.skyblock.stats.Statistic;
@@ -19,7 +19,7 @@ import java.util.Objects;
  * Unified component for handling item stats and lore generation.
  * This component manages both base stats and all stat modifiers in one place.
  */
-public final class ItemStatsComponent implements TransientComponent {
+public final class ItemStatsComponent implements NonPersistentComponent {
     private final StatProfile baseStats;
     private final List<StatModifierComponent> modifiers;
     private StatProfile cachedCombinedStats;

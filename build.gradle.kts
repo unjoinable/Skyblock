@@ -44,3 +44,12 @@ fun getLatestCommitHash(url: String): String {
     val commits = fetchFromUrl(url)
     return commits.split("sha")[1].substring(3,13)
 }
+
+tasks.register<JavaExec>("runServer") {
+    group = "application"
+    description = "Runs the Skyblock server"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("com.github.unjoinable.skyblock.Skyblock")
+    workingDir = file("run")
+    standardInput = System.`in`
+}

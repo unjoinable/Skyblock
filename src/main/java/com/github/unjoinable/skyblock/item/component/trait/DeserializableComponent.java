@@ -7,14 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 /**
- * Interface for components that can be deserialized from NBT
+ * Interface for components that can be deserialized from persistent storage.
  */
-public interface NBTReadable extends Component {
-
+public interface DeserializableComponent extends Component {
     /**
      * Attempts to create a component from an ItemStack's NBT data
      * @return The deserialized component, or empty if invalid/missing data
      */
-    @NotNull Optional<? extends NBTReadable> fromNBT(@NotNull ItemStack itemStack);
-
+    @NotNull Optional<? extends DeserializableComponent> fromNBT(@NotNull ItemStack itemStack);
 }
