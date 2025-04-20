@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b099a4c8-afa0-4b28-bbe7-879b66ca3eec" name="Changes" comment="Re-write">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/run/skyblock_items.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/Skyblock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/LoreGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/SkyblockItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/Component.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/ComponentContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/adapters/ItemCategoryAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/adapters/MaterialAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/adapters/RarityAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/adapters/StatProfileAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/DescriptionComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/ItemCategoryComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/ItemStatsComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/MaterialComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/NameComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/components/RarityComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/LoreComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/NBTReadable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/NBTWritable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/StatModifierComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/component/trait/TransientComponent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/enums/ItemCategory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/enums/ModifierType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/item/enums/Rarity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/player/SkyblockPlayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/ItemRegistry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/ReadableComponentRegistry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/Registries.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/registry/Registry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/stats/StatHolder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/stats/StatProfile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/stats/StatValueType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/github/unjoinable/skyblock/stats/Statistic.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="package-info" />
+        <option value="Record" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2vtkMct5ZN7DVf2cjsJyKRqGUQw" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Skyblock [:com.github.unjoinable.skyblock.Skyblock.main()].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Divye/IdeaProjects/Skyblock/run&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Divye\IdeaProjects\Skyblock\run" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Divye\IdeaProjects\Skyblock\run" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.github.unjoinable.skyblock.Skyblock" />
+      <module name="Skyblock.main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b099a4c8-afa0-4b28-bbe7-879b66ca3eec" name="Changes" comment="" />
+      <created>1744971713701</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1744971713701</updated>
+      <workItem from="1744971714986" duration="452000" />
+      <workItem from="1744972180565" duration="16705000" />
+      <workItem from="1745031187156" duration="3228000" />
+      <workItem from="1745036497291" duration="15000" />
+      <workItem from="1745036890492" duration="2285000" />
+      <workItem from="1745045449810" duration="3845000" />
+      <workItem from="1745051111760" duration="55000" />
+      <workItem from="1745051186651" duration="886000" />
+      <workItem from="1745058660205" duration="2793000" />
+      <workItem from="1745061739011" duration="983000" />
+      <workItem from="1745062875047" duration="223000" />
+      <workItem from="1745063588414" duration="7000" />
+      <workItem from="1745063608748" duration="848000" />
+      <workItem from="1745065040124" duration="754000" />
+      <workItem from="1745152674361" duration="309000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Re-write" />
+    <option name="LAST_COMMIT_MESSAGE" value="Re-write" />
+  </component>
+</project>
