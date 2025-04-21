@@ -5,8 +5,6 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.UnaryOperator;
-
 /**
  * A final class representing the material component of an item.
  * This class implements the SerializableComponent interface to handle
@@ -33,10 +31,9 @@ public final class MaterialComponent implements SerializableComponent {
 
     /**
      * Writes the material data to the NBT of an item stack.
-     * @return A {@link UnaryOperator} that modifies the {@link ItemStack.Builder}.
      */
     @Override
-    public @NotNull UnaryOperator<ItemStack.Builder> nbtWriter() {
-        return builder -> builder.material(material);
+    public void nbtWriter(ItemStack.@NotNull Builder builder) {
+        builder.material(material);
     }
 }

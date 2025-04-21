@@ -2,10 +2,9 @@ package com.github.unjoinable.skyblock.item.component.components;
 
 import com.github.unjoinable.skyblock.item.component.trait.SerializableComponent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.UnaryOperator;
 
 /**
  * A final class representing the name component of an item.
@@ -31,7 +30,8 @@ public final class NameComponent implements SerializableComponent {
     }
 
     @Override
-    public @NotNull UnaryOperator<ItemStack.Builder> nbtWriter() {
-        return builder -> builder.customName(Component.text(displayName));
+    public void nbtWriter(ItemStack.@NotNull Builder builder) {
+        builder.customName(Component.text(displayName)
+                .decoration(TextDecoration.ITALIC, false));
     }
 }

@@ -1,8 +1,8 @@
 package com.github.unjoinable.skyblock.item;
 
-import com.github.unjoinable.skyblock.item.component.Component;
 import com.github.unjoinable.skyblock.item.component.ComponentContainer;
 import com.github.unjoinable.skyblock.item.component.trait.LoreComponent;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ public final class LoreGenerator {
      *
      * @return combined lore lines
      */
-    public @NotNull List<net.kyori.adventure.text.Component> generate() {
-        List<LoreComponent> loreComponents = new ArrayList<>(4);
+    public @NotNull List<Component> generate() {
+        List<LoreComponent> loreComponents = new ArrayList<>();
 
-        for (Component comp : container.asMap().values()) {
+        for (com.github.unjoinable.skyblock.item.component.Component comp : container.asMap().values()) {
             if (comp instanceof LoreComponent lore) {
                 loreComponents.add(lore);
             }
@@ -43,11 +43,14 @@ public final class LoreGenerator {
         loreComponents.sort(Comparator.comparingInt(LoreComponent::lorePriority));
 
         // Collect lore lines
-        List<net.kyori.adventure.text.Component> result = new ArrayList<>(loreComponents.size() * 2);
-        for (LoreComponent lore : loreComponents) {
-            result.addAll(lore.generateLore(container));
-        }
+        List<Component> result = new ArrayList<>();
 
+        for (int i = 0; i < loreComponents.size(); i++) {
+            result.addAll(loreComponents.get(i).generateLore(container));
+           if (i != loreComponents.size() - 1) {
+               result.add(Component.empty());
+           }
+        }
         return result;
     }
 }

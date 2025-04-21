@@ -1,8 +1,11 @@
 package com.github.unjoinable.skyblock.item.component.trait;
 
 import com.github.unjoinable.skyblock.item.component.Component;
+import com.github.unjoinable.skyblock.item.component.ComponentContainer;
 import com.github.unjoinable.skyblock.item.enums.ModifierType;
 import com.github.unjoinable.skyblock.stats.StatProfile;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,5 +22,38 @@ public interface StatModifierComponent extends Component {
      * Gets the stat profile containing the modifications.
      * @return The stat profile with modifications
      */
-    @NotNull StatProfile getStatProfile();
+    @NotNull StatProfile getStatProfile(ComponentContainer container);
+
+    /**
+     * Gets the bracket type for this modifier.
+     * Default is square brackets.
+     * @return The bracket type character (e.g., '[', '(', etc.)
+     */
+    default char getOpenBracket() {
+        return '[';
+    }
+
+    /**
+     * Gets the closing bracket that matches the opening one.
+     * @return The closing bracket character
+     */
+    default char getCloseBracket() {
+        char open = getOpenBracket();
+        return switch (open) {
+            case '[' -> ']';
+            case '(' -> ')';
+            case '{' -> '}';
+            case '<' -> '>';
+            default -> ']'; // Default to square bracket if unknown
+        };
+    }
+
+    /**
+     * Gets the color for this modifier in lore.
+     * Default is white.
+     * @return The TextColor for this modifier
+     */
+    default TextColor getModifierColor() {
+        return NamedTextColor.WHITE;
+    }
 }

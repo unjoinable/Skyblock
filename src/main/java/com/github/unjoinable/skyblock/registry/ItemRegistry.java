@@ -100,7 +100,6 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
         for (SkyblockItem item : items) {
             try {
                 String itemId = item.itemId() != null ? item.itemId() : "unknown";
-                System.out.println("Registering item: " + itemId);
                 register(itemId, item);
                 successCount++;
             } catch (Exception e) {

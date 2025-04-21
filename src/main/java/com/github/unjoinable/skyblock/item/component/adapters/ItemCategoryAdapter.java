@@ -7,6 +7,14 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
+/**
+ * A Gson {@link TypeAdapter} for serializing and deserializing the {@link ItemCategory} enum.
+ *
+ * This adapter serializes an {@link ItemCategory} enum constant to its name string.
+ * It deserializes a string back into an {@link ItemCategory} enum constant, performing
+ * a case-insensitive lookup. If the string does not match any enum constant, it defaults
+ * to {@link ItemCategory#NONE}.
+ */
 public class ItemCategoryAdapter extends TypeAdapter<ItemCategory> {
     @Override
     public void write(JsonWriter out, ItemCategory value) throws IOException {
@@ -17,10 +25,11 @@ public class ItemCategoryAdapter extends TypeAdapter<ItemCategory> {
     public ItemCategory read(JsonReader in) throws IOException {
         String str = in.nextString();
         try {
+            // Deserialize by valueOf, converting to uppercase for case-insensitivity
             return ItemCategory.valueOf(str.toUpperCase());
         } catch (IllegalArgumentException e) {
+            // Default to NONE if the string doesn't match any enum constant
             return ItemCategory.NONE;
         }
     }
 }
-

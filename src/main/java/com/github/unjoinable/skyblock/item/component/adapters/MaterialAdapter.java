@@ -17,7 +17,7 @@ public class MaterialAdapter extends TypeAdapter<Material> {
     public Material read(JsonReader in) throws IOException {
         String str = in.nextString();
         try {
-            return Material.fromKey(str);
+            return Material.fromKey(str.toLowerCase());
         } catch (IllegalArgumentException e) {
             return Material.AIR; // Default fallback
         }

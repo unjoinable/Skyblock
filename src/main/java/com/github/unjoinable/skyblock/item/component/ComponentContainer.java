@@ -24,27 +24,25 @@ public final class ComponentContainer {
     private static final Object2ObjectMap<Class<? extends Component>, Component> EMPTY =
             Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>());
 
+    // Static list of listeners that will be notified of all component changes
+    private static final List<ComponentChangeListener> GLOBAL_LISTENERS = new CopyOnWriteArrayList<>();
+
     private final Object2ObjectMap<Class<? extends Component>, Component> components;
-    private final List<ComponentChangeListener> listeners;
 
     /**
      * Creates an empty component container.
      */
     public ComponentContainer() {
         this.components = EMPTY;
-        this.listeners = new CopyOnWriteArrayList<>();
     }
 
     /**
      * Internal constructor for modified containers.
      * @param components backing component map (will be wrapped as unmodifiable)
-     * @param listeners list of event listeners to maintain
      */
     private ComponentContainer(
-            @NotNull Object2ObjectMap<Class<? extends Component>, Component> components,
-            @NotNull List<ComponentChangeListener> listeners) {
+            @NotNull Object2ObjectMap<Class<? extends Component>, Component> components) {
         this.components = Object2ObjectMaps.unmodifiable(components);
-        this.listeners = new CopyOnWriteArrayList<>(listeners);
     }
 
     /**
@@ -60,9 +58,8 @@ public final class ComponentContainer {
         if (components.isEmpty()) {
             var newMap = new Object2ObjectOpenHashMap<Class<? extends Component>, Component>(1);
             newMap.put(type, component);
-            var result = new ComponentContainer(newMap, listeners);
-            notifyComponentAdded(result, component);
-            return result;
+            var result = new ComponentContainer(newMap);
+            return notifyComponentAdded(result, component);
         }
 
         // Only copy if necessary
@@ -73,14 +70,12 @@ public final class ComponentContainer {
 
         var newMap = new Object2ObjectOpenHashMap<>(components);
         newMap.put(type, component);
-        var result = new ComponentContainer(newMap, listeners);
+        var result = new ComponentContainer(newMap);
 
         if (existing != null) {
-            notifyComponentRemoved(result, existing);
+            result = notifyComponentRemoved(result, existing);
         }
-        notifyComponentAdded(result, component);
-
-        return result;
+        return notifyComponentAdded(result, component);
     }
 
     /**
@@ -99,35 +94,27 @@ public final class ComponentContainer {
 
         var newMap = new Object2ObjectOpenHashMap<>(components);
         newMap.remove(type);
-        var result = new ComponentContainer(newMap, listeners);
-        notifyComponentRemoved(result, removed);
-        return result;
+        var result = new ComponentContainer(newMap);
+        return notifyComponentRemoved(result, removed);
     }
 
     /**
-     * Adds an event listener to this container.
+     * Adds a global event listener that will be notified of all component changes.
      * @param listener the listener to add
-     * @return a new container with the listener added
      */
-    public ComponentContainer addListener(@NotNull ComponentChangeListener listener) {
+    public static void addListener(@NotNull ComponentChangeListener listener) {
         Objects.requireNonNull(listener);
-        List<ComponentChangeListener> newListeners = new ArrayList<>(listeners);
-        newListeners.add(listener);
-        return new ComponentContainer(components, newListeners);
+        GLOBAL_LISTENERS.add(listener);
     }
 
     /**
-     * Removes an event listener from this container.
+     * Removes a global event listener.
      * @param listener the listener to remove
-     * @return a new container without the listener
+     * @return true if the listener was removed, false if it wasn't registered
      */
-    public ComponentContainer removeListener(@NotNull ComponentChangeListener listener) {
+    public static boolean removeListener(@NotNull ComponentChangeListener listener) {
         Objects.requireNonNull(listener);
-        List<ComponentChangeListener> newListeners = new ArrayList<>(listeners);
-        if (newListeners.remove(listener)) {
-            return new ComponentContainer(components, newListeners);
-        }
-        return this;
+        return GLOBAL_LISTENERS.remove(listener);
     }
 
     /**
@@ -178,15 +165,17 @@ public final class ComponentContainer {
         return components;
     }
 
-    private void notifyComponentAdded(ComponentContainer container, Component component) {
-        for (ComponentChangeListener listener : listeners) {
-            listener.onComponentAdded(container, component);
+    private static ComponentContainer notifyComponentAdded(ComponentContainer container, Component component) {
+        for (ComponentChangeListener listener : GLOBAL_LISTENERS) {
+            container = listener.onComponentAdded(container, component);
         }
+        return container;
     }
 
-    private void notifyComponentRemoved(ComponentContainer container, Component component) {
-        for (ComponentChangeListener listener : listeners) {
-            listener.onComponentRemoved(container, component);
+    private static ComponentContainer notifyComponentRemoved(ComponentContainer container, Component component) {
+        for (ComponentChangeListener listener : GLOBAL_LISTENERS) {
+            container = listener.onComponentRemoved(container, component);
         }
+        return container;
     }
 }

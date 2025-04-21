@@ -51,6 +51,15 @@ public enum ItemCategory {
 
     private final String name;
 
+    private static final Set<ItemCategory> ARMOR_CATEGORIES = EnumSet.of(
+            HELMET, CHESTPLATE, LEGGINGS, BOOTS
+    );
+
+    private static final Set<ItemCategory> WEAPON_CATEGORIES = EnumSet.of(
+            ItemCategory.SWORD,
+            ItemCategory.AXE
+    );
+
     ItemCategory() {
         this.name = name().replace("_", "");
     }
@@ -73,7 +82,10 @@ public enum ItemCategory {
         return ARMOR_CATEGORIES.contains(this);
     }
 
-    private static final Set<ItemCategory> ARMOR_CATEGORIES = EnumSet.of(
-            HELMET, CHESTPLATE, LEGGINGS, BOOTS
-    );
+    /**
+     * @return True if this is a weapon;
+     */
+    public boolean isWeapon() {
+        return WEAPON_CATEGORIES.contains(this);
+    }
 }

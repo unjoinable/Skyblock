@@ -6,8 +6,10 @@ import com.github.unjoinable.skyblock.item.component.trait.LoreComponent;
 import com.github.unjoinable.skyblock.item.component.trait.SerializableComponent;
 import com.github.unjoinable.skyblock.item.enums.ItemCategory;
 import com.github.unjoinable.skyblock.item.enums.Rarity;
-import com.github.unjoinable.skyblock.item.service.CategoryResolver;
+import com.github.unjoinable.skyblock.item.service.ComponentResolver;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
 
 /**
  * A class representing the rarity component for an item, which
@@ -27,7 +28,7 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
 
     private final Rarity rarity;
     private final boolean isUpgraded;
-    private final CategoryResolver categoryResolver;
+    private final ComponentResolver componentResolver;
 
     /**
      * Constructs a RarityComponent with the specified rarity and upgrade status.
@@ -37,19 +38,19 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
     public RarityComponent(@NotNull Rarity rarity, boolean isUpgraded) {
         this.rarity = rarity;
         this.isUpgraded = isUpgraded;
-        this.categoryResolver = new CategoryResolver();
+        this.componentResolver = new ComponentResolver();
     }
 
     /**
      * Constructs a RarityComponent with the specified rarity, upgrade status, and category resolver.
      * @param rarity The rarity level of the item.
      * @param isUpgraded A boolean indicating if the rarity has been upgraded.
-     * @param categoryResolver The resolver for item categories.
+     * @param componentResolver The resolver for item categories.
      */
-    public RarityComponent(@NotNull Rarity rarity, boolean isUpgraded, @NotNull CategoryResolver categoryResolver) {
+    public RarityComponent(@NotNull Rarity rarity, boolean isUpgraded, @NotNull ComponentResolver componentResolver) {
         this.rarity = rarity;
         this.isUpgraded = isUpgraded;
-        this.categoryResolver = categoryResolver;
+        this.componentResolver = componentResolver;
     }
 
     /**
@@ -75,11 +76,31 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
 
     @Override
     public @NotNull List<Component> generateLore(@NotNull ComponentContainer container) {
-        List<Component> lore = new ArrayList<>(1);
-        ItemCategory category = categoryResolver.resolveCategory(container);
+        Rarity rarity = this.rarity;
 
-        // Implementation to generate rarity lore based on category
-        lore.add(Component.text(rarity.name() + category.getName()));
+        if (isUpgraded) rarity = rarity.upgrade();
+
+        List<Component> lore = new ArrayList<>(1);
+        ItemCategory category = componentResolver.resolveCategory(container);
+        TextColor color = rarity.getColor();
+
+        Component base = Component.text(rarity.name() + " " + category.getName())
+                .color(color)
+                .decorate(TextDecoration.BOLD)
+                .decoration(TextDecoration.ITALIC, false);
+
+        if (isUpgraded) {
+            // Add obfuscation effect on both sides
+            Component obfuscatedPrefix = Component.text("a ", color)
+                    .decorate(TextDecoration.OBFUSCATED)
+                    .decoration(TextDecoration.ITALIC, false);
+            Component obfuscatedSuffix = Component.text(" a", color)
+                    .decorate(TextDecoration.OBFUSCATED)
+                    .decoration(TextDecoration.ITALIC, false);
+            lore.add(Component.empty().append(obfuscatedPrefix).append(base).append(obfuscatedSuffix));
+        } else {
+            lore.add(base);
+        }
 
         return lore;
     }
@@ -89,12 +110,12 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
         return Optional.of(new RarityComponent(
                 Rarity.getRarity(itemStack.getTag(RARITY_TAG)),
                 itemStack.getTag(UPGRADED_TAG),
-                categoryResolver
+                componentResolver
         ));
     }
 
     @Override
-    public @NotNull UnaryOperator<ItemStack.Builder> nbtWriter() {
-        return builder -> builder.set(RARITY_TAG, rarity.toString()).set(UPGRADED_TAG, isUpgraded);
+    public void nbtWriter(ItemStack.@NotNull Builder builder) {
+        builder.set(RARITY_TAG, rarity.toString()).set(UPGRADED_TAG, isUpgraded);
     }
 }

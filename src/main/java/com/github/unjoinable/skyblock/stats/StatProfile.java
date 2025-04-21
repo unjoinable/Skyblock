@@ -50,6 +50,10 @@ public final class StatProfile {
         }
     }
 
+    public StatProfile() {
+        this(false);
+    }
+
     /**
      * Gets the current value of a stat with all modifiers applied.
      * Formula: (base * (1 + additive) * multiplicative) + bonus
