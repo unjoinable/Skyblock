@@ -1,18 +1,15 @@
 package com.github.unjoinable.skyblock.item.component.trait;
 
 import com.github.unjoinable.skyblock.item.component.Component;
-import net.minestom.server.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 /**
  * Interface for components that can be deserialized from persistent storage.
+ * <p>
+ * Implementing classes should provide a static read method with the signature:
+ * <pre>
+ * public static @NotNull Optional<? extends DeserializableComponent> read(@NotNull ItemStack itemStack)
+ * </pre>
  */
 public interface DeserializableComponent extends Component {
-    /**
-     * Attempts to create a component from an ItemStack's NBT data
-     * @return The deserialized component, or empty if invalid/missing data
-     */
-    @NotNull Optional<? extends DeserializableComponent> fromNBT(@NotNull ItemStack itemStack);
+    // No methods - this is a marker interface with documentation
 }

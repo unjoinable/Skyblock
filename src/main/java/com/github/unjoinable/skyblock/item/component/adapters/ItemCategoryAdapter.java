@@ -25,10 +25,8 @@ public class ItemCategoryAdapter extends TypeAdapter<ItemCategory> {
     public ItemCategory read(JsonReader in) throws IOException {
         String str = in.nextString();
         try {
-            // Deserialize by valueOf, converting to uppercase for case-insensitivity
             return ItemCategory.valueOf(str.toUpperCase());
         } catch (IllegalArgumentException e) {
-            // Default to NONE if the string doesn't match any enum constant
             return ItemCategory.NONE;
         }
     }

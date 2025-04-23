@@ -12,7 +12,6 @@ import java.io.IOException;
 /**
  * A Gson {@link TypeAdapter} for serializing and deserializing {@link Component} objects
  * using MiniMessage format.
- *
  * This adapter serializes a {@link Component} into its MiniMessage string representation
  * and deserializes a MiniMessage string back into a {@link Component}. It also
  * specifically removes the {@link TextDecoration#ITALIC} decoration upon deserialization.

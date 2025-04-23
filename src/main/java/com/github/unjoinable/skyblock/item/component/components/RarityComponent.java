@@ -14,7 +14,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,23 +23,11 @@ import java.util.Optional;
  * includes the rarity level and whether the rarity has been upgraded.
  */
 public final class RarityComponent implements LoreComponent, SerializableComponent, DeserializableComponent {
-    private static final Tag<String> RARITY_TAG = Tag.String("rarity").defaultValue(Rarity.UNOBTAINABLE.toString());
-    private static final Tag<Boolean> UPGRADED_TAG = Tag.Boolean("rarity_upgraded").defaultValue(false);
-
+    private static final Tag<String> RARITY = Tag.String("rarity").defaultValue(Rarity.UNOBTAINABLE.name());
+    private static final Tag<Boolean> IS_UPGRADED = Tag.Boolean("is_upgraded").defaultValue(false);
     private final Rarity rarity;
     private final boolean isUpgraded;
     private final ComponentResolver componentResolver;
-
-    /**
-     * Constructs a RarityComponent with the specified rarity and upgrade status.
-     * @param rarity The rarity level of the item.
-     * @param isUpgraded A boolean indicating if the rarity has been upgraded.
-     */
-    public RarityComponent(@NotNull Rarity rarity, boolean isUpgraded) {
-        this.rarity = rarity;
-        this.isUpgraded = isUpgraded;
-        this.componentResolver = new ComponentResolver();
-    }
 
     /**
      * Constructs a RarityComponent with the specified rarity, upgrade status, and category resolver.
@@ -52,6 +40,24 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
         this.isUpgraded = isUpgraded;
         this.componentResolver = componentResolver;
     }
+
+    /**
+     * Constructs a RarityComponent with the specified rarity and upgrade status.
+     * @param rarity The rarity level of the item.
+     * @param isUpgraded A boolean indicating if the rarity has been upgraded.
+     */
+    public RarityComponent(@NotNull Rarity rarity, boolean isUpgraded) {
+        this(rarity, isUpgraded, new ComponentResolver());
+    }
+
+    /**
+     * Constructs a RarityComponent with the specified rarity and upgrade status.
+     * @param rarity The rarity level of the item.
+     */
+    public RarityComponent(@NotNull Rarity rarity) {
+        this(rarity, false);
+    }
+
 
     /**
      * Retrieves the rarity associated with this component.
@@ -74,13 +80,10 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
         return 100;
     }
 
+
     @Override
     public @NotNull List<Component> generateLore(@NotNull ComponentContainer container) {
-        Rarity rarity = this.rarity;
-
-        if (isUpgraded) rarity = rarity.upgrade();
-
-        List<Component> lore = new ArrayList<>(1);
+        Rarity rarity = isUpgraded ? this.rarity.upgrade() : this.rarity;
         ItemCategory category = componentResolver.resolveCategory(container);
         TextColor color = rarity.getColor();
 
@@ -89,33 +92,28 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
                 .decorate(TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false);
 
-        if (isUpgraded) {
-            // Add obfuscation effect on both sides
-            Component obfuscatedPrefix = Component.text("a ", color)
-                    .decorate(TextDecoration.OBFUSCATED)
-                    .decoration(TextDecoration.ITALIC, false);
-            Component obfuscatedSuffix = Component.text(" a", color)
-                    .decorate(TextDecoration.OBFUSCATED)
-                    .decoration(TextDecoration.ITALIC, false);
-            lore.add(Component.empty().append(obfuscatedPrefix).append(base).append(obfuscatedSuffix));
-        } else {
-            lore.add(base);
+        Component result = isUpgraded
+                ? Component.empty()
+                .append(Component.text("a ", color).decorate(TextDecoration.OBFUSCATED).decoration(TextDecoration.ITALIC, false))
+                .append(base)
+                .append(Component.text(" a", color).decorate(TextDecoration.OBFUSCATED).decoration(TextDecoration.ITALIC, false))
+                : base;
+
+        return Collections.singletonList(result);
+    }
+
+    @Override
+    public void write(ItemStack.@NotNull Builder builder) {
+        builder.set(RARITY, rarity.name())
+               .set(IS_UPGRADED, isUpgraded);
+    }
+
+    public static @NotNull Optional<? extends DeserializableComponent> read(@NotNull ItemStack itemStack) {
+        if (itemStack.hasTag(RARITY) && itemStack.hasTag(IS_UPGRADED)) {
+            return Optional.of(new RarityComponent
+                    (Rarity.getRarity(itemStack.getTag(RARITY)),
+                            itemStack.getTag(IS_UPGRADED)));
         }
-
-        return lore;
-    }
-
-    @Override
-    public @NotNull Optional<RarityComponent> fromNBT(@NotNull ItemStack itemStack) {
-        return Optional.of(new RarityComponent(
-                Rarity.getRarity(itemStack.getTag(RARITY_TAG)),
-                itemStack.getTag(UPGRADED_TAG),
-                componentResolver
-        ));
-    }
-
-    @Override
-    public void nbtWriter(ItemStack.@NotNull Builder builder) {
-        builder.set(RARITY_TAG, rarity.toString()).set(UPGRADED_TAG, isUpgraded);
+        return Optional.empty();
     }
 }

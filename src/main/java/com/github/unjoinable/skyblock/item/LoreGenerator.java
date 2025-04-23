@@ -22,7 +22,7 @@ public final class LoreGenerator {
     }
 
     public LoreGenerator(@NotNull SkyblockItem item) {
-        this.container = item.components();
+        this(item.components());
     }
 
     /**

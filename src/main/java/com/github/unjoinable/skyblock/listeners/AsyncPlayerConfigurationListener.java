@@ -1,7 +1,7 @@
 package com.github.unjoinable.skyblock.listeners;
 
-import com.github.unjoinable.skyblock.player.SkyblockPlayer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.instance.Instance;
@@ -23,7 +23,7 @@ public class AsyncPlayerConfigurationListener implements EventListener<AsyncPlay
 
     @Override
     public @NotNull Result run(@NotNull AsyncPlayerConfigurationEvent event) {
-        final SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        final Player player = event.getPlayer();
         event.setSpawningInstance(spawnInstance);
         player.setRespawnPoint(spawnPos);
 

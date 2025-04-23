@@ -23,16 +23,15 @@ import java.util.Optional;
  * In Hypixel SkyBlock, Hot Potato Books add +2 to various stats when applied to an item.
  * Up to 10 Hot Potato Books can be applied to an item, with each application
  * providing additional stats.
- *
+ * <p></p>
  * Different item categories receive different stat bonuses:
  * - Weapons (SWORD, AXE): +2 Damage and +2 Strength per book
  * - Armor (HELMET, CHESTPLATE, LEGGINGS, BOOTS): +2 Defense and +4 Health per book
  * - Other items cannot have Hot Potato Books applied
  */
 public class HotPotatoBookComponent implements StatModifierComponent, SerializableComponent, DeserializableComponent {
-    private static final Tag<Integer> HOT_POTATO_COUNT = Tag.Integer("hot_potato_count").defaultValue(0);
-    private static final int MAX_HOT_POTATO_BOOKS = 100000;
-
+    private static final Tag<Integer> HOT_POTATO_BOOKS = Tag.Integer("hot_potato_books");
+    private static final int MAX_HOT_POTATO_BOOKS = 10;
     private final int count;
 
     /**
@@ -81,16 +80,6 @@ public class HotPotatoBookComponent implements StatModifierComponent, Serializab
         return new HotPotatoBookComponent(count + 1);
     }
 
-    @Override
-    public @NotNull Optional<? extends DeserializableComponent> fromNBT(@NotNull ItemStack itemStack) {
-        int storedCount = itemStack.getTag(HOT_POTATO_COUNT);
-        return Optional.of(new HotPotatoBookComponent(storedCount));
-    }
-
-    @Override
-    public void nbtWriter(ItemStack.@NotNull Builder builder) {
-        builder.set(HOT_POTATO_COUNT, count);
-    }
 
     @Override
     public @NotNull ModifierType getModifierType() {
@@ -129,5 +118,17 @@ public class HotPotatoBookComponent implements StatModifierComponent, Serializab
     @Override
     public char getCloseBracket() {
         return ')';
+    }
+
+    @Override
+    public void write(ItemStack.@NotNull Builder builder) {
+        builder.setTag(HOT_POTATO_BOOKS, count);
+    }
+
+    public static @NotNull Optional<? extends DeserializableComponent> read(@NotNull ItemStack itemStack) {
+        if (itemStack.hasTag(HOT_POTATO_BOOKS)) {
+            return Optional.of(new HotPotatoBookComponent(itemStack.getTag(HOT_POTATO_BOOKS)));
+        }
+        return Optional.empty();
     }
 }

@@ -1,6 +1,7 @@
 package com.github.unjoinable.skyblock.item.component.components;
 
 import com.github.unjoinable.skyblock.item.component.trait.SerializableComponent;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.HeadProfile;
@@ -29,11 +30,10 @@ public class HeadTextureComponent implements SerializableComponent {
      * using the stored texture and a random UUID.
      */
     @Override
-    public void nbtWriter(ItemStack.@NotNull Builder builder) {
+    public void write(ItemStack.@NotNull Builder builder) {
         PlayerSkin skin = new PlayerSkin(texture, UUID.randomUUID().toString());
         HeadProfile profile = new HeadProfile(skin);
-        // Set the HeadProfile component on the item
-        builder.set(net.minestom.server.item.ItemComponent.PROFILE, profile);
+        builder.set(DataComponents.PROFILE, profile);
     }
 
     /**
