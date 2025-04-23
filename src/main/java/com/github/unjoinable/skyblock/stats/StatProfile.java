@@ -133,8 +133,6 @@ public final class StatProfile {
         return copy;
     }
 
-    // ===== Private Helpers =====
-
     private float calculateStatValue(int statId) {
         float value = (base.getFloat(statId) * (1 + additive.getFloat(statId)))
                 * multiplicative.getFloat(statId)
@@ -142,5 +140,22 @@ public final class StatProfile {
 
         Statistic stat = Statistic.values()[statId];
         return stat.isCapped() ? Math.min(value, STAT_CAPS[statId]) : value;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("StatProfile {\n");
+        for (Statistic stat : Statistic.values()) {
+            int id = stat.ordinal();
+            float baseVal = base.getFloat(id);
+            float addVal = additive.getFloat(id);
+            float multVal = multiplicative.getFloat(id);
+            float bonusVal = bonus.getFloat(id);
+            float finalVal = get(stat);
+            sb.append(String.format("  %s -> base=%.2f, additive=%.2f, multiplicative=%.2f, bonus=%.2f, final=%.2f%n",
+                    stat.name(), baseVal, addVal, multVal, bonusVal, finalVal));
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

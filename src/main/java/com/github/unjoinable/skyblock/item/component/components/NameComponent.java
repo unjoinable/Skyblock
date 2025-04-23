@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * A final class representing the name component of an item.
- * This class defines the display name for an item and implements SerializableComponent.
+ * This class defines the display name for an item.
  */
 public final class NameComponent implements SerializableComponent {
     private final String displayName;
@@ -30,8 +30,9 @@ public final class NameComponent implements SerializableComponent {
     }
 
     @Override
-    public void nbtWriter(ItemStack.@NotNull Builder builder) {
+    public void write(ItemStack.@NotNull Builder builder) {
         builder.customName(Component.text(displayName)
                 .decoration(TextDecoration.ITALIC, false));
     }
+
 }

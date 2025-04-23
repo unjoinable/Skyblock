@@ -69,7 +69,7 @@ public enum Statistic {
     private final boolean isCapped;
     private final int capValue;
 
-    private static final Collection<Statistic> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
+    private static final Collection<Statistic> VALUES = List.of(values());
 
     // Constructor for uncapped stats
     Statistic(@NotNull String displayName,
@@ -163,9 +163,5 @@ public enum Statistic {
 
     public int getCapValue() {
         return capValue;
-    }
-
-    public static Statistic byOrdinal(int ordinal) {
-        return values()[ordinal];
     }
 }

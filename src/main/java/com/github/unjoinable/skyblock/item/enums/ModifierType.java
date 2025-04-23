@@ -9,7 +9,9 @@ public enum ModifierType {
     ABILITY,
     RUNE,
     HOT_POTATO,
+    ART_OF_PEACE,
     RECOMBOBULATED,
+    ART_OF_WAR,
     GEMSTONE,
     SCROLL,
     OTHER

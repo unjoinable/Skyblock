@@ -54,7 +54,6 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
 
         } catch (Exception e) {
             System.err.println("Critical error during item registration: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Failed to load and register Skyblock items", e);
         }
     }
@@ -104,7 +103,6 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
                 successCount++;
             } catch (Exception e) {
                 System.err.println("Failed to register item: " + e.getMessage());
-                e.printStackTrace();
                 failureCount++;
             }
         }

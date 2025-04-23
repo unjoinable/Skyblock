@@ -5,6 +5,7 @@ package com.github.unjoinable.skyblock.item.component;
  * Implementations must be immutable and thread-safe.
  */
 public interface Component {
+
     /**
      * Returns the component type used for storage and retrieval.
      * Defaults to the implementing class.

@@ -1,6 +1,12 @@
 package com.github.unjoinable.skyblock;
 
+import com.github.unjoinable.skyblock.command.commands.ItemCommand;
+import com.github.unjoinable.skyblock.command.commands.TestCommand;
+import com.github.unjoinable.skyblock.item.SkyblockItemProcessor;
 import com.github.unjoinable.skyblock.item.component.ComponentContainer;
+import com.github.unjoinable.skyblock.item.component.components.ArtOfPeaceComponent;
+import com.github.unjoinable.skyblock.item.component.components.HotPotatoBookComponent;
+import com.github.unjoinable.skyblock.item.component.components.RarityComponent;
 import com.github.unjoinable.skyblock.listeners.StatModifierSyncListener;
 import com.github.unjoinable.skyblock.listeners.AsyncPlayerConfigurationListener;
 import com.github.unjoinable.skyblock.player.SkyblockPlayer;
@@ -22,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * It serves as the entry point for the entire Skyblock server application.
  */
 public class Skyblock {
+    private static SkyblockItemProcessor processor;
     private static InstanceContainer hubInstance;
     private static final Logger logger = LoggerFactory.getLogger(Skyblock.class);
 
@@ -47,6 +54,7 @@ public class Skyblock {
 
         // Initialize item and component registries
         initRegistries();
+        initProcesor();
 
         // Register commands
         CommandManager cmdManager = MinecraftServer.getCommandManager();
@@ -70,8 +78,19 @@ public class Skyblock {
      * custom items and their associated components/behaviors.
      */
     private static void initRegistries() {
+        //Registry.COMPONENT_REGISTRY.init();
         Registry.ITEM_REGISTRY.init();
-        Registry.COMPONENT_REGISTRY.init();
+
+    }
+
+    /**
+     * Registers all default components to processor
+     */
+    private static void initProcesor() {
+        processor = new SkyblockItemProcessor();
+        processor.registerDeserializer(HotPotatoBookComponent::read);
+        processor.registerDeserializer(RarityComponent::read);
+        processor.registerDeserializer(ArtOfPeaceComponent::read);
     }
 
     /**
@@ -90,7 +109,8 @@ public class Skyblock {
      * @param cmdManager The Minestom command manager used to register commands.
      */
     private static void registerCommands(CommandManager cmdManager) {
-
+        cmdManager.register(new ItemCommand());
+        cmdManager.register(new TestCommand());
     }
 
     /**
@@ -100,5 +120,14 @@ public class Skyblock {
      */
     public static Logger getLogger() {
         return logger;
+    }
+
+
+    /**
+     * The instance of processor with default components registered
+     * @return The Skyblock Item Processor
+     */
+    public static SkyblockItemProcessor getProcessor() {
+        return processor;
     }
 }

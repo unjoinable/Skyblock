@@ -33,7 +33,7 @@ public final class MaterialComponent implements SerializableComponent {
      * Writes the material data to the NBT of an item stack.
      */
     @Override
-    public void nbtWriter(ItemStack.@NotNull Builder builder) {
+    public void write(ItemStack.@NotNull Builder builder) {
         builder.material(material);
     }
 }

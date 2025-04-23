@@ -26,6 +26,5 @@ public enum StatValueType {
     /**
      * A bonus value that is added to the final result of a stat calculation.
      */
-    BONUS,
-    ;
+    BONUS
 }

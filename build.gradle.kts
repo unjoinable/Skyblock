@@ -19,11 +19,12 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    implementation("net.minestom:minestom-snapshots:$minestomVersion")
+    implementation("net.minestom:minestom-snapshots:1_21_5-aa17002536")
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.google.guava:guava:33.2.1-jre")
+    implementation("org.reflections:reflections:0.10.2")
 }
 
 //auto updater
@@ -43,13 +44,4 @@ fun fetchFromUrl(url: String): String {
 fun getLatestCommitHash(url: String): String {
     val commits = fetchFromUrl(url)
     return commits.split("sha")[1].substring(3,13)
-}
-
-tasks.register<JavaExec>("runServer") {
-    group = "application"
-    description = "Runs the Skyblock server"
-    classpath = sourceSets.main.get().runtimeClasspath
-    mainClass.set("com.github.unjoinable.skyblock.Skyblock")
-    workingDir = file("run")
-    standardInput = System.`in`
 }

@@ -11,5 +11,5 @@ public interface SerializableComponent extends Component {
     /**
      * Applies this component's data to an ItemStack builder
      */
-    void nbtWriter(ItemStack.@NotNull Builder builder);
+    void write(ItemStack.@NotNull Builder builder);
 }

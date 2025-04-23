@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 
 /**
  * A Gson {@link JsonDeserializer} for deserializing {@link SkyblockItem} objects.
- *
  * This adapter works by first deserializing the JSON element into a {@link SkyblockItem.Builder}
  * and then calling the {@code build()} method on the builder to construct the final
  * {@link SkyblockItem} instance. This is a common pattern for deserializing complex
@@ -18,9 +17,7 @@ public class SkyblockItemAdapter implements JsonDeserializer<SkyblockItem> {
     @Override
     public SkyblockItem deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        // Deserialize the JSON into the builder type
         SkyblockItem.Builder builder = context.deserialize(json, SkyblockItem.Builder.class);
-        // Build the final SkyblockItem object from the builder
         return builder.build();
     }
 }

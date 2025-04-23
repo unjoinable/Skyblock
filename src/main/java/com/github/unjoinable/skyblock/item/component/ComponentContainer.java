@@ -1,7 +1,6 @@
 package com.github.unjoinable.skyblock.item.component;
 
 import com.github.unjoinable.skyblock.item.component.event.ComponentChangeListener;
-import com.github.unjoinable.skyblock.registry.Registry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -126,23 +125,6 @@ public final class ComponentContainer {
     @SuppressWarnings("unchecked")
     public <T extends Component> Optional<T> get(@NotNull Class<T> type) {
         Objects.requireNonNull(type);
-        Component component = components.get(type);
-        return component != null ? Optional.of((T) component) : Optional.empty();
-    }
-
-    /**
-     * Gets a component by its registry ID.
-     * @param registryId the registered component ID
-     * @param <T> the expected component type
-     * @return an Optional containing the component if present
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Component> Optional<T> getByRegistryId(@NotNull String registryId) {
-        Objects.requireNonNull(registryId);
-        Class<? extends Component> type = Registry.COMPONENT_REGISTRY.get(registryId);
-        if (type == null) {
-            return Optional.empty();
-        }
         Component component = components.get(type);
         return component != null ? Optional.of((T) component) : Optional.empty();
     }

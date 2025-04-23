@@ -77,8 +77,7 @@ public final class StatsComponent implements LoreComponent {
      * @return List of stat modifiers
      */
     public @NotNull List<StatModifierComponent> getModifiers() {
-        // Convert back to a standard Java List for API compatibility
-        return Collections.unmodifiableList(new ArrayList<>(modifiers));
+        return List.copyOf(modifiers);
     }
 
     /**
@@ -169,8 +168,7 @@ public final class StatsComponent implements LoreComponent {
 
             // Check if any modifier affects this stat
             boolean hasModifier = false;
-            for (int i = 0; i < modifiers.size(); i++) {
-                StatModifierComponent modifier = modifiers.get(i);
+            for (StatModifierComponent modifier : modifiers) {
                 if (modifier.getStatProfile(container).get(stat) != 0) {
                     hasModifier = true;
                     break;
@@ -189,7 +187,7 @@ public final class StatsComponent implements LoreComponent {
             for (Statistic stat : Statistic.getValues()) {
                 float modValue = modProfile.get(stat);
                 if (modValue != 0) {
-                    ObjectList<ModifierInfo> modList = result.computeIfAbsent(stat, k -> new ObjectArrayList<>());
+                    ObjectList<ModifierInfo> modList = result.computeIfAbsent(stat, _ -> new ObjectArrayList<>());
                     modList.add(new ModifierInfo(
                             modifier.getModifierType(),
                             modValue,
@@ -221,7 +219,6 @@ public final class StatsComponent implements LoreComponent {
 
         List<Component> lore = new ArrayList<>();
 
-        // Manually iterate instead of using streams for better performance
         for (Statistic stat : Statistic.getValues()) {
             float value = finalStats.get(stat);
             if (value > 0) {
@@ -259,6 +256,8 @@ public final class StatsComponent implements LoreComponent {
             String modValueText = isPercentage
                     ? String.format("%.1f%%", mod.getValue())
                     : String.format("%.0f", mod.getValue());
+
+            builder.append(Component.text(" ")).append();
 
             builder.append(Component
                     .text(" " + mod.getOpenBracket() + "+" + modValueText + mod.getCloseBracket(), mod.getColor()));

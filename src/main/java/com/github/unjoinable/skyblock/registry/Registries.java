@@ -12,8 +12,4 @@ interface Registries {
      */
     ItemRegistry ITEM_REGISTRY = new ItemRegistry();
 
-    /**
-     * Global instance of the Component registry.
-     */
-    ComponentRegistry COMPONENT_REGISTRY = new ComponentRegistry();
 }
