@@ -22,7 +22,7 @@ import java.util.Optional;
  * Acts as a Hot Potato type modifier with red text.
  */
 public class ArtOfPeaceComponent implements StatModifierComponent, SerializableComponent, DeserializableComponent {
-    private static final Tag<Boolean> ART_OF_PEACE= Tag.Boolean("art_of_peace").defaultValue(false);
+    private static final Tag<Boolean> ART_OF_PEACE= Tag.Boolean("art_of_peace");
     private final boolean isApplied;
 
     public ArtOfPeaceComponent(boolean isApplied) {
