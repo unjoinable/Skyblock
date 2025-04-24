@@ -117,9 +117,11 @@ public final class StatProfile {
     /**
      * Combines another StatProfile into this one (additive stacking).
      * Multiplicative values are multiplied together.
+     * Uses Statistic.values() to ensure all stats are processed properly.
      */
     public void combineWith(StatProfile other) {
-        for (int i = 0; i < STAT_COUNT; i++) {
+        for (Statistic stat : Statistic.values()) {
+            int i = stat.ordinal();
             base.set(i, base.getFloat(i) + other.base.getFloat(i));
             additive.set(i, additive.getFloat(i) + other.additive.getFloat(i));
             multiplicative.set(i, multiplicative.getFloat(i) * other.multiplicative.getFloat(i));
@@ -132,17 +134,19 @@ public final class StatProfile {
      * Forces recalculation of all stats on next access.
      */
     public void invalidateAll() {
-        for (int i = 0; i < STAT_COUNT; i++) {
-            isDirty.set(i, true);
+        for (Statistic stat : Statistic.values()) {
+            isDirty.set(stat.ordinal(), true);
         }
     }
 
     /**
      * Creates an exact independent copy of this profile.
+     * Uses Statistic.values() to ensure all stats are copied properly.
      */
     public StatProfile copy() {
         StatProfile copy = new StatProfile(false);
-        for (int i = 0; i < STAT_COUNT; i++) {
+        for (Statistic stat : Statistic.values()) {
+            int i = stat.ordinal();
             copy.base.set(i, base.getFloat(i));
             copy.additive.set(i, additive.getFloat(i));
             copy.multiplicative.set(i, multiplicative.getFloat(i));
@@ -168,11 +172,11 @@ public final class StatProfile {
             int id = stat.ordinal();
             float baseVal = base.getFloat(id);
             float addVal = additive.getFloat(id);
-            float multVal = multiplicative.getFloat(id);
+            float multiVal = multiplicative.getFloat(id);
             float bonusVal = bonus.getFloat(id);
             float finalVal = get(stat);
             sb.append(String.format("  %s -> base=%.2f, additive=%.2f, multiplicative=%.2f, bonus=%.2f, final=%.2f%n",
-                    stat.name(), baseVal, addVal, multVal, bonusVal, finalVal));
+                    stat.name(), baseVal, addVal, multiVal, bonusVal, finalVal));
         }
         sb.append("}");
         return sb.toString();

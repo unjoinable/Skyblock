@@ -1,7 +1,14 @@
 package net.skyblock.command.commands;
 
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
+import net.minestom.server.tag.Tag;
 import net.skyblock.command.SkyblockCommand;
+import net.skyblock.item.component.components.ArtOfPeaceComponent;
+import net.skyblock.player.SkyblockPlayer;
 import net.skyblock.player.rank.PlayerRank;
+import net.skyblock.stats.StatProfile;
+import net.skyblock.stats.Statistic;
 
 /**
  * A basic test command used for verifying the command framework.
@@ -19,9 +26,13 @@ public class TestCommand extends SkyblockCommand {
         super("test");
 
         // Test Syntax
-        addSyntax((_, _) -> {
-            // No operation — placeholder
+        addSyntax((sender, _) -> {
+            SkyblockPlayer player = (SkyblockPlayer) sender;
+            Tag<Boolean> tag = Tag.Boolean("test").defaultValue(false);
+            ItemStack itemStack = ItemStack.of(Material.STONE);
+            System.out.println(itemStack.hasTag(tag));
         });
+
     }
 
     /**

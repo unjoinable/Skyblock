@@ -1,5 +1,6 @@
 package net.skyblock.listeners;
 
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.skyblock.player.ItemSlot;
@@ -52,7 +53,10 @@ public class InventoryPreClickListener implements EventListener<InventoryPreClic
         }
 
         if (itemSlot != null) {
-            player.getStatsManager().update(itemSlot);
+            ItemSlot finalItemSlot = itemSlot;
+            MinecraftServer.getSchedulerManager().scheduleNextTick(() -> {
+                player.getStatsManager().update(finalItemSlot);
+            });
         }
 
         return Result.SUCCESS;

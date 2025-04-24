@@ -97,6 +97,7 @@ public class Skyblock {
         eventHandler.addListener(new PlayerSwapItemListener());
         eventHandler.addListener(new InventoryPreClickListener());
         eventHandler.addListener(new PlayerChangeHeldSlotListener());
+        eventHandler.addListener(new PlayerUseItemListener());
         ComponentContainer.addListener(new StatModifierSyncListener());
     }
 

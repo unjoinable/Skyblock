@@ -104,8 +104,10 @@ public class PlayerStatsManager {
     /**
      * Rebuilds the cached combined profile from all stat sources.
      * Optimized to efficiently combine all stat sources.
+     * Now uses a freshly created StatProfile for cleaner combination.
      */
     private void rebuildCachedProfile() {
+        // Create a fresh profile and copy the base stats first
         StatProfile combined = baseStats.copy();
 
         // Add stats from all equipment slots

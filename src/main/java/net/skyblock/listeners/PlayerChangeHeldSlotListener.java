@@ -1,5 +1,6 @@
 package net.skyblock.listeners;
 
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerChangeHeldSlotEvent;
 import net.skyblock.player.ItemSlot;
@@ -34,7 +35,11 @@ public class PlayerChangeHeldSlotListener implements EventListener<PlayerChangeH
     @Override
     public @NotNull Result run(@NotNull PlayerChangeHeldSlotEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-        player.getStatsManager().update(ItemSlot.MAIN_HAND);
+
+        MinecraftServer.getSchedulerManager().scheduleNextTick(() -> {
+            player.getStatsManager().update(ItemSlot.MAIN_HAND);
+        });
+
         return Result.SUCCESS;
     }
 }

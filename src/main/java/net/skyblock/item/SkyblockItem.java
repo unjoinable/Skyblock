@@ -46,6 +46,7 @@ public record SkyblockItem(String itemId, ComponentContainer components) {
         private ItemCategory category;
         private StatProfile statistics;
         private String skin; // Used for head textures
+        private String color; //Used for leather armor color
 
         private ComponentContainer container = new ComponentContainer();
         private List<net.kyori.adventure.text.Component> description;
@@ -81,6 +82,10 @@ public record SkyblockItem(String itemId, ComponentContainer components) {
 
             if (skin != null) {
                 container = container.with(new HeadTextureComponent(skin));
+            }
+
+            if (color != null) {
+                container = container.with(new ArmorColorComponent(color));
             }
 
             return new SkyblockItem(id, container);

@@ -23,8 +23,8 @@ import java.util.Optional;
  * includes the rarity level and whether the rarity has been upgraded.
  */
 public final class RarityComponent implements LoreComponent, SerializableComponent, DeserializableComponent {
-    private static final Tag<String> RARITY = Tag.String("rarity").defaultValue(Rarity.UNOBTAINABLE.name());
-    private static final Tag<Boolean> IS_UPGRADED = Tag.Boolean("is_upgraded").defaultValue(false);
+    private static final Tag<String> RARITY = Tag.String("rarity");
+    private static final Tag<Boolean> IS_UPGRADED = Tag.Boolean("is_upgraded");
     private final Rarity rarity;
     private final boolean isUpgraded;
     private final ComponentResolver componentResolver;
