@@ -1,0 +1,119 @@
+package net.skyblock.player;
+
+import net.skyblock.item.SkyblockItem;
+import net.skyblock.item.component.components.StatsComponent;
+import net.skyblock.stats.StatProfile;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Manages and calculates player stats from equipped items.
+ * Provides efficient caching and targeted slot updates to minimize performance impact.
+ * Uses a unified equipment slot system that covers both vanilla and custom slots.
+ */
+public class PlayerStatsManager {
+    private final SkyblockPlayer player;
+    private final StatProfile baseStats; // Base stats (from player level, skills, etc.)
+    private final Map<ItemSlot, StatProfile> itemStats; // All equipment stats
+    private StatProfile cachedCombinedProfile; // Combined cached profile (all sources)
+    private boolean isDirty;
+
+    /**
+     * Creates a new stats manager for the specified player.
+     *
+     * @param player The player whose stats are being managed
+     */
+    public PlayerStatsManager(@NotNull SkyblockPlayer player) {
+        this.player = player;
+        this.baseStats = new StatProfile(true);
+
+        // Initialize all slot stats
+        this.itemStats = new EnumMap<>(ItemSlot.class);
+        for (ItemSlot slot : ItemSlot.values()) {
+            itemStats.put(slot, new StatProfile());
+        }
+
+        this.cachedCombinedProfile = new StatProfile();
+        this.isDirty = true;
+
+        // Initial calculation of all equipment stats
+        recalculateAll();
+    }
+
+    /**
+     * Gets the complete stat profile for the player, combining base stats and all equipment.
+     * Uses cached values when available for better performance.
+     *
+     * @return The complete player stat profile
+     */
+    @NotNull
+    public StatProfile getStatProfile() {
+        if (isDirty) {
+            rebuildCachedProfile();
+        }
+        return cachedCombinedProfile;
+    }
+
+    /**
+     * Updates stats for a specific item slot (unified system).
+     *
+     * @param slot The item slot that changed
+     */
+    public void update(@NotNull ItemSlot slot) {
+        SkyblockItem item = slot.getItem(player);
+        StatProfile profile = new StatProfile();
+
+        if (item != null && item.components() != null) {
+            Optional<StatsComponent> statsComponent = item.get(StatsComponent.class);
+            if (statsComponent.isPresent()) {
+                profile = statsComponent.get().calculateFinalStats(item.components()).copy();
+            }
+        }
+
+        itemStats.put(slot, profile);
+        isDirty = true;
+    }
+
+    /**
+     * Recalculates stats for all equipment slots.
+     * This is more expensive than targeted updates but useful for initialization
+     * or when multiple pieces of equipment change at once.
+     */
+    public void recalculateAll() {
+        for (ItemSlot slot : ItemSlot.values()) {
+            update(slot);
+        }
+
+        isDirty = true;
+    }
+
+    /**
+     * Updates the base stats (non-equipment stats) for the player.
+     * These could come from skills, levels, etc.
+     *
+     * @param newBaseStats The new base stats to use
+     */
+    public void updateBaseStats(@NotNull StatProfile newBaseStats) {
+        this.baseStats.combineWith(newBaseStats);
+        isDirty = true;
+    }
+
+    /**
+     * Rebuilds the cached combined profile from all stat sources.
+     * Optimized to efficiently combine all stat sources.
+     */
+    private void rebuildCachedProfile() {
+        StatProfile combined = baseStats.copy();
+
+        // Add stats from all equipment slots
+        for (StatProfile slotStats : this.itemStats.values()) {
+            combined.combineWith(slotStats);
+        }
+
+        this.cachedCombinedProfile = combined;
+        this.isDirty = false;
+    }
+}
