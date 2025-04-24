@@ -33,7 +33,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     private static final List<SkyblockEntity> activeMobs = new ArrayList<>();
     private int level = 0;
     private StatProfile statProfile;
-    private double currentHealth;
+    private float currentHealth;
     private boolean isInvulnerable = false;
 
     /**
@@ -44,7 +44,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     protected SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType);
         this.statProfile = new StatProfile(false); // Initialize empty profile
-        this.currentHealth = 0; // Will be set during spawn based on max health
+        this.currentHealth = 0f; // Will be set during spawn based on max health
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
 
         // Set movement speed based on stats
         float speedStat = getStatProfile().get(Statistic.SPEED);
-        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((speedStat / 1000) * 2.5);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((speedStat / 1000f) * 2.5f);
 
         // Set custom name and visibility settings
         set(DataComponents.CUSTOM_NAME, displayName());
@@ -137,17 +137,17 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public double getCurrentHealth() {
+    public float getCurrentHealth() {
         return currentHealth;
     }
 
     @Override
-    public void setCurrentHealth(double health) {
-        if (health <= 0) {
-            currentHealth = 0;
+    public void setCurrentHealth(float health) {
+        if (health <= 0f) {
+            currentHealth = 0f;
             kill();
         } else {
-            double maxHealth = getMaxHealth();
+            float maxHealth = getMaxHealth();
             this.currentHealth = Math.min(health, maxHealth); // Cap at max health
 
             // Update display name to show new health
@@ -156,7 +156,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public double getMaxHealth() {
+    public float getMaxHealth() {
         return getStatProfile().get(Statistic.HEALTH);
     }
 
@@ -173,7 +173,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     @Override
     public void attack(CombatEntity target, DamageReason reason) {
         // Calculate damage based on stats
-        double absoluteDamage = calculateAbsoluteDamage();
+        float absoluteDamage = calculateAbsoluteDamage();
 
         boolean isMagic = reason == DamageReason.MAGIC;
 
@@ -204,8 +204,8 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         }
 
         // Calculate actual damage after defense
-        double absoluteDamage = damage.damage();
-        double damageTaken = applyDefenseReduction(absoluteDamage);
+        float absoluteDamage = (float) damage.damage();
+        float damageTaken = applyDefenseReduction(absoluteDamage);
 
         // Spawn damage indicator
         spawnDamageIndicator(damageTaken, damage.isCriticalDamage());
@@ -223,12 +223,12 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
      *
      * @return the calculated damage value
      */
-    public double calculateAbsoluteDamage() {
+    public float calculateAbsoluteDamage() {
         StatProfile stats = getStatProfile();
-        double baseDamage = stats.get(Statistic.DAMAGE);
-        double strength = stats.get(Statistic.STRENGTH);
+        float baseDamage = stats.get(Statistic.DAMAGE);
+        float strength = stats.get(Statistic.STRENGTH);
 
-        return (5 + baseDamage) * (1 + strength / 100);
+        return (5f + baseDamage) * (1f + strength / 100f);
     }
 
     /**
@@ -237,9 +237,9 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
      * @param damage the incoming damage amount
      * @return the amount of damage after defense reduction
      */
-    public double applyDefenseReduction(double damage) {
-        double defense = getStatProfile().get(Statistic.DEFENSE);
-        return damage * (1 - (defense / (defense + 100)));
+    public float applyDefenseReduction(float damage) {
+        float defense = getStatProfile().get(Statistic.DEFENSE);
+        return damage * (1f - (defense / (defense + 100f)));
     }
 
     @Override
@@ -248,24 +248,24 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         Pos entityPos = getPosition();
         Pos sourcePos = source.getPosition();
 
-        double xDiff = entityPos.x() - sourcePos.x();
-        double zDiff = entityPos.z() - sourcePos.z();
-        double distance = Math.sqrt(xDiff * xDiff + zDiff * zDiff);
+        float xDiff = (float) (entityPos.x() - sourcePos.x());
+        float zDiff = (float) (entityPos.z() - sourcePos.z());
+        float distance = (float) Math.sqrt(xDiff * xDiff + zDiff * zDiff);
 
         if (distance > 0) {
             // Calculate knockback strength (can be modified based on stats)
-            double strength = 0.4;
+            float strength = 0.4f;
 
             // Normalize and apply knockback
             xDiff = xDiff / distance * strength;
             zDiff = zDiff / distance * strength;
 
-            setVelocity(getVelocity().add(xDiff, 0.4, zDiff));
+            setVelocity(getVelocity().add(xDiff, 0.4f, zDiff));
         }
     }
 
     @Override
-    public void spawnDamageIndicator(double damage, boolean isCritical) {
+    public void spawnDamageIndicator(float damage, boolean isCritical) {
         // Commented implementation for when DamageIndicator is available
         // new DamageIndicator(damage, isCritical).spawn(getPosition(), getInstance());
     }

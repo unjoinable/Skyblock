@@ -1,7 +1,11 @@
 package net.skyblock.registry;
 
+import net.minestom.server.MinecraftServer;
+import net.skyblock.Skyblock;
 import net.skyblock.item.SkyblockItem;
 import net.skyblock.item.SkyblockItemLoader;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A registry responsible for storing and retrieving {@link SkyblockItem}s.
@@ -16,19 +20,31 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
      */
     @Override
     public void init() {
-        try {
-            // Use the dedicated loader class to load items
+        final long startTime = System.nanoTime(); // Benchmark start
+
+        CompletableFuture.supplyAsync(() -> {
             SkyblockItemLoader loader = new SkyblockItemLoader();
-            var items = loader.loadItems();
+            try {
+                return loader.loadItems();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load Skyblock items", e);
+            }
+        }).thenAccept(items -> {
+            Skyblock.getLogger().info("Successfully loaded {} items", items.size());
 
-            System.out.println("Successfully loaded " + items.size() + " items");
-            registerItems(items);
-
-        } catch (Exception e) {
-            System.err.println("Critical error during item registration: " + e.getMessage());
-            throw new RuntimeException("Failed to load and register Skyblock items", e);
-        }
+            // Run registration on the main thread
+            MinecraftServer.getSchedulerManager().buildTask(() -> {
+                registerItems(items);
+                long endTime = System.nanoTime();
+                long durationMs = (endTime - startTime) / 1_000_000;
+                Skyblock.getLogger().info("ItemRegistry initialization completed in {} ms", durationMs);
+            }).schedule();
+        }).exceptionally(ex -> {
+            Skyblock.getLogger().error("Critical error during item registration", ex);
+            return null;
+        });
     }
+
 
     /**
      * Attempts to register each item from the list of items.
@@ -50,6 +66,6 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
             }
         }
 
-        System.out.println("Item registration complete — Success: " + successCount + ", Failed: " + failureCount);
+        Skyblock.getLogger().info("Item registration complete — Success: {}, Failed: {}", successCount, failureCount);
     }
 }

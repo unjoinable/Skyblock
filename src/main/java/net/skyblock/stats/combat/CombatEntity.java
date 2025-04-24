@@ -31,21 +31,21 @@ public interface CombatEntity {
      *
      * @return current health value
      */
-    double getCurrentHealth();
+    float getCurrentHealth();
 
     /**
      * Sets the current health of the entity
      *
      * @param health the new health value
      */
-    void setCurrentHealth(double health);
+    void setCurrentHealth(float health);
 
     /**
      * Gets the maximum possible health of the entity
      *
      * @return maximum health value
      */
-    double getMaxHealth();
+    float getMaxHealth();
 
     /**
      * Gets the current instance the entity is in
@@ -103,7 +103,7 @@ public interface CombatEntity {
      * @param damage the amount of damage to display
      * @param isCritical whether the damage was a critical hit
      */
-    void spawnDamageIndicator(double damage, boolean isCritical);
+    void spawnDamageIndicator(float damage, boolean isCritical);
 
     /**
      * Convenience method to perform a melee attack on a target
@@ -129,10 +129,10 @@ public interface CombatEntity {
      *
      * @return the calculated damage value
      */
-    default double calculateAbsoluteDamage() {
+    default float calculateAbsoluteDamage() {
         StatProfile stats = getStatProfile();
-        double baseDamage = stats.get(Statistic.DAMAGE);
-        double strength = stats.get(Statistic.STRENGTH);
+        float baseDamage = stats.get(Statistic.DAMAGE);
+        float strength = stats.get(Statistic.STRENGTH);
 
         return (5 + baseDamage) * (1 + strength / 100);
     }
@@ -143,8 +143,8 @@ public interface CombatEntity {
      * @param damage the incoming damage amount
      * @return the amount of damage after defense reduction
      */
-    default double applyDefenseReduction(double damage) {
-        double defense = getStatProfile().get(Statistic.DEFENSE);
+    default float applyDefenseReduction(float damage) {
+        float defense = getStatProfile().get(Statistic.DEFENSE);
         return damage * (1 - (defense / (defense + 100)));
     }
 

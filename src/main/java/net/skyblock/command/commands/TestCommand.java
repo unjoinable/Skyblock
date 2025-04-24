@@ -4,11 +4,8 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.tag.Tag;
 import net.skyblock.command.SkyblockCommand;
-import net.skyblock.item.component.components.ArtOfPeaceComponent;
 import net.skyblock.player.SkyblockPlayer;
 import net.skyblock.player.rank.PlayerRank;
-import net.skyblock.stats.StatProfile;
-import net.skyblock.stats.Statistic;
 
 /**
  * A basic test command used for verifying the command framework.
