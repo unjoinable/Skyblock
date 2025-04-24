@@ -54,7 +54,9 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
 
         // Systems
         this.actionBar = new SkyblockPlayerActionBar(this);
+    }
 
+    public void initTaskLoop() {
         MinecraftServer.getSchedulerManager().scheduleTask(() -> {
             taskLoop();
         }, TaskSchedule.tick(4), TaskSchedule.tick(4));
