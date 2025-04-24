@@ -43,3 +43,5 @@ bin/
 /run/hub/
 '.idea' 
 .idea
+/src/main/resources/skyblock_items.json
+/src/main/resources/

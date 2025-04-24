@@ -1,55 +1,27 @@
 package net.skyblock.registry;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import net.kyori.adventure.text.Component;
-import net.minestom.server.item.Material;
 import net.skyblock.item.SkyblockItem;
-import net.skyblock.item.component.adapters.*;
-import net.skyblock.item.enums.ItemCategory;
-import net.skyblock.item.enums.Rarity;
-import net.skyblock.stats.StatProfile;
-
-import java.io.File;
-import java.io.FileReader;
-import java.lang.reflect.Type;
-import java.util.List;
+import net.skyblock.item.SkyblockItemLoader;
 
 /**
- * A registry responsible for loading and registering {@link SkyblockItem}s
- * from a JSON file during application startup.
+ * A registry responsible for storing and retrieving {@link SkyblockItem}s.
+ * This registry follows the Single Responsibility Principle by focusing only
+ * on registration and lookup functionality.
  */
 public class ItemRegistry extends Registry<String, SkyblockItem> {
 
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(StatProfile.class, new StatProfileAdapter())
-            .registerTypeAdapter(Rarity.class, new RarityAdapter())
-            .registerTypeAdapter(ItemCategory.class, new ItemCategoryAdapter())
-            .registerTypeAdapter(Material.class, new MaterialAdapter())
-            .registerTypeAdapter(Component.class, new ComponentAdapter())
-            .registerTypeAdapter(SkyblockItem.class, new SkyblockItemAdapter())
-            .create();
-
-    private static final File ITEM_FILE = new File("skyblock_items.json");
-
     /**
-     * Initializes the item registry by loading and registering all Skyblock items
-     * defined in the {@code skyblock_items.json} file.
-     *
-     * @throws RuntimeException if the file is missing, malformed, or if item registration fails.
+     * Initializes the item registry by loading items from the JSON file
+     * and registering them.
      */
     @Override
     public void init() {
-        validateFileExists();
+        try {
+            // Use the dedicated loader class to load items
+            SkyblockItemLoader loader = new SkyblockItemLoader();
+            var items = loader.loadItems();
 
-        System.out.println("Loading items from: " + ITEM_FILE.getAbsolutePath());
-
-        try (FileReader reader = new FileReader(ITEM_FILE)) {
-            System.out.println("Parsing JSON...");
-            List<SkyblockItem> items = parseItemsFromJson(reader);
-
-            System.out.println("Successfully parsed " + items.size() + " items");
+            System.out.println("Successfully loaded " + items.size() + " items");
             registerItems(items);
 
         } catch (Exception e) {
@@ -59,40 +31,11 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
     }
 
     /**
-     * Validates that the JSON file exists before parsing.
+     * Attempts to register each item from the list of items.
      *
-     * @throws RuntimeException if the file does not exist.
+     * @param items A list of {@link SkyblockItem} objects to register.
      */
-    private void validateFileExists() {
-        if (!ITEM_FILE.exists()) {
-            throw new RuntimeException("Items file not found at: " + ITEM_FILE.getAbsolutePath());
-        }
-    }
-
-    /**
-     * Parses the list of item builders from JSON.
-     *
-     * @param reader A reader for the item JSON file.
-     * @return A list of {@link SkyblockItem} instances.
-     * @throws RuntimeException if parsing fails.
-     */
-    private List<SkyblockItem> parseItemsFromJson(FileReader reader)  {
-        Type listType = new TypeToken<List<SkyblockItem>>() {}.getType();
-        List<SkyblockItem> items = gson.fromJson(reader, listType);
-
-        if (items == null) {
-            throw new RuntimeException("Failed to parse items file — JSON is null");
-        }
-
-        return items;
-    }
-
-    /**
-     * Attempts to register each item from the list of item builders.
-     *
-     * @param items A list of {@link SkyblockItem} objects to build and register.
-     */
-    private void registerItems(List<SkyblockItem> items) {
+    private void registerItems(java.util.List<SkyblockItem> items) {
         int successCount = 0;
         int failureCount = 0;
 
