@@ -22,6 +22,19 @@ public enum PlayerRank {
     private final NamedTextColor color;
     private final Component componentPrefix;
 
+    /**
+     * Constructor for the enum constants to assign a prefix, color, and component prefix for each rank.
+     * <p>
+     * This constructor is used to initialize each player's rank with the following properties:
+     * - A string prefix that represents the rank name.
+     * - A color associated with the rank for display purposes.
+     * - A component-based prefix that can be used for in-game chat or other displays.
+     * </p>
+     *
+     * @param prefix The string prefix associated with the rank (e.g., "OWNER", "ADMIN").
+     * @param color The {@link NamedTextColor} associated with this rank for display purposes.
+     * @param componentPrefix The {@link Component} representation of the prefix, used for formatted display in the game.
+     */
     PlayerRank (String prefix, NamedTextColor color, Component componentPrefix) {
         this.prefix = prefix;
         this.color = color;

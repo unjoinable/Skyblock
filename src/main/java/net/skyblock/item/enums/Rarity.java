@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents the rarity tier of an item.
- *
- * @since 1.0.0
  */
 public enum Rarity {
     ADMIN(NamedTextColor.DARK_RED),
@@ -24,6 +22,15 @@ public enum Rarity {
 
     private final TextColor color;
 
+    /**
+     * Constructor for the enum constants to assign a color to each rarity tier.
+     * <p>
+     * This constructor associates a specific {@link TextColor} with each rarity tier, which determines the color
+     * that will be used for the item when displayed in-game.
+     * </p>
+     *
+     * @param color The {@link TextColor} associated with the rarity tier.
+     */
     Rarity(TextColor color) {
         this.color = color;
     }
@@ -32,7 +39,6 @@ public enum Rarity {
      * Returns the Adventure {@link TextColor} associated with this rarity.
      *
      * @return the rarity's color
-     * @since 1.0.0
      */
     public TextColor getColor() {
         return color;
@@ -43,7 +49,6 @@ public enum Rarity {
      *
      * @param string the name of the rarity (case-insensitive)
      * @return a valid Rarity, or {@link #UNOBTAINABLE} if not found or null
-     * @since 1.0.0
      */
     public static Rarity getRarity(@Nullable String string) {
         if (string == null) return UNOBTAINABLE;
@@ -56,7 +61,6 @@ public enum Rarity {
 
     /**
      * @return the next higher rarity tier, or this if it's already the highest
-     * @since 1.0.0
      */
     public Rarity upgrade() {
         return this.ordinal() > 0
@@ -66,7 +70,6 @@ public enum Rarity {
 
     /**
      * @return the next lower rarity tier, or this if it's already the lowest
-     * @since 1.0.0
      */
     public Rarity degrade() {
         int next = this.ordinal() + 1;

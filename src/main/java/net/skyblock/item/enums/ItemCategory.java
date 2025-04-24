@@ -60,10 +60,24 @@ public enum ItemCategory {
             ItemCategory.AXE
     );
 
+    /**
+     * Default constructor for enum values that do not require a custom name.
+     * <p>
+     * This constructor is used by enum constants such as HELMET, CHESTPLATE
+     * and others that do not provide a custom name and rely on the default enum name (e.g., "HELMET" or "SWORD").
+     */
     ItemCategory() {
         this.name = name().replace("_", "");
     }
 
+    /**
+     * Constructor for enum values that require a custom display name.
+     * <p>
+     * This constructor allows the enum constant to have a custom name, which is passed as an argument.
+     * For example, this could be used for item categories like NONE or others that require a custom string value.
+     *
+     * @param name The custom name to set for the enum constant.
+     */
     ItemCategory(String name) {
         this.name = name;
     }

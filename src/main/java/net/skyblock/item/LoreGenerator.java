@@ -17,9 +17,30 @@ public final class LoreGenerator {
 
     private final ComponentContainer container;
 
+    /**
+     * Constructor to create a LoreGenerator with a specific {@link ComponentContainer}.
+     * <p>
+     * This constructor allows you to create a LoreGenerator instance that can generate lore based on
+     * the provided container, which holds various components that might contribute lore.
+     * </p>
+     *
+     * @param container The {@link ComponentContainer} that holds the components used to generate lore.
+     */
+
     public LoreGenerator(@NotNull ComponentContainer container) {
         this.container = container;
     }
+
+    /**
+     * Constructor to create a LoreGenerator using a {@link SkyblockItem}.
+     * <p>
+     * This constructor creates a LoreGenerator instance based on the components of the provided
+     * {@link SkyblockItem}. The item’s components are passed to the container, which is then used to
+     * generate the lore.
+     * </p>
+     *
+     * @param item The {@link SkyblockItem} from which the components are extracted for lore generation.
+     */
 
     public LoreGenerator(@NotNull SkyblockItem item) {
         this(item.components());

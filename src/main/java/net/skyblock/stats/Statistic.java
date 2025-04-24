@@ -9,6 +9,19 @@ import java.util.List;
 
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
+/**
+ * Represents the different statistics in the game, each with specific properties
+ * such as display name, lore color, display color, symbol, base value, and cap value.
+ * <p>
+ * These statistics are used to represent various attributes a player or item can have,
+ * such as damage, health, speed, and other game-specific metrics. Each statistic can
+ * have a base value, some may be capped, and some can be represented as a percentage.
+ * </p>
+ *
+ * The enum contains both uncapped statistics (with a base value) and capped statistics
+ * (with a cap value), providing versatility in how they are displayed and processed.
+ * The statistics are used for in-game items, attributes, and gameplay mechanics.
+ */
 public enum Statistic {
     DAMAGE("Damage", RED, RED, false, "❁", 0),
     STRENGTH("Strength", RED, RED, false, "❁", 0),
@@ -72,7 +85,20 @@ public enum Statistic {
 
     private static final Collection<Statistic> VALUES = List.of(values());
 
-    // Constructor for uncapped stats
+    /**
+     * Constructor for uncapped statistics.
+     * <p>
+     * This constructor is used to create a statistic that does not have a cap on its value.
+     * The statistic will have a base value that represents its starting or default value.
+     * </p>
+     *
+     * @param displayName The name displayed for the statistic.
+     * @param loreColor The color used for the statistic in lore.
+     * @param displayColor The color used for the statistic's display.
+     * @param isPercentage Whether the statistic is represented as a percentage.
+     * @param symbol The symbol representing the statistic.
+     * @param baseValue The base value of the statistic (no cap).
+     */
     Statistic(@NotNull String displayName,
               @NotNull NamedTextColor loreColor,
               @NotNull NamedTextColor displayColor,
@@ -89,7 +115,22 @@ public enum Statistic {
         this.capValue = 0;
     }
 
-    // Constructor for capped stats
+    /**
+     * Constructor for capped statistics.
+     * <p>
+     * This constructor is used to create a statistic that has a cap on its value.
+     * The statistic will have a base value and a cap value, which represents the maximum
+     * allowable value for the statistic.
+     * </p>
+     *
+     * @param displayName The name displayed for the statistic.
+     * @param loreColor The color used for the statistic in lore.
+     * @param displayColor The color used for the statistic's display.
+     * @param isPercentage Whether the statistic is represented as a percentage.
+     * @param symbol The symbol representing the statistic.
+     * @param baseValue The base value of the statistic (before capping).
+     * @param capValue The maximum value the statistic can reach.
+     */
     Statistic(@NotNull String displayName,
               @NotNull NamedTextColor loreColor,
               @NotNull NamedTextColor displayColor,
