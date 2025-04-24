@@ -10,6 +10,7 @@ import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -43,7 +44,7 @@ public class SkyblockItemLoader {
      * Loads Skyblock items from the JSON file in the resources directory.
      *
      * @return A list of {@link SkyblockItem} instances
-     * @throws RuntimeException if the file is missing, malformed, or if parsing fails
+     * @throws IllegalStateException if the file is missing, malformed, or if parsing fails
      */
     public List<SkyblockItem> loadItems() {
         System.out.println("Loading items from: " + ITEM_FILE_PATH);
@@ -51,14 +52,14 @@ public class SkyblockItemLoader {
         // Load resource from classpath instead of file system
         InputStream inputStream = getClass().getResourceAsStream(ITEM_FILE_PATH);
         if (inputStream == null) {
-            throw new RuntimeException("Items file not found in resources: " + ITEM_FILE_PATH);
+            throw new IllegalStateException("Items file not found in resources: " + ITEM_FILE_PATH);
         }
 
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
             System.out.println("Parsing JSON...");
             return parseItemsFromJson(reader);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load Skyblock items from resources", e);
+            throw new IllegalStateException("Failed to load Skyblock items from resources", e);
         }
     }
 

@@ -1,5 +1,6 @@
 package net.skyblock.entity;
 
+import net.minestom.server.entity.attribute.Attribute;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
 import net.skyblock.stats.combat.CombatEntity;
@@ -95,7 +96,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
 
         // Set movement speed based on stats
         float speedStat = getStatProfile().get(Statistic.SPEED);
-        //getAttribute().setBaseValue((speedStat / 1000) * 2.5);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((speedStat / 1000) * 2.5);
 
         // Set custom name and visibility settings
         set(DataComponents.CUSTOM_NAME, displayName());
