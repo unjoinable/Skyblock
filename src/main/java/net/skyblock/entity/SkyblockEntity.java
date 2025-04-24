@@ -40,7 +40,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
      *
      * @param entityType the Minestom entity type
      */
-    public SkyblockEntity(@NotNull EntityType entityType) {
+    protected SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType);
         this.statProfile = new StatProfile(false); // Initialize empty profile
         this.currentHealth = 0; // Will be set during spawn based on max health

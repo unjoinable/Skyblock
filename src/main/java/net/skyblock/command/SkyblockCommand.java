@@ -20,7 +20,7 @@ public abstract class SkyblockCommand extends Command {
      * @param name    the primary name of the command
      * @param aliases alternative names for the command
      */
-    public SkyblockCommand(@NotNull String name, @Nullable String... aliases) {
+    protected SkyblockCommand(@NotNull String name, @Nullable String... aliases) {
         super(name, aliases);
         setCondition(new RankCondition(getRequiredRank()));
     }

@@ -25,6 +25,17 @@ public final class StatProfile {
     private final FloatArrayList cachedValues;
     private final BooleanArrayList isDirty;
 
+    /**
+     * Creates a new StatProfile instance with the option to initialize base stats.
+     * <p>
+     * This constructor initializes the various stat modifier arrays (base, additive, multiplicative, bonus)
+     * and sets up the dirty flags for all stats. If the {@code initBaseStats} parameter is {@code true},
+     * the base values for each stat will be set according to the values defined in the {@link Statistic} enum.
+     * Otherwise, the base values are initialized to 0, and the profile is empty.
+     *
+     * @param initBaseStats whether or not to initialize the base stats for each statistic from the {@link Statistic} enum.
+     *                      If {@code true}, base stats are set to their predefined values; otherwise, they are set to 0.
+     */
     public StatProfile(boolean initBaseStats) {
         this.base = new FloatArrayList(STAT_COUNT);
         this.additive = new FloatArrayList(STAT_COUNT);
@@ -50,6 +61,14 @@ public final class StatProfile {
         }
     }
 
+    /**
+     * Creates a new StatProfile instance without initializing base stats.
+     * <p>
+     * This constructor initializes the stat modifier arrays (base, additive, multiplicative, bonus)
+     * and dirty flags for each stat. The base stats are not initialized, meaning all base values are set to 0.
+     *
+     * This constructor can be useful when you don't want to apply the predefined base values immediately.
+     */
     public StatProfile() {
         this(false);
     }
