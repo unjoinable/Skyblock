@@ -2,9 +2,7 @@ package net.skyblock.item;
 
 import net.skyblock.item.component.Component;
 import net.skyblock.item.component.ComponentContainer;
-import com.github.unjoinable.skyblock.item.component.components.*;
 import net.skyblock.item.component.components.*;
-import skyblock.item.component.components.*;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;

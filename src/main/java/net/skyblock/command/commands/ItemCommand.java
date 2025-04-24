@@ -55,7 +55,7 @@ public class ItemCommand extends SkyblockCommand {
         SkyblockItem item = itemRegistry.get(itemId);
 
         if (item != null) {
-            player.getInventory().addItemStack(Skyblock.getProcessor().toItemStack(item));
+            player.getInventory().addItemStack(Skyblock.getInstance().getProcessor().toItemStack(item));
         }
     }
 }

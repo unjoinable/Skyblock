@@ -1,9 +1,7 @@
 package net.skyblock.registry;
 
 import net.skyblock.item.SkyblockItem;
-import com.github.unjoinable.skyblock.item.component.adapters.*;
 import net.skyblock.item.component.adapters.*;
-import skyblock.item.component.adapters.*;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;

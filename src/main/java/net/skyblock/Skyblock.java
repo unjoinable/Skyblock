@@ -28,25 +28,38 @@ import org.slf4j.LoggerFactory;
  * It serves as the entry point for the entire Skyblock server application.
  */
 public class Skyblock {
-    private static SkyblockItemProcessor processor;
-    private static InstanceContainer hubInstance;
-    private static final Logger logger = LoggerFactory.getLogger(Skyblock.class);
+    private static Skyblock instance;
+    private static Logger logger;
+    private final MinecraftServer server;
+    private final SkyblockItemProcessor processor;
+    private final InstanceContainer hubInstance;
 
     /**
      * Main entry point for the Skyblock server.
-     * Initializes the server, registers event listeners, loads registries,
-     * creates the hub world, and starts the server.
      *
      * @param args Command line arguments (unused)
      */
     public static void main(String[] args) {
-        MinecraftServer server = MinecraftServer.init();
+        Skyblock skyblock = new Skyblock();
+        logger = LoggerFactory.getLogger(Skyblock.class);
+        skyblock.start("0.0.0.0", 25565);
+    }
+
+    /**
+     * Constructs a new Skyblock server instance.
+     * Initializes the server, registers event listeners, loads registries,
+     * creates the hub world.
+     */
+    public Skyblock() {
+        instance = this;
+        this.server = MinecraftServer.init();
+
         MojangAuth.init();
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
 
         // Set up world instances
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
-        loadHub(instanceManager);
+        this.hubInstance = loadHub(instanceManager);
 
         // Register event listeners before registries to ensure proper registration order
         GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
@@ -54,20 +67,29 @@ public class Skyblock {
 
         // Initialize item and component registries
         initRegistries();
-        initProcesor();
+        this.processor = initProcessor();
 
         // Register commands
         CommandManager cmdManager = MinecraftServer.getCommandManager();
         registerCommands(cmdManager);
+    }
 
-        // Start the server on the default Minecraft port
-        server.start("0.0.0.0", 25565);
+    /**
+     * Starts the server on the specified address and port.
+     *
+     * @param address The address to bind to
+     * @param port The port to listen on
+     */
+    public void start(String address, int port) {
+        server.start(address, port);
     }
 
     /**
      * Registers all event listeners required for the Skyblock server.
+     *
+     * @param eventHandler The global event handler
      */
-    private static void registerListeners(GlobalEventHandler eventHandler) {
+    private void registerListeners(GlobalEventHandler eventHandler) {
         eventHandler.addListener(new AsyncPlayerConfigurationListener(hubInstance, new Pos(-2, 71, -68).withYaw(-180F)));
         ComponentContainer.addListener(new StatModifierSyncListener());
     }
@@ -77,20 +99,22 @@ public class Skyblock {
      * This includes the item registry and component registry which handle
      * custom items and their associated components/behaviors.
      */
-    private static void initRegistries() {
+    private void initRegistries() {
         //Registry.COMPONENT_REGISTRY.init();
         Registry.ITEM_REGISTRY.init();
-
     }
 
     /**
      * Registers all default components to processor
+     *
+     * @return The initialized SkyblockItemProcessor
      */
-    private static void initProcesor() {
-        processor = new SkyblockItemProcessor();
+    private SkyblockItemProcessor initProcessor() {
+        SkyblockItemProcessor processor = new SkyblockItemProcessor();
         processor.registerDeserializer(HotPotatoBookComponent::read);
         processor.registerDeserializer(RarityComponent::read);
         processor.registerDeserializer(ArtOfPeaceComponent::read);
+        return processor;
     }
 
     /**
@@ -98,17 +122,20 @@ public class Skyblock {
      * Uses an AnvilLoader to load chunk data from the "hub" directory.
      *
      * @param instanceManager The Minestom instance manager used to create world instances
+     * @return The created hub instance container
      */
-    private static void loadHub(InstanceManager instanceManager) {
-        hubInstance = instanceManager.createInstanceContainer();
+    private InstanceContainer loadHub(InstanceManager instanceManager) {
+        InstanceContainer hubInstance = instanceManager.createInstanceContainer();
         hubInstance.setChunkLoader(new AnvilLoader("hub"));
+        return hubInstance;
     }
 
     /**
      * Registers all the commands
+     *
      * @param cmdManager The Minestom command manager used to register commands.
      */
-    private static void registerCommands(CommandManager cmdManager) {
+    private void registerCommands(CommandManager cmdManager) {
         cmdManager.register(new ItemCommand());
         cmdManager.register(new TestCommand());
     }
@@ -122,12 +149,30 @@ public class Skyblock {
         return logger;
     }
 
-
     /**
-     * The instance of processor with default components registered
+     * Returns the item processor with default components registered
+     *
      * @return The Skyblock Item Processor
      */
-    public static SkyblockItemProcessor getProcessor() {
+    public SkyblockItemProcessor getProcessor() {
         return processor;
+    }
+
+    /**
+     * Returns the hub instance container
+     *
+     * @return The hub instance container
+     */
+    public InstanceContainer getHubInstance() {
+        return hubInstance;
+    }
+
+    /**
+     * Returns the skyblock instance
+     *
+     * @return The skyblock instance
+     */
+    public static Skyblock getInstance() {
+        return instance;
     }
 }

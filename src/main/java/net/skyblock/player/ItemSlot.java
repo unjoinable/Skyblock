@@ -12,12 +12,12 @@ import java.util.function.Function;
  * Each enum constant contains a function to retrieve the corresponding item for a player.
  */
 public enum ItemSlot {
-    HELMET(player -> Skyblock.getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.HELMET.armorSlot()))),
-    CHESTPLATE(player -> Skyblock.getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.CHESTPLATE.armorSlot()))),
-    LEGGINGS(player -> Skyblock.getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.LEGGINGS.armorSlot()))),
-    BOOTS(player -> Skyblock.getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.BOOTS.armorSlot()))),
+    HELMET(player -> Skyblock.getInstance().getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.HELMET.armorSlot()))),
+    CHESTPLATE(player -> Skyblock.getInstance().getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.CHESTPLATE.armorSlot()))),
+    LEGGINGS(player -> Skyblock.getInstance().getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.LEGGINGS.armorSlot()))),
+    BOOTS(player -> Skyblock.getInstance().getProcessor().toSkyblockItem(player.getInventory().getItemStack(EquipmentSlot.BOOTS.armorSlot()))),
 
-    MAIN_HAND(player -> Skyblock.getProcessor().toSkyblockItem(player.getItemInMainHand())),
+    MAIN_HAND(player -> Skyblock.getInstance().getProcessor().toSkyblockItem(player.getItemInMainHand())),
     ;
 
 
