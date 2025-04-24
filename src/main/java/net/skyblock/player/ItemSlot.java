@@ -1,8 +1,8 @@
 package net.skyblock.player;
 
+import net.minestom.server.entity.EquipmentSlot;
 import net.skyblock.Skyblock;
 import net.skyblock.item.SkyblockItem;
-import net.minestom.server.entity.EquipmentSlot;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;

@@ -7,8 +7,7 @@ import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.components.ArtOfPeaceComponent;
 import net.skyblock.item.component.components.HotPotatoBookComponent;
 import net.skyblock.item.component.components.RarityComponent;
-import net.skyblock.listeners.StatModifierSyncListener;
-import net.skyblock.listeners.AsyncPlayerConfigurationListener;
+import net.skyblock.listeners.*;
 import net.skyblock.player.SkyblockPlayer;
 import net.skyblock.registry.Registry;
 import net.minestom.server.MinecraftServer;
@@ -91,6 +90,9 @@ public class Skyblock {
      */
     private void registerListeners(GlobalEventHandler eventHandler) {
         eventHandler.addListener(new AsyncPlayerConfigurationListener(hubInstance, new Pos(-2, 71, -68).withYaw(-180F)));
+        eventHandler.addListener(new PlayerSwapItemListener());
+        eventHandler.addListener(new InventoryPreClickListener());
+        eventHandler.addListener(new PlayerChangeHeldSlotListener());
         ComponentContainer.addListener(new StatModifierSyncListener());
     }
 
@@ -156,15 +158,6 @@ public class Skyblock {
      */
     public SkyblockItemProcessor getProcessor() {
         return processor;
-    }
-
-    /**
-     * Returns the hub instance container
-     *
-     * @return The hub instance container
-     */
-    public InstanceContainer getHubInstance() {
-        return hubInstance;
     }
 
     /**

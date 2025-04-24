@@ -1,15 +1,15 @@
 package net.skyblock.registry;
 
-import net.skyblock.item.SkyblockItem;
-import net.skyblock.item.component.adapters.*;
-import net.skyblock.item.enums.ItemCategory;
-import net.skyblock.item.enums.Rarity;
-import net.skyblock.stats.StatProfile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.Material;
+import net.skyblock.item.SkyblockItem;
+import net.skyblock.item.component.adapters.*;
+import net.skyblock.item.enums.ItemCategory;
+import net.skyblock.item.enums.Rarity;
+import net.skyblock.stats.StatProfile;
 
 import java.io.File;
 import java.io.FileReader;
