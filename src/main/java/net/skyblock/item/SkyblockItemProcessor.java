@@ -1,5 +1,6 @@
 package net.skyblock.item;
 
+import net.skyblock.Skyblock;
 import net.skyblock.item.component.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.trait.DeserializableComponent;
@@ -64,7 +65,7 @@ public class SkyblockItemProcessor {
      * @return A SkyblockItem containing all deserialized components
      */
     public @NotNull SkyblockItem toSkyblockItem(@NotNull ItemStack itemStack) {
-        SkyblockItem item = Registry.ITEM_REGISTRY.get(itemStack.getTag(ID_TAG));
+        SkyblockItem item = Skyblock.getInstance().getItemRegistry().get(itemStack.getTag(ID_TAG));
         if (item == null) return SkyblockItem.AIR;
 
         ComponentContainer container = item.components();

@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * @param <K> The key type (e.g., String, NamespacedID)
  * @param <V> The value type (e.g., Component, SkyblockItem)
  */
-public abstract class Registry<K, V> implements Registries, Iterable<V> {
+public abstract class Registry<K, V> implements Iterable<V> {
     protected final Map<K, V> keyToValue = new ConcurrentHashMap<>();
     protected final Map<V, K> valueToKey = new ConcurrentHashMap<>();
     private boolean locked = false;

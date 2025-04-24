@@ -18,7 +18,7 @@ public class ItemCommand extends SkyblockCommand {
     public ItemCommand() {
         super("item");
         Argument<String> itemArg = ArgumentType.String("itemId")
-                .setSuggestionCallback((_, _, suggestion) -> Registry.ITEM_REGISTRY.iterator()
+                .setSuggestionCallback((_, _, suggestion) -> Skyblock.getInstance().getItemRegistry().iterator()
                         .forEachRemaining(item -> suggestion.addEntry(new SuggestionEntry(item.itemId()))));
         ArgumentEntity playerArg = ArgumentType.Entity("target").onlyPlayers(true).singleEntity(true);
 
@@ -51,7 +51,7 @@ public class ItemCommand extends SkyblockCommand {
     }
 
     private void giveItem(SkyblockPlayer player, String itemId) {
-        ItemRegistry itemRegistry = Registry.ITEM_REGISTRY;
+        ItemRegistry itemRegistry = Skyblock.getInstance().getItemRegistry();
         SkyblockItem item = itemRegistry.get(itemId);
 
         if (item != null) {

@@ -9,7 +9,7 @@ import net.skyblock.item.component.components.HotPotatoBookComponent;
 import net.skyblock.item.component.components.RarityComponent;
 import net.skyblock.listeners.*;
 import net.skyblock.player.SkyblockPlayer;
-import net.skyblock.registry.Registry;
+import net.skyblock.registry.ItemRegistry;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
@@ -32,6 +32,9 @@ public class Skyblock {
     private final MinecraftServer server;
     private final SkyblockItemProcessor processor;
     private final InstanceContainer hubInstance;
+
+    // Registries
+    private final ItemRegistry itemRegistry;
 
     /**
      * Main entry point for the Skyblock server.
@@ -65,6 +68,7 @@ public class Skyblock {
         registerListeners(eventHandler);
 
         // Initialize item and component registries
+        this.itemRegistry = new ItemRegistry();
         initRegistries();
         this.processor = initProcessor();
 
@@ -102,8 +106,7 @@ public class Skyblock {
      * custom items and their associated components/behaviors.
      */
     private void initRegistries() {
-        //Registry.COMPONENT_REGISTRY.init();
-        Registry.ITEM_REGISTRY.init();
+        itemRegistry.init();
     }
 
     /**
@@ -158,6 +161,15 @@ public class Skyblock {
      */
     public SkyblockItemProcessor getProcessor() {
         return processor;
+    }
+
+    /**
+     * Returns the item registry with default items registered
+     *
+     * @return The Item Registry
+     */
+    public ItemRegistry getItemRegistry() {
+        return itemRegistry;
     }
 
     /**
