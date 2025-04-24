@@ -5,7 +5,7 @@ plugins {
     id("java")
 }
 
-group = "io.github.unjoinable"
+group = "net.skyblock"
 version = "1.0-SNAPSHOT"
 var api = "https://api.github.com/repos/Minestom/Minestom/commits"
 var minestomVersion = getLatestCommitHash(api)
@@ -24,7 +24,8 @@ dependencies {
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.google.guava:guava:33.2.1-jre")
-    implementation("org.reflections:reflections:0.10.2")
+    //implementation("org.reflections:reflections:0.10.2")
+    //implementation("org.jheaps:jheaps:0.14")
 }
 
 //auto updater
