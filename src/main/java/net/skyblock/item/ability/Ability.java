@@ -1,7 +1,5 @@
 package net.skyblock.item.ability;
 
-import net.skyblock.stats.combat.DamageType;
-
 /**
  * Represents a single ability on an item
  */

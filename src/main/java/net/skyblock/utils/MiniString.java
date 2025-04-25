@@ -68,9 +68,13 @@ public final class MiniString {
                     .append("{value").append(valueIndex).append("}");
 
             Object value = values[valueIndex];
-            resolvers.add(value instanceof Component ?
-                    Placeholder.component("value" + valueIndex, (Component) value) :
-                    Placeholder.parsed("value" + valueIndex, value == null ? "" : String.valueOf(value)));
+
+            if (value instanceof Component component) {
+                resolvers.add(Placeholder.component("value" + valueIndex, component));
+            }
+
+            resolvers.add(Placeholder.parsed("value" + valueIndex, value == null ? "" : String.valueOf(value)));
+
 
             lastEnd = matcher.end();
             valueIndex++;
