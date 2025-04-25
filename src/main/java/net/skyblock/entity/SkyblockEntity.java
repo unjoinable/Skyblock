@@ -4,7 +4,7 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
 import net.skyblock.stats.combat.CombatEntity;
-import net.skyblock.stats.combat.DamageReason;
+import net.skyblock.stats.combat.DamageType;
 import net.skyblock.stats.combat.SkyblockDamage;
 import net.skyblock.utils.MiniString;
 import net.kyori.adventure.text.Component;
@@ -33,7 +33,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     private static final List<SkyblockEntity> activeMobs = new ArrayList<>();
     private int level = 0;
     private StatProfile statProfile;
-    private float currentHealth;
+    private double currentHealth;
     private boolean isInvulnerable = false;
 
     /**
@@ -44,7 +44,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     protected SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType);
         this.statProfile = new StatProfile(false); // Initialize empty profile
-        this.currentHealth = 0f; // Will be set during spawn based on max health
+        this.currentHealth = 0; // Will be set during spawn based on max health
     }
 
     /**
@@ -95,8 +95,8 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         this.currentHealth = getMaxHealth();
 
         // Set movement speed based on stats
-        float speedStat = getStatProfile().get(Statistic.SPEED);
-        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((speedStat / 1000f) * 2.5f);
+        double speedStat = getStatProfile().get(Statistic.SPEED);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((speedStat / 1000) * 2.5);
 
         // Set custom name and visibility settings
         set(DataComponents.CUSTOM_NAME, displayName());
@@ -137,17 +137,17 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public float getCurrentHealth() {
+    public double getCurrentHealth() {
         return currentHealth;
     }
 
     @Override
-    public void setCurrentHealth(float health) {
-        if (health <= 0f) {
-            currentHealth = 0f;
+    public void setCurrentHealth(double health) {
+        if (health <= 0) {
+            currentHealth = 0;
             kill();
         } else {
-            float maxHealth = getMaxHealth();
+            double maxHealth = getMaxHealth();
             this.currentHealth = Math.min(health, maxHealth); // Cap at max health
 
             // Update display name to show new health
@@ -156,7 +156,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public float getMaxHealth() {
+    public double getMaxHealth() {
         return getStatProfile().get(Statistic.HEALTH);
     }
 
@@ -171,44 +171,44 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public void attack(CombatEntity target, DamageReason reason) {
+    public void attack(CombatEntity target, DamageType damageType) {
+        if (target == null || target.isInvulnerable()) {
+            return;
+        }
+
         // Calculate damage based on stats
-        float absoluteDamage = calculateAbsoluteDamage();
+        double absoluteDamage = calculateAbsoluteDamage();
 
-        boolean isMagic = reason == DamageReason.MAGIC;
-
-        // Create damage object using the builder for the new record class
+        // Create damage object using the builder pattern
         SkyblockDamage damage = SkyblockDamage.builder()
-                .projectile(reason == DamageReason.PROJECTILE)
-                .magic(isMagic)
-                .damage(absoluteDamage)
-                .critical(false) // Entities don't crit by default, can be overridden in subclasses
-                .reason(reason)
-                .source(this)
-                .target(target)
+                .rawDamage(absoluteDamage)
+                .criticalHit(false) // Entities don't crit by default, can be overridden in subclasses
+                .damageType(damageType)
+                .sourceEntity(this)
+                .targetEntity(target)
                 .build();
 
         // Apply damage to target
         target.damage(damage);
 
         // Apply knockback if melee
-        if (reason == DamageReason.MELEE) {
+        if (damageType == DamageType.MELEE) {
             target.applyKnockback(this.getEntity());
         }
     }
 
     @Override
     public void damage(SkyblockDamage damage) {
-        if (isInvulnerable()) {
+        if (isInvulnerable() || isDead()) {
             return;
         }
 
         // Calculate actual damage after defense
-        float absoluteDamage = (float) damage.damage();
-        float damageTaken = applyDefenseReduction(absoluteDamage);
+        double rawDamage = damage.getRawDamage();
+        double damageTaken = applyDefenseReduction(rawDamage, damage.getDamageType());
 
         // Spawn damage indicator
-        spawnDamageIndicator(damageTaken, damage.isCriticalDamage());
+        spawnDamageIndicator(damageTaken, damage.isCriticalHit());
 
         // Apply damage to health
         setCurrentHealth(getCurrentHealth() - damageTaken);
@@ -223,56 +223,64 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
      *
      * @return the calculated damage value
      */
-    public float calculateAbsoluteDamage() {
+    protected double calculateAbsoluteDamage() {
         StatProfile stats = getStatProfile();
-        float baseDamage = stats.get(Statistic.DAMAGE);
-        float strength = stats.get(Statistic.STRENGTH);
+        double baseDamage = stats.get(Statistic.DAMAGE);
+        double strength = stats.get(Statistic.STRENGTH);
 
-        return (5f + baseDamage) * (1f + strength / 100f);
+        return (5.0 + baseDamage) * (1.0 + strength / 100.0);
     }
 
     /**
      * Calculates the damage reduction from defense
      *
      * @param damage the incoming damage amount
+     * @param damageType the type of damage being dealt
      * @return the amount of damage after defense reduction
      */
-    public float applyDefenseReduction(float damage) {
-        float defense = getStatProfile().get(Statistic.DEFENSE);
-        return damage * (1f - (defense / (defense + 100f)));
+    protected double applyDefenseReduction(double damage, DamageType damageType) {
+        // If damage type bypasses defense, return full damage
+        if (damageType.bypassesDefense()) {
+            return damage;
+        }
+
+        double defense = getStatProfile().get(Statistic.DEFENSE);
+        return damage * (1.0 - (defense / (defense + 100.0)));
     }
 
     @Override
     public void applyKnockback(Entity source) {
-        // Default knockback implementation
-        Pos entityPos = getPosition();
+        if (source == null) return;
+
+        // Calculate knockback direction
         Pos sourcePos = source.getPosition();
+        Pos myPos = getPosition();
 
-        float xDiff = (float) (entityPos.x() - sourcePos.x());
-        float zDiff = (float) (entityPos.z() - sourcePos.z());
-        float distance = (float) Math.sqrt(xDiff * xDiff + zDiff * zDiff);
+        // Get direction vector from source to this entity
+        double dx = myPos.x() - sourcePos.x();
+        double dz = myPos.z() - sourcePos.z();
 
-        if (distance > 0) {
-            // Calculate knockback strength (can be modified based on stats)
-            float strength = 0.4f;
+        // Normalize and apply knockback strength
+        double length = Math.sqrt(dx * dx + dz * dz);
+        if (length > 0) {
+            double knockbackStrength = 0.4; // Base knockback strength
+            dx = dx / length * knockbackStrength;
+            dz = dz / length * knockbackStrength;
 
-            // Normalize and apply knockback
-            xDiff = xDiff / distance * strength;
-            zDiff = zDiff / distance * strength;
-
-            setVelocity(getVelocity().add(xDiff, 0.4f, zDiff));
+            // Apply velocity
+            setVelocity(getVelocity().add(dx, 0.4, dz)); // 0.4 is upward knockback
         }
     }
 
     @Override
-    public void spawnDamageIndicator(float damage, boolean isCritical) {
-        // Commented implementation for when DamageIndicator is available
-        // new DamageIndicator(damage, isCritical).spawn(getPosition(), getInstance());
+    public void spawnDamageIndicator(double damage, boolean isCritical) {
+        // Implementation depends on your DamageIndicator system
+        // Can be implemented when DamageIndicator class is available
     }
 
     @Override
     public void kill() {
-        // Remove from active mobs and destroy entity
+        // Remove from active mobs list and destroy entity
         activeMobs.remove(this);
         remove();
 
@@ -320,7 +328,9 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
 
     @Override
     public void setCustomName(@Nullable Component customName) {
-        set(DataComponents.CUSTOM_NAME, customName);
+        if (customName != null) {
+            set(DataComponents.CUSTOM_NAME, customName);
+        }
     }
 
     @Override

@@ -1,14 +1,14 @@
 package net.skyblock.stats;
 
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
-import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 
 /**
  * Ultimate optimized stat system
  */
 public final class StatProfile {
     private static final int STAT_COUNT = Statistic.values().length;
-    private static final float[] STAT_CAPS = new float[STAT_COUNT];
+    private static final double[] STAT_CAPS = new double[STAT_COUNT];
 
     static {
         for (Statistic stat : Statistic.values()) {
@@ -18,11 +18,11 @@ public final class StatProfile {
         }
     }
 
-    private final FloatArrayList base;
-    private final FloatArrayList additive;
-    private final FloatArrayList multiplicative;
-    private final FloatArrayList bonus;
-    private final FloatArrayList cachedValues;
+    private final DoubleArrayList base;
+    private final DoubleArrayList additive;
+    private final DoubleArrayList multiplicative;
+    private final DoubleArrayList bonus;
+    private final DoubleArrayList cachedValues;
     private final BooleanArrayList isDirty;
 
     /**
@@ -37,20 +37,20 @@ public final class StatProfile {
      *                      If {@code true}, base stats are set to their predefined values; otherwise, they are set to 0.
      */
     public StatProfile(boolean initBaseStats) {
-        this.base = new FloatArrayList(STAT_COUNT);
-        this.additive = new FloatArrayList(STAT_COUNT);
-        this.multiplicative = new FloatArrayList(STAT_COUNT);
-        this.bonus = new FloatArrayList(STAT_COUNT);
-        this.cachedValues = new FloatArrayList(STAT_COUNT);
+        this.base = new DoubleArrayList(STAT_COUNT);
+        this.additive = new DoubleArrayList(STAT_COUNT);
+        this.multiplicative = new DoubleArrayList(STAT_COUNT);
+        this.bonus = new DoubleArrayList(STAT_COUNT);
+        this.cachedValues = new DoubleArrayList(STAT_COUNT);
         this.isDirty = new BooleanArrayList(STAT_COUNT);
 
         // Initialize all arrays
         for (int i = 0; i < STAT_COUNT; i++) {
-            base.add(0f);
-            additive.add(0f);
-            multiplicative.add(1f); // Multiplicative identity
-            bonus.add(0f);
-            cachedValues.add(0f);
+            base.add(0.0);
+            additive.add(0.0);
+            multiplicative.add(1.0); // Multiplicative identity
+            bonus.add(0.0);
+            cachedValues.add(0.0);
             isDirty.add(true);
         }
 
@@ -77,13 +77,13 @@ public final class StatProfile {
      * Gets the current value of a stat with all modifiers applied.
      * Formula: (base * (1 + additive) * multiplicative) + bonus
      */
-    public float get(Statistic stat) {
+    public double get(Statistic stat) {
         int id = stat.ordinal();
         if (!isDirty.getBoolean(id)) {
-            return cachedValues.getFloat(id);
+            return cachedValues.getDouble(id);
         }
 
-        float value = calculateStatValue(id);
+        double value = calculateStatValue(id);
         cachedValues.set(id, value);
         isDirty.set(id, false);
         return value;
@@ -94,13 +94,13 @@ public final class StatProfile {
      * @param type Stat modifier type (BASE/ADDITIVE/MULTIPLICATIVE/BONUS)
      * @param amount Value to add (positive or negative)
      */
-    public void addStat(Statistic stat, StatValueType type, float amount) {
+    public void addStat(Statistic stat, StatValueType type, double amount) {
         int id = stat.ordinal();
         switch (type) {
-            case BASE -> base.set(id, base.getFloat(id) + amount);
-            case ADDITIVE -> additive.set(id, additive.getFloat(id) + amount);
-            case MULTIPLICATIVE -> multiplicative.set(id, multiplicative.getFloat(id) * (1 + amount));
-            case BONUS -> bonus.set(id, bonus.getFloat(id) + amount);
+            case BASE -> base.set(id, base.getDouble(id) + amount);
+            case ADDITIVE -> additive.set(id, additive.getDouble(id) + amount);
+            case MULTIPLICATIVE -> multiplicative.set(id, multiplicative.getDouble(id) * (1 + amount));
+            case BONUS -> bonus.set(id, bonus.getDouble(id) + amount);
         }
         isDirty.set(id, true);
     }
@@ -110,7 +110,7 @@ public final class StatProfile {
      * @param type Stat modifier type (BASE/ADDITIVE/MULTIPLICATIVE/BONUS)
      * @param amount Value to remove (positive or negative)
      */
-    public void removeStat(Statistic stat, StatValueType type, float amount) {
+    public void removeStat(Statistic stat, StatValueType type, double amount) {
         addStat(stat, type, -amount);
     }
 
@@ -122,10 +122,10 @@ public final class StatProfile {
     public void combineWith(StatProfile other) {
         for (Statistic stat : Statistic.values()) {
             int i = stat.ordinal();
-            base.set(i, base.getFloat(i) + other.base.getFloat(i));
-            additive.set(i, additive.getFloat(i) + other.additive.getFloat(i));
-            multiplicative.set(i, multiplicative.getFloat(i) * other.multiplicative.getFloat(i));
-            bonus.set(i, bonus.getFloat(i) + other.bonus.getFloat(i));
+            base.set(i, base.getDouble(i) + other.base.getDouble(i));
+            additive.set(i, additive.getDouble(i) + other.additive.getDouble(i));
+            multiplicative.set(i, multiplicative.getDouble(i) * other.multiplicative.getDouble(i));
+            bonus.set(i, bonus.getDouble(i) + other.bonus.getDouble(i));
             isDirty.set(i, true);
         }
     }
@@ -147,19 +147,19 @@ public final class StatProfile {
         StatProfile copy = new StatProfile(false);
         for (Statistic stat : Statistic.values()) {
             int i = stat.ordinal();
-            copy.base.set(i, base.getFloat(i));
-            copy.additive.set(i, additive.getFloat(i));
-            copy.multiplicative.set(i, multiplicative.getFloat(i));
-            copy.bonus.set(i, bonus.getFloat(i));
+            copy.base.set(i, base.getDouble(i));
+            copy.additive.set(i, additive.getDouble(i));
+            copy.multiplicative.set(i, multiplicative.getDouble(i));
+            copy.bonus.set(i, bonus.getDouble(i));
             copy.isDirty.set(i, true); // New copies should recalculate
         }
         return copy;
     }
 
-    private float calculateStatValue(int statId) {
-        float value = (base.getFloat(statId) * (1 + additive.getFloat(statId)))
-                * multiplicative.getFloat(statId)
-                + bonus.getFloat(statId);
+    private double calculateStatValue(int statId) {
+        double value = (base.getDouble(statId) * (1 + additive.getDouble(statId)))
+                * multiplicative.getDouble(statId)
+                + bonus.getDouble(statId);
 
         Statistic stat = Statistic.values()[statId];
         return stat.isCapped() ? Math.min(value, STAT_CAPS[statId]) : value;
@@ -170,11 +170,11 @@ public final class StatProfile {
         StringBuilder sb = new StringBuilder("StatProfile {\n");
         for (Statistic stat : Statistic.values()) {
             int id = stat.ordinal();
-            float baseVal = base.getFloat(id);
-            float addVal = additive.getFloat(id);
-            float multiVal = multiplicative.getFloat(id);
-            float bonusVal = bonus.getFloat(id);
-            float finalVal = get(stat);
+            double baseVal = base.getDouble(id);
+            double addVal = additive.getDouble(id);
+            double multiVal = multiplicative.getDouble(id);
+            double bonusVal = bonus.getDouble(id);
+            double finalVal = get(stat);
             sb.append(String.format("  %s -> base=%.2f, additive=%.2f, multiplicative=%.2f, bonus=%.2f, final=%.2f%n",
                     stat.name(), baseVal, addVal, multiVal, bonusVal, finalVal));
         }

@@ -2,12 +2,13 @@ package net.skyblock.player;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.TaskSchedule;
+import net.skyblock.item.SkyblockItem;
 import net.skyblock.player.rank.PlayerRank;
 import net.skyblock.stats.StatHolder;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
 import net.skyblock.stats.combat.CombatEntity;
-import net.skyblock.stats.combat.DamageReason;
+import net.skyblock.stats.combat.DamageType;
 import net.skyblock.stats.combat.SkyblockDamage;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
@@ -28,8 +29,8 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     private PlayerRank playerRank;
 
     // Combat-related fields
-    private float currentHealth;
-    private float currentMana;
+    private double currentHealth;
+    private double currentMana;
     private boolean invulnerable;
 
     // Systems
@@ -130,7 +131,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     public void regenerateHealth() {
         if (isDead()) return;
 
-        float regenAmount = statsManager.calculateHealthRegeneration();
+        double regenAmount = statsManager.calculateHealthRegeneration();
         setCurrentHealth(getCurrentHealth() + regenAmount);
     }
 
@@ -139,7 +140,9 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      * This should be called from a scheduled task.
      */
     public void regenerateMana() {
-        float regenAmount = statsManager.calculateManaRegeneration();
+        if (isDead()) return;
+
+        double regenAmount = statsManager.calculateManaRegeneration();
         setCurrentMana(getCurrentMana() + regenAmount);
     }
 
@@ -151,27 +154,27 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     }
 
     @Override
-    public float getCurrentHealth() {
+    public double getCurrentHealth() {
         return currentHealth;
     }
 
     @Override
-    public void setCurrentHealth(float health) {
-        float maxHealth = getMaxHealth();
-        this.currentHealth = Math.max(0f, Math.min(health, maxHealth));
+    public void setCurrentHealth(double health) {
+        double maxHealth = getMaxHealth();
+        this.currentHealth = Math.max(0.0, Math.min(health, maxHealth));
 
-        //TODO: Update client-side health display (using percentage since vanilla has different health scale)
-        float healthPercentage = this.currentHealth / maxHealth;
-        this.setHealth(healthPercentage * 20f); // Vanilla health is 20 hearts max
+        //TODO: Update client-side health display
+        double healthPercentage = this.currentHealth / maxHealth;
+        this.setHealth((float) (healthPercentage * 20.0)); // 40 hearts
 
         // If health drops to 0, trigger death
-        if (this.currentHealth <= 0f) {
+        if (this.currentHealth <= 0.0) {
             kill();
         }
     }
 
     @Override
-    public float getMaxHealth() {
+    public double getMaxHealth() {
         return getStatProfile().get(Statistic.HEALTH);
     }
 
@@ -180,7 +183,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      *
      * @return current mana value
      */
-    public float getCurrentMana() {
+    public double getCurrentMana() {
         return currentMana;
     }
 
@@ -189,11 +192,9 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      *
      * @param mana the new mana value
      */
-    public void setCurrentMana(float mana) {
-        float maxMana = getMaxMana();
-        this.currentMana = Math.max(0f, Math.min(mana, maxMana));
-
-        // TODO: Update client-side mana display (ActionBar)
+    public void setCurrentMana(double mana) {
+        double maxMana = getMaxMana();
+        this.currentMana = Math.max(0.0, Math.min(mana, maxMana));
     }
 
     /**
@@ -201,7 +202,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      *
      * @return maximum mana value
      */
-    public float getMaxMana() {
+    public double getMaxMana() {
         return getStatProfile().get(Statistic.INTELLIGENCE);
     }
 
@@ -211,7 +212,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      * @param amount the amount of mana to consume
      * @return true if enough mana was available and consumed; false otherwise
      */
-    public boolean consumeMana(float amount) {
+    public boolean consumeMana(double amount) {
         if (currentMana >= amount) {
             setCurrentMana(currentMana - amount);
             return true;
@@ -230,36 +231,15 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     }
 
     @Override
-    public void attack(CombatEntity target, DamageReason reason) {
+    public void attack(CombatEntity target, DamageType damageType) {
         if (target == null || target.isInvulnerable()) {
             return;
         }
 
-        // Calculate base damage using StatsManager
-        float damage = calculateAbsoluteDamage();
+        SkyblockItem weapon = ItemSlot.MAIN_HAND.getItem(this);
+        SkyblockDamage damage = DamageCalculator.calculateDamage(this, target, weapon, damageType);
 
-        // Apply combat modifiers based on reason (melee, magic, etc.)
-        damage *= statsManager.getDamageMultiplierForType(reason.name());
-
-        // Check for critical hit
-        boolean isCritical = statsManager.rollForCritical();
-        if (isCritical) {
-            damage *= statsManager.getCriticalDamageMultiplier();
-        }
-
-        // Create damage object using builder pattern
-        SkyblockDamage skyblockDamage = SkyblockDamage.builder()
-                .damage(damage)
-                .critical(isCritical)
-                .reason(reason)
-                .source(this)
-                .target(target)
-                .magic(reason == DamageReason.MAGIC)
-                .projectile(reason == DamageReason.PROJECTILE)
-                .build();
-
-        // Apply damage to target
-        target.damage(skyblockDamage);
+        target.damage(damage);
     }
 
     @Override
@@ -268,22 +248,35 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
             return;
         }
 
-        float finalDamage = applyDefenseReduction((float) damage.damage());
+        double finalDamage = damage.getRawDamage();
+        StatProfile stats = getStatProfile();
+
+        // Reduction by Defense
+        if (!damage.getDamageType().bypassesDefense()) {
+            double defense = stats.get(Statistic.DEFENSE);
+            finalDamage = finalDamage * (1.0 - (defense / (defense + 100.0)));
+        }
+
+        // Reduction by True Defense
+        if (damage.getDamageType().bypassesDefense()) {
+            double trueDefense = stats.get(Statistic.TRUE_DEFENSE);
+            finalDamage = finalDamage * (1.0 - (trueDefense / (trueDefense + 100.0)));
+        }
 
         // Apply the damage
         setCurrentHealth(getCurrentHealth() - finalDamage);
 
         // Display damage indicator
-        spawnDamageIndicator(finalDamage, damage.isCriticalDamage());
+        spawnDamageIndicator(finalDamage, damage.isCriticalHit());
 
         // Apply knockback if source exists
-        if (damage.source() != null) {
-            applyKnockback(damage.source().getEntity());
+        if (damage.getSourceEntity() != null) {
+            applyKnockback(damage.getSourceEntity().getEntity());
         }
     }
 
     @Override
-    public void applyKnockback(Entity source) {
+    public void applyKnockback(Entity source) { //TODO fix the knockback
         if (source == null) return;
 
         // Calculate knockback direction
@@ -291,43 +284,30 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
         Pos myPos = getPosition();
 
         // Get direction vector from source to this entity
-        float dx = (float) (myPos.x() - sourcePos.x());
-        float dz = (float) (myPos.z() - sourcePos.z());
+        double dx = myPos.x() - sourcePos.x();
+        double dz = myPos.z() - sourcePos.z();
 
         // Normalize and apply knockback strength
-        float length = (float) Math.sqrt(dx * dx + dz * dz);
+        double length = Math.sqrt(dx * dx + dz * dz);
         if (length > 0) {
-            float knockbackStrength = 0.4f; // Base knockback strength
+            double knockbackStrength = 0.4; // Base knockback strength
             dx = dx / length * knockbackStrength;
             dz = dz / length * knockbackStrength;
 
             // Apply velocity
-            setVelocity(getVelocity().add(dx, 0.4f, dz)); // 0.4 is upward knockback
+            setVelocity(getVelocity().add(dx, 0.4, dz)); // 0.4 is upward knockback
         }
     }
 
     @Override
-    public void spawnDamageIndicator(float damage, boolean isCritical) {
+    public void spawnDamageIndicator(double damage, boolean isCritical) {
         //TODO
         System.out.println("Damage indicator: " + (isCritical ? "CRIT " : "") + Math.round(damage));
     }
 
     @Override
-    public float applyDefenseReduction(float damage) {
-        return statsManager.calculateDefenseReduction(damage);
-    }
-
-    @Override
-    public float calculateAbsoluteDamage() {
-        return statsManager.calculateAbsoluteDamage();
-    }
-
-    @Override
     public void kill() {
-        this.currentHealth = 0f;
-        // dropInventory();
-        // teleportToSpawn();
-        // resetCombatStats();
+        this.currentHealth = 0.0;
     }
 
     /**
@@ -337,5 +317,14 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      */
     public SkyblockPlayerActionBar getActionBar() {
         return actionBar;
+    }
+
+    /**
+     * Convenience method to perform a melee attack on a target
+     *
+     * @param target the entity to attack
+     */
+    public void meleeDamage(CombatEntity target) {
+        attack(target, DamageType.MELEE);
     }
 }

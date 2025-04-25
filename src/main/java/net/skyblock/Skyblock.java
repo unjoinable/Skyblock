@@ -42,9 +42,9 @@ public class Skyblock {
      * @param args Command line arguments (unused)
      */
     public static void main(String[] args) {
-        Skyblock skyblock = new Skyblock();
+        instance = new Skyblock();
         logger = LoggerFactory.getLogger(Skyblock.class);
-        skyblock.start("0.0.0.0", 25565);
+        instance.start("0.0.0.0", 25565);
     }
 
     /**
@@ -53,7 +53,6 @@ public class Skyblock {
      * creates the hub world.
      */
     public Skyblock() {
-        instance = this;
         this.server = MinecraftServer.init();
 
         MojangAuth.init();
@@ -117,11 +116,11 @@ public class Skyblock {
      * @return The initialized SkyblockItemProcessor
      */
     private SkyblockItemProcessor initProcessor() {
-        SkyblockItemProcessor processor = new SkyblockItemProcessor();
-        processor.registerDeserializer(HotPotatoBookComponent::read);
-        processor.registerDeserializer(RarityComponent::read);
-        processor.registerDeserializer(ArtOfPeaceComponent::read);
-        return processor;
+        SkyblockItemProcessor itemProcessor = new SkyblockItemProcessor();
+        itemProcessor.registerDeserializer(HotPotatoBookComponent::read);
+        itemProcessor.registerDeserializer(RarityComponent::read);
+        itemProcessor.registerDeserializer(ArtOfPeaceComponent::read);
+        return itemProcessor;
     }
 
     /**
@@ -132,9 +131,9 @@ public class Skyblock {
      * @return The created hub instance container
      */
     private InstanceContainer loadHub(InstanceManager instanceManager) {
-        InstanceContainer hubInstance = instanceManager.createInstanceContainer();
-        hubInstance.setChunkLoader(new AnvilLoader("hub"));
-        return hubInstance;
+        InstanceContainer container = instanceManager.createInstanceContainer();
+        container.setChunkLoader(new AnvilLoader("hub"));
+        return container;
     }
 
     /**

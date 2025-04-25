@@ -40,7 +40,9 @@ public class ArtOfPeaceComponent implements StatModifierComponent, SerializableC
     @Override
     public @NotNull StatProfile getStatProfile(ComponentContainer container) {
         StatProfile statProfile = new StatProfile();
-        statProfile.addStat(Statistic.HEALTH, StatValueType.BASE, 40);
+        if (isApplied) {
+            statProfile.addStat(Statistic.HEALTH, StatValueType.BASE, 40);
+        }
         return statProfile;
     }
 

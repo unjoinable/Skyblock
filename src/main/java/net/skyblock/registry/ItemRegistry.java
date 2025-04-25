@@ -61,7 +61,7 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
                 register(itemId, item);
                 successCount++;
             } catch (Exception e) {
-                System.err.println("Failed to register item: " + e.getMessage());
+                Skyblock.getLogger().error("Failed to register item: {}", e.getMessage());
                 failureCount++;
             }
         }

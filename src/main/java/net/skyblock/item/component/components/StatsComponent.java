@@ -87,7 +87,7 @@ public final class StatsComponent implements LoreComponent {
      * @param value The value to set/add
      * @return A new component with the modification
      */
-    public StatsComponent withBaseStat(@NotNull Statistic stat, float value) {
+    public StatsComponent withBaseStat(@NotNull Statistic stat, double value) {
         return withBaseStat(stat, StatValueType.BASE, value);
     }
 
@@ -99,7 +99,7 @@ public final class StatsComponent implements LoreComponent {
      * @param value The value to apply
      * @return A new component with the modification
      */
-    public StatsComponent withBaseStat(@NotNull Statistic stat, @NotNull StatValueType type, float value) {
+    public StatsComponent withBaseStat(@NotNull Statistic stat, @NotNull StatValueType type, double value) {
         StatProfile newBase = baseStats.copy();
         newBase.addStat(stat, type, value);
         return new StatsComponent(newBase, modifiers);
@@ -185,7 +185,7 @@ public final class StatsComponent implements LoreComponent {
             StatProfile modProfile = modifier.getStatProfile(container);
 
             for (Statistic stat : Statistic.getValues()) {
-                float modValue = modProfile.get(stat);
+                double modValue = modProfile.get(stat);
                 if (modValue != 0) {
                     ObjectList<ModifierInfo> modList = result.computeIfAbsent(stat, _ -> new ObjectArrayList<>());
                     modList.add(new ModifierInfo(
@@ -220,7 +220,7 @@ public final class StatsComponent implements LoreComponent {
         List<Component> lore = new ArrayList<>();
 
         for (Statistic stat : Statistic.getValues()) {
-            float value = finalStats.get(stat);
+            double value = finalStats.get(stat);
             if (value > 0) {
                 lore.add(formatStatLineWithModifiers(
                         stat,
@@ -238,7 +238,7 @@ public final class StatsComponent implements LoreComponent {
      */
     private Component formatStatLineWithModifiers(
             Statistic stat,
-            float value,
+            double value,
             List<ModifierInfo> modifiers) {
 
         boolean isPercentage = stat.getPercentage();

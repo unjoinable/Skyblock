@@ -31,21 +31,21 @@ public interface CombatEntity {
      *
      * @return current health value
      */
-    float getCurrentHealth();
+    double getCurrentHealth();
 
     /**
      * Sets the current health of the entity
      *
      * @param health the new health value
      */
-    void setCurrentHealth(float health);
+    void setCurrentHealth(double health);
 
     /**
      * Gets the maximum possible health of the entity
      *
      * @return maximum health value
      */
-    float getMaxHealth();
+    double getMaxHealth();
 
     /**
      * Gets the current instance the entity is in
@@ -76,12 +76,12 @@ public interface CombatEntity {
     void setInvulnerable(boolean invulnerable);
 
     /**
-     * Performs an attack on the target entity with the specified damage reason
+     * Performs an attack on the target entity with the specified damage type
      *
      * @param target the entity to attack
-     * @param reason the reason for the damage (e.g., MELEE, PROJECTILE, MAGIC)
+     * @param damageType the type of damage being dealt
      */
-    void attack(CombatEntity target, DamageReason reason);
+    void attack(CombatEntity target, DamageType damageType);
 
     /**
      * Applies damage to this entity from an incoming damage source
@@ -103,7 +103,7 @@ public interface CombatEntity {
      * @param damage the amount of damage to display
      * @param isCritical whether the damage was a critical hit
      */
-    void spawnDamageIndicator(float damage, boolean isCritical);
+    void spawnDamageIndicator(double damage, boolean isCritical);
 
     /**
      * Convenience method to perform a melee attack on a target
@@ -111,7 +111,7 @@ public interface CombatEntity {
      * @param target the entity to attack
      */
     default void meleeDamage(CombatEntity target) {
-        attack(target, DamageReason.MELEE);
+        attack(target, DamageType.MELEE);
     }
 
     /**
@@ -123,30 +123,6 @@ public interface CombatEntity {
         return getCurrentHealth() <= 0;
     }
 
-    /**
-     * Calculates the absolute damage that would be dealt by this entity
-     * based on its base damage and strength stats
-     *
-     * @return the calculated damage value
-     */
-    default float calculateAbsoluteDamage() {
-        StatProfile stats = getStatProfile();
-        float baseDamage = stats.get(Statistic.DAMAGE);
-        float strength = stats.get(Statistic.STRENGTH);
-
-        return (5 + baseDamage) * (1 + strength / 100);
-    }
-
-    /**
-     * Calculates the damage reduction from defense
-     *
-     * @param damage the incoming damage amount
-     * @return the amount of damage after defense reduction
-     */
-    default float applyDefenseReduction(float damage) {
-        float defense = getStatProfile().get(Statistic.DEFENSE);
-        return damage * (1 - (defense / (defense + 100)));
-    }
 
     /**
      * Kills this entity

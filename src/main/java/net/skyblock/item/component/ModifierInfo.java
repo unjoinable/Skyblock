@@ -9,7 +9,7 @@ import net.kyori.adventure.text.format.TextColor;
  */
 public class ModifierInfo {
     private final ModifierType modifierType;
-    private final float value;
+    private final double value;
     private final char openBracket;
     private final char closeBracket;
     private final TextColor color;
@@ -23,7 +23,7 @@ public class ModifierInfo {
      * @param closeBracket The character used for the closing bracket in its display.
      * @param color The text color for displaying the modifier.
      */
-    public ModifierInfo(ModifierType type, float value, char openBracket, char closeBracket, TextColor color) {
+    public ModifierInfo(ModifierType type, double value, char openBracket, char closeBracket, TextColor color) {
         this.modifierType = type;
         this.value = value;
         this.openBracket = openBracket;
@@ -43,7 +43,7 @@ public class ModifierInfo {
      * Gets the numerical value of the modifier.
      * @return The modifier value.
      */
-    public float getValue() {
+    public double getValue() {
         return value;
     }
 

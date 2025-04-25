@@ -25,7 +25,7 @@ public class StatProfileAdapter extends TypeAdapter<StatProfile> {
     public void write(JsonWriter out, StatProfile value) throws IOException {
         out.beginObject();
         for (Statistic stat : Statistic.values()) {
-            float base = value.get(stat);
+            double base = value.get(stat);
             // Only write non-zero base stats
             if (base != 0f) {
                 out.name(stat.name()).value(base);
@@ -44,7 +44,7 @@ public class StatProfileAdapter extends TypeAdapter<StatProfile> {
             try {
                 // Find the corresponding Statistic enum by name
                 Statistic stat = Statistic.valueOf(name);
-                float val = (float) in.nextDouble();
+                double val = in.nextDouble();
                 // Add the read value as a base stat
                 profile.addStat(stat, StatValueType.BASE, val);
             } catch (IllegalArgumentException e) {
