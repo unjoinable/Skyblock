@@ -1,5 +1,6 @@
 package net.skyblock.listeners;
 
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.item.Material;
@@ -77,7 +78,8 @@ public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> 
         ItemSlot slot = ARMOR_SLOT_MAP.get(material);
 
         if (slot != null) {
-            ((SkyblockPlayer) event.getPlayer()).getStatsManager().update(slot);
+            SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+            MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatsManager().update(slot));
         }
 
         return Result.SUCCESS;

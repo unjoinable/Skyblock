@@ -1,7 +1,6 @@
 package net.skyblock.stats.combat;
 
 import net.skyblock.stats.StatProfile;
-import net.skyblock.stats.Statistic;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Instance;
@@ -101,9 +100,8 @@ public interface CombatEntity {
      * Creates and spawns a damage indicator hologram
      *
      * @param damage the amount of damage to display
-     * @param isCritical whether the damage was a critical hit
      */
-    void spawnDamageIndicator(double damage, boolean isCritical);
+    void spawnDamageIndicator(SkyblockDamage damage);
 
     /**
      * Convenience method to perform a melee attack on a target

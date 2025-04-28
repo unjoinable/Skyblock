@@ -36,9 +36,7 @@ public class PlayerSwapItemListener implements EventListener<PlayerSwapItemEvent
     public @NotNull Result run(@NotNull PlayerSwapItemEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
 
-        MinecraftServer.getSchedulerManager().scheduleNextTick(() -> {
-            player.getStatsManager().update(ItemSlot.MAIN_HAND);
-        });
+        MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatsManager().update(ItemSlot.MAIN_HAND));
 
         return Result.SUCCESS;
     }

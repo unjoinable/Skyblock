@@ -1,6 +1,11 @@
 package net.skyblock.entity;
 
+import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.event.entity.EntityDeathEvent;
+import net.skyblock.entity.entities.DamageIndicator;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
 import net.skyblock.stats.combat.CombatEntity;
@@ -12,9 +17,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityCreature;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.instance.Instance;
@@ -28,12 +30,12 @@ import java.util.UUID;
 /**
  * Abstract base class for all Skyblock entities.
  * Implements the CombatEntity interface to provide standard combat functionality.
+ * Uses Minestom's health system internally while exposing CombatEntity interface methods.
  */
 public abstract class SkyblockEntity extends EntityCreature implements CombatEntity {
     private static final List<SkyblockEntity> activeMobs = new ArrayList<>();
     private int level = 0;
-    private StatProfile statProfile;
-    private double currentHealth;
+    private final StatProfile statProfile;
     private boolean isInvulnerable = false;
 
     /**
@@ -44,7 +46,6 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     protected SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType);
         this.statProfile = new StatProfile(false); // Initialize empty profile
-        this.currentHealth = 0; // Will be set during spawn based on max health
     }
 
     /**
@@ -91,8 +92,10 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         // Configure stats based on level
         configureStats(lvl);
 
-        // Set initial health to max health
-        this.currentHealth = getMaxHealth();
+        // Set max health attribute and initial health from stats
+        double maxHealth = getMaxHealth();
+        getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
+        setHealth((float)maxHealth); // Initialize Minestom health to our max health value
 
         // Set movement speed based on stats
         double speedStat = getStatProfile().get(Statistic.SPEED);
@@ -138,17 +141,17 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
 
     @Override
     public double getCurrentHealth() {
-        return currentHealth;
+        return getHealth(); // Use Minestom's health system
     }
 
     @Override
     public void setCurrentHealth(double health) {
         if (health <= 0) {
-            currentHealth = 0;
+            setHealth(0);
             kill();
         } else {
             double maxHealth = getMaxHealth();
-            this.currentHealth = Math.min(health, maxHealth); // Cap at max health
+            setHealth((float)Math.min(health, maxHealth)); // Cap at max health
 
             // Update display name to show new health
             setCustomName(displayName());
@@ -158,6 +161,22 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     @Override
     public double getMaxHealth() {
         return getStatProfile().get(Statistic.HEALTH);
+    }
+
+    /**
+     * Override Minestom's setHealth to update our display name when health changes
+     */
+    @Override
+    public void setHealth(float health) {
+        super.setHealth(health);
+
+        // If this is a death, trigger our kill method
+        if (health <= 0) {
+            kill();
+        }
+
+        // Update display name to reflect new health
+        setCustomName(displayName());
     }
 
     @Override
@@ -208,13 +227,58 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         double damageTaken = applyDefenseReduction(rawDamage, damage.getDamageType());
 
         // Spawn damage indicator
-        spawnDamageIndicator(damageTaken, damage.isCriticalHit());
+        spawnDamageIndicator(damage);
 
-        // Apply damage to health
+        // Apply damage to health using our interface method
         setCurrentHealth(getCurrentHealth() - damageTaken);
+    }
 
-        // Update display name
-        setCustomName(displayName());
+    /**
+     * Override Minestom's default damage method to route through our SkyBlock damage system
+     */
+
+    public void damage(@NotNull net.minestom.server.entity.damage.DamageType type, float value) {
+        // Convert Minestom damage to SkyBlock damage
+        DamageType skyblockType = convertMinestomDamageType(type);
+
+        // Create a SkyblockDamage object and route through our damage system
+        SkyblockDamage damage = SkyblockDamage.builder()
+                .rawDamage(value)
+                .criticalHit(false)
+                .damageType(skyblockType)
+                .targetEntity(this)
+                .build();
+
+        damage(damage);
+    }
+
+    /**
+     * Convert Minestom damage type to SkyBlock damage type
+     *
+     * @param minestomType the Minestom damage type
+     * @return the equivalent SkyBlock damage type
+     */
+    private DamageType convertMinestomDamageType(net.minestom.server.entity.damage.DamageType minestomType) {
+        // Simple mapping based on damage type name
+        // This should be expanded based on your damage type enumeration
+        String typeName = minestomType.toString();
+
+        if (typeName.contains("ATTACK") || typeName.contains("PLAYER_ATTACK")) {
+            return DamageType.MELEE;
+        } else if (typeName.contains("PROJECTILE")) {
+            return DamageType.RANGED;
+        } else if (typeName.contains("MAGIC")) {
+            return DamageType.MAGIC;
+        } else if (typeName.contains("FIRE") || typeName.contains("LAVA")) {
+            return DamageType.FIRE;
+        } else if (typeName.contains("POISON")) {
+            return DamageType.POISON;
+        } else if (typeName.contains("VOID")) {
+            return DamageType.TRUE; // Assuming TRUE is a damage type that bypasses defense
+        }
+
+        // Default to GENERIC if no match
+        return DamageType.ABILITY;
     }
 
     /**
@@ -273,18 +337,16 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     }
 
     @Override
-    public void spawnDamageIndicator(double damage, boolean isCritical) {
-        // Implementation depends on your DamageIndicator system
-        // Can be implemented when DamageIndicator class is available
+    public void spawnDamageIndicator(SkyblockDamage damage) {
+        DamageIndicator indicator = new DamageIndicator(damage.getRawDamage(), damage.isCriticalHit());
+        CombatEntity source = damage.getSourceEntity();
+        indicator.spawn(source.getPosition(), source.getInstance());
     }
 
     @Override
     public void kill() {
-        // Remove from active mobs list and destroy entity
         activeMobs.remove(this);
         remove();
-
-        // Subclasses can override to handle drops, experience, etc.
     }
 
     /**
@@ -320,7 +382,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     public static @Nullable SkyblockEntity getSkyblockInstance(UUID uuid) {
         for (SkyblockEntity activeMob : activeMobs) {
             if (activeMob.getUuid().equals(uuid)) {
-                return activeMob;
+                return null;
             }
         }
         return null;
@@ -331,15 +393,5 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         if (customName != null) {
             set(DataComponents.CUSTOM_NAME, customName);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "SkyblockEntity{" +
-                "name=" + name() +
-                ", level=" + level +
-                ", health=" + getCurrentHealth() + "/" + getMaxHealth() +
-                ", isInvulnerable=" + isInvulnerable +
-                '}';
     }
 }

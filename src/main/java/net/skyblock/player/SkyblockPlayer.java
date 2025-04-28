@@ -267,7 +267,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
         setCurrentHealth(getCurrentHealth() - finalDamage);
 
         // Display damage indicator
-        spawnDamageIndicator(finalDamage, damage.isCriticalHit());
+        spawnDamageIndicator(damage);
 
         // Apply knockback if source exists
         if (damage.getSourceEntity() != null) {
@@ -300,10 +300,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     }
 
     @Override
-    public void spawnDamageIndicator(double damage, boolean isCritical) {
-        //TODO
-        System.out.println("Damage indicator: " + (isCritical ? "CRIT " : "") + Math.round(damage));
-    }
+    public void spawnDamageIndicator(SkyblockDamage damage) {}
 
     @Override
     public void kill() {
