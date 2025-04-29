@@ -1,28 +1,24 @@
 package net.skyblock.item.component.components;
 
-import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.ModifierInfo;
-import net.skyblock.item.component.trait.LoreComponent;
-import net.skyblock.item.component.trait.StatModifierComponent;
-import net.skyblock.item.enums.ModifierType;
-import net.skyblock.stats.StatProfile;
-import net.skyblock.stats.Statistic;
-import net.skyblock.stats.StatValueType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ModifierInfo;
+import net.skyblock.item.component.trait.LoreComponent;
+import net.skyblock.item.component.trait.StatModifierComponent;
+import net.skyblock.item.enums.ModifierType;
+import net.skyblock.stats.StatProfile;
+import net.skyblock.stats.StatValueType;
+import net.skyblock.stats.Statistic;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 /**
  * Master component for managing item stats, including base stats, modifiers, and lore generation.
@@ -32,8 +28,8 @@ public final class StatsComponent implements LoreComponent {
     private final ObjectList<StatModifierComponent> modifiers;
 
     // Add a cache for the final stats calculation
-    private transient StatProfile finalStatsCache;
-    private transient boolean statsCacheValid = false;
+    private StatProfile finalStatsCache;
+    private boolean statsCacheValid = false;
 
     /**
      * Creates a new StatsComponent with default empty stats
@@ -200,7 +196,7 @@ public final class StatsComponent implements LoreComponent {
         }
 
         // Convert ObjectLists to standard Lists for API compatibility
-        Map<Statistic, List<ModifierInfo>> standardResult = new HashMap<>();
+        Map<Statistic, List<ModifierInfo>> standardResult = new EnumMap<>();
         for (Map.Entry<Statistic, ObjectList<ModifierInfo>> entry : result.entrySet()) {
             standardResult.put(entry.getKey(), new ArrayList<>(entry.getValue()));
         }
@@ -249,7 +245,7 @@ public final class StatsComponent implements LoreComponent {
         TextComponent.Builder builder = Component.text()
                 .append(Component.text(stat.getDisplayName() + ": ", NamedTextColor.GRAY))
                 .append(Component.text("+" + formattedValue + percentSign, stat.getLoreColor()))
-                .decoration(TextDecoration.ITALIC, false);
+                .decoration(ITALIC, false);
 
         // Add each modifier with its bracket type and color
         for (ModifierInfo mod : modifiers) {

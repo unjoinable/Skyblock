@@ -1,22 +1,23 @@
 package net.skyblock.item.component.components;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.tag.Tag;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.trait.DeserializableComponent;
 import net.skyblock.item.component.trait.LoreComponent;
 import net.skyblock.item.component.trait.SerializableComponent;
-import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.item.service.ComponentResolver;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.minestom.server.item.ItemStack;
-import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.TextDecoration.*;
 
 /**
  * A class representing the rarity component for an item, which
@@ -80,26 +81,21 @@ public final class RarityComponent implements LoreComponent, SerializableCompone
         return 100;
     }
 
-
     @Override
     public @NotNull List<Component> generateLore(@NotNull ComponentContainer container) {
-        Rarity rarity = isUpgraded ? this.rarity.upgrade() : this.rarity;
-        ItemCategory category = componentResolver.resolveCategory(container);
-        TextColor color = rarity.getColor();
+        Rarity itemRarity = isUpgraded ? this.rarity.upgrade() : this.rarity;
+        TextColor color = itemRarity.getColor();
+        String categoryName = componentResolver.resolveCategory(container).getName();
 
-        Component base = Component.text(rarity.name() + " " + category.getName())
-                .color(color)
-                .decorate(TextDecoration.BOLD)
-                .decoration(TextDecoration.ITALIC, false);
+        Component base = text(itemRarity.name() + " " + categoryName, color, BOLD)
+                .decoration(ITALIC, false);
 
         Component result = isUpgraded
-                ? Component.empty()
-                .append(Component.text("a ", color).decorate(TextDecoration.OBFUSCATED).decoration(TextDecoration.ITALIC, false))
-                .append(base)
-                .append(Component.text(" a", color).decorate(TextDecoration.OBFUSCATED).decoration(TextDecoration.ITALIC, false))
+                ? textOfChildren(text("a ", color, OBFUSCATED), base, text(" a", color, OBFUSCATED))
+                .decoration(ITALIC, false)
                 : base;
 
-        return Collections.singletonList(result);
+        return List.of(result);
     }
 
     @Override
