@@ -6,7 +6,7 @@ import net.skyblock.item.components.NameComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class NameHandler implements StackWriterHandler<NameComponent> {
-    private static final String ID = "skyblock:name_handler";
+    private static final String ID = "name";
 
     /**
      * Writes component-specific data to the provided ItemStack builder.

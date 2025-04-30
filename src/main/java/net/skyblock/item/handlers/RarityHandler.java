@@ -18,7 +18,7 @@ import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.TextDecoration.*;
 
 public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<RarityComponent> {
-    private static final String ID = "skyblock:rarity";
+    private static final String ID = "rarity";
     private static final String KEY_RARITY = "rarity";
     private static final String KEY_UPGRADED = "upgraded";
 
@@ -61,7 +61,7 @@ public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<R
      * Deserializes an ItemComponent from NBT data.
      *
      * @param nbt The NBT data containing component information
-     * @return A new component instance created from the NBT data
+     * @return A an optional component instance created from the NBT data
      */
     @Override
     public @NotNull Optional<RarityComponent> fromNbt(CompoundBinaryTag nbt) {
@@ -69,7 +69,7 @@ public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<R
         Rarity rarity = Rarity.getRarity(rarityName);
         boolean upgraded = nbt.getBoolean(KEY_UPGRADED);
 
-        return new RarityComponent(rarity, upgraded);
+        return Optional.of(new RarityComponent(rarity, upgraded));
     }
 
     /**

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent> {
-    private static final String ID = "skyblock:hot_potato_book_handler";
+    private static final String ID = "hot_potato_book";
     private static final String KEY_COUNT = "count";
 
     /**

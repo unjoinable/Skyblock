@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public class HeadTextureHandler implements StackWriterHandler<HeadTextureComponent> {
-    private static final String ID = "skyblock:head_texture_handler";
+    private static final String ID = "skin";
 
     /**
      * Writes component-specific data to the provided ItemStack builder.
