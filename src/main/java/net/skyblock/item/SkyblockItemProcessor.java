@@ -1,11 +1,10 @@
 package net.skyblock.item;
 
 import net.skyblock.Skyblock;
-import net.skyblock.item.component.Component;
+import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.trait.DeserializableComponent;
 import net.skyblock.item.component.trait.SerializableComponent;
-import net.skyblock.registry.Registry;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -46,7 +45,7 @@ public class SkyblockItemProcessor {
     public @NotNull ItemStack toItemStack(@NotNull SkyblockItem skyblockItem) {
         ItemStack.Builder builder = ItemStack.builder(Material.AIR); // Material by component
 
-        for (Component component : skyblockItem.components().asMap().values()) {
+        for (ItemComponent component : skyblockItem.components().asMap().values()) {
             if (component instanceof SerializableComponent serializableComponent) {
                 serializableComponent.write(builder);
             }

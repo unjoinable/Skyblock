@@ -1,6 +1,6 @@
 package net.skyblock.listeners;
 
-import net.skyblock.item.component.Component;
+import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.components.StatsComponent;
 import net.skyblock.item.component.event.ComponentChangeListener;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public final class StatModifierSyncListener implements ComponentChangeListener {
 
     @Override
-    public ComponentContainer onComponentAdded(@NotNull ComponentContainer container, @NotNull Component component) {
+    public ComponentContainer onComponentAdded(@NotNull ComponentContainer container, @NotNull ItemComponent component) {
         if (component instanceof StatModifierComponent modifier) {
             // Get or create the StatsComponent
             StatsComponent stats = container
@@ -31,7 +31,7 @@ public final class StatModifierSyncListener implements ComponentChangeListener {
     }
 
     @Override
-    public ComponentContainer onComponentRemoved(@NotNull ComponentContainer container, @NotNull Component component) {
+    public ComponentContainer onComponentRemoved(@NotNull ComponentContainer container, @NotNull ItemComponent component) {
         if (component instanceof StatModifierComponent modifier) {
             // Only proceed if we have a StatsComponent
             if (container.contains(StatsComponent.class)) {

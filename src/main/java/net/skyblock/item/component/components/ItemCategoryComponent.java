@@ -1,13 +1,13 @@
 package net.skyblock.item.component.components;
 
-import net.skyblock.item.component.Component;
+import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.enums.ItemCategory;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A class representing the item category of a component.
  */
-public final class ItemCategoryComponent implements Component {
+public final class ItemCategoryComponent implements ItemComponent {
     private final @NotNull ItemCategory itemCategory;
 
     /**

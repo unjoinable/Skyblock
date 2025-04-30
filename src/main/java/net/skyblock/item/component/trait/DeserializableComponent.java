@@ -1,6 +1,6 @@
 package net.skyblock.item.component.trait;
 
-import net.skyblock.item.component.Component;
+import net.skyblock.item.component.ItemComponent;
 
 /**
  * Interface for components that can be deserialized from persistent storage.
@@ -10,6 +10,6 @@ import net.skyblock.item.component.Component;
  * public static @NotNull Optional<? extends DeserializableComponent> read(@NotNull ItemStack itemStack)
  * </pre>
  */
-public interface DeserializableComponent extends Component {
+public interface DeserializableComponent extends ItemComponent {
     // No methods - this is a marker interface with documentation
 }

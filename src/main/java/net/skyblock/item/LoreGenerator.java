@@ -1,6 +1,7 @@
 package net.skyblock.item;
 
 import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.trait.LoreComponent;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +55,7 @@ public final class LoreGenerator {
     public @NotNull List<Component> generate() {
         List<LoreComponent> loreComponents = new ArrayList<>();
 
-        for (net.skyblock.item.component.Component comp : container.asMap().values()) {
+        for (ItemComponent comp : container.asMap().values()) {
             if (comp instanceof LoreComponent lore) {
                 loreComponents.add(lore);
             }

@@ -1,6 +1,6 @@
 package net.skyblock.item.component.trait;
 
-import net.skyblock.item.component.Component;
+import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.enums.ModifierType;
 import net.skyblock.stats.StatProfile;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Interface for components that modify item stats.
  */
-public interface StatModifierComponent extends Component {
+public interface StatModifierComponent extends ItemComponent {
     /**
      * Gets the type of this stat modifier.
      * @return The modifier type

@@ -1,7 +1,7 @@
 package net.skyblock.item.component.components;
 
 import net.skyblock.item.ability.Ability;
-import net.skyblock.item.component.Component;
+import net.skyblock.item.component.ItemComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.List;
  * Component for items that have abilities.
  * Holds and manages the abilities an item can use.
  */
-public class ItemAbilityComponent implements Component {
+public class ItemAbilityComponent implements ItemComponent {
     private final List<Ability> abilities;
 
     public ItemAbilityComponent(List<Ability> abilities) {
@@ -39,7 +39,7 @@ public class ItemAbilityComponent implements Component {
     }
 
     @Override
-    public Class<? extends Component> getType() {
+    public Class<? extends ItemComponent> getType() {
         return ItemAbilityComponent.class;
     }
 }
