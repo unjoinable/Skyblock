@@ -42,8 +42,8 @@ public class Skyblock {
      * @param args Command line arguments (unused)
      */
     public static void main(String[] args) {
-        instance = new Skyblock();
         logger = LoggerFactory.getLogger(Skyblock.class);
+        instance = new Skyblock();
         instance.start("0.0.0.0", 25565);
     }
 

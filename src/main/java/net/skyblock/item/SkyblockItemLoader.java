@@ -5,12 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.Material;
+import net.skyblock.Skyblock;
 import net.skyblock.item.component.adapters.*;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;
+import org.slf4j.Logger;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -27,7 +28,7 @@ public class SkyblockItemLoader {
     private final Gson gson;
 
     /**
-     * Creates a new SkyblockItemLoader with properly configured Gson instance.
+     * Creates a new SkyblockItemLoader with a properly configured Gson instance.
      */
     public SkyblockItemLoader() {
         this.gson = new GsonBuilder()
@@ -41,22 +42,23 @@ public class SkyblockItemLoader {
     }
 
     /**
-     * Loads Skyblock items from the JSON file in the resources directory.
+     * Loads Skyblock items from the JSON file in the resources' directory.
      *
      * @return A list of {@link SkyblockItem} instances
      * @throws IllegalStateException if the file is missing, malformed, or if parsing fails
      */
     public List<SkyblockItem> loadItems() {
-        System.out.println("Loading items from: " + ITEM_FILE_PATH);
+        Logger logger = Skyblock.getLogger();
+        logger.info("Loading items from: " + ITEM_FILE_PATH);
 
-        // Load resource from classpath instead of file system
+        // Load resource from a classpath instead of a file system
         InputStream inputStream = getClass().getResourceAsStream(ITEM_FILE_PATH);
         if (inputStream == null) {
             throw new IllegalStateException("Items file not found in resources: " + ITEM_FILE_PATH);
         }
 
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
-            System.out.println("Parsing JSON...");
+            logger.info("Parsing JSON...");
             return parseItemsFromJson(reader);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to load Skyblock items from resources", e);
@@ -68,14 +70,14 @@ public class SkyblockItemLoader {
      *
      * @param reader A reader for the item JSON file.
      * @return A list of {@link SkyblockItem} instances.
-     * @throws RuntimeException if parsing fails.
+     * @throws IllegalStateException if parsing fails.
      */
     private List<SkyblockItem> parseItemsFromJson(InputStreamReader reader) {
         Type listType = new TypeToken<List<SkyblockItem>>() {}.getType();
         List<SkyblockItem> items = gson.fromJson(reader, listType);
 
         if (items == null) {
-            throw new RuntimeException("Failed to parse items file — JSON is null");
+            throw new IllegalStateException("Failed to parse items file — JSON is null");
         }
 
         return items;
