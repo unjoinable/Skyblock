@@ -73,7 +73,7 @@ public class PlayerStatsManager {
         StatProfile profile = new StatProfile();
 
         if (item != null && item.components() != null) {
-            Optional<StatsComponent> statsComponent = item.get(StatsComponent.class);
+            Optional<StatsComponent> statsComponent = item.components().get(StatsComponent.class);
             if (statsComponent.isPresent()) {
                 profile = statsComponent.get().calculateFinalStats(item.components()).copy();
             }

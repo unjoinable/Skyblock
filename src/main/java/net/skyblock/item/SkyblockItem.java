@@ -1,15 +1,14 @@
 package net.skyblock.item;
 
+import net.minestom.server.item.Material;
 import net.skyblock.item.component.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.components.*;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;
-import net.minestom.server.item.Material;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Represents an immutable Hypixel Skyblock item with its associated components.
@@ -20,17 +19,6 @@ import java.util.Optional;
  */
 public record SkyblockItem(String itemId, ComponentContainer components) {
     public static final SkyblockItem AIR = new SkyblockItem("AIR", null);
-
-    /**
-     * Retrieves a component of the specified type from the item's component container.
-     *
-     * @param type The class of the component to retrieve.
-     * @param <T> The type of the component.
-     * @return An {@link Optional} containing the component if found, otherwise empty.
-     */
-    public <T extends Component> Optional<T> get(Class<T> type) {
-        return components.get(type);
-    }
 
     /**
      * A builder class for constructing {@link SkyblockItem} instances.

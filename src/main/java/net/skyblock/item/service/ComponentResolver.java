@@ -32,6 +32,4 @@ public class ComponentResolver {
                 .map(RarityComponent::getRarity)
                 .orElse(Rarity.UNOBTAINABLE);
     }
-
-
 }
