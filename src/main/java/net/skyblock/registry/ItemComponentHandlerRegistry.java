@@ -2,7 +2,7 @@ package net.skyblock.registry;
 
 import net.skyblock.item.ItemComponentHandler;
 import net.skyblock.item.component.ItemComponent;
-import net.skyblock.item.handlers.RarityHandler;
+import net.skyblock.item.handlers.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,5 +76,9 @@ public class ItemComponentHandlerRegistry extends Registry<String, ItemComponent
     @Override
     public void init() {
         register(new RarityHandler());
+        register(new NameHandler());
+        register(new HeadTextureHandler());
+        register(new HotPotatoBookHandler());
+        register(new MaterialHandler());
     }
 }

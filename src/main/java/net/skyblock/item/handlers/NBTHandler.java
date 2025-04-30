@@ -5,14 +5,16 @@ import net.skyblock.item.ItemComponentHandler;
 import net.skyblock.item.component.ItemComponent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public interface NBTHandler <C extends ItemComponent> extends ItemComponentHandler<C> {
     /**
      * Deserializes an ItemComponent from NBT data.
      *
      * @param nbt The NBT data containing component information
-     * @return A new component instance created from the NBT data
+     * @return An optional new component instance created from the NBT data
      */
-    @NotNull C fromNbt(CompoundBinaryTag nbt);
+    @NotNull Optional<C> fromNbt(CompoundBinaryTag nbt);
 
     /**
      * Serializes an ItemComponent to NBT data.

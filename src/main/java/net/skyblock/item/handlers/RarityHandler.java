@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -63,7 +64,7 @@ public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<R
      * @return A new component instance created from the NBT data
      */
     @Override
-    public @NotNull RarityComponent fromNbt(CompoundBinaryTag nbt) {
+    public @NotNull Optional<RarityComponent> fromNbt(CompoundBinaryTag nbt) {
         String rarityName = nbt.getString(KEY_RARITY);
         Rarity rarity = Rarity.getRarity(rarityName);
         boolean upgraded = nbt.getBoolean(KEY_UPGRADED);
