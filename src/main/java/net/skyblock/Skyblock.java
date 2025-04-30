@@ -9,6 +9,7 @@ import net.skyblock.item.component.components.HotPotatoBookComponent;
 import net.skyblock.item.component.components.RarityComponent;
 import net.skyblock.listeners.*;
 import net.skyblock.player.SkyblockPlayer;
+import net.skyblock.registry.ItemComponentHandlerRegistry;
 import net.skyblock.registry.ItemRegistry;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
@@ -35,6 +36,7 @@ public class Skyblock {
 
     // Registries
     private final ItemRegistry itemRegistry;
+    private final ItemComponentHandlerRegistry itemComponentHandlerRegistry;
 
     /**
      * Main entry point for the Skyblock server.
@@ -68,6 +70,7 @@ public class Skyblock {
 
         // Initialize item and component registries
         this.itemRegistry = new ItemRegistry();
+        this.itemComponentHandlerRegistry = new ItemComponentHandlerRegistry();
         initRegistries();
         this.processor = initProcessor();
 
@@ -110,6 +113,7 @@ public class Skyblock {
      */
     private void initRegistries() {
         itemRegistry.init();
+        itemComponentHandlerRegistry.init();
     }
 
     /**
