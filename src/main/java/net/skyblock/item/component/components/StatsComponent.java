@@ -1,10 +1,7 @@
 package net.skyblock.item.component.components;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ModifierInfo;
@@ -21,13 +18,13 @@ import java.util.*;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 /**
- * Master component for managing item stats, including base stats, modifiers, and lore generation.
+ * Manages item stats, modifiers, and lore generation
  */
 public final class StatsComponent implements LoreComponent {
     private final StatProfile baseStats;
-    private final ObjectList<StatModifierComponent> modifiers;
+    private final ObjectArrayList<StatModifierComponent> modifiers;
 
-    // Add a cache for the final stats calculation
+    // Stats cache
     private StatProfile finalStatsCache;
     private boolean statsCacheValid = false;
 
@@ -40,8 +37,6 @@ public final class StatsComponent implements LoreComponent {
 
     /**
      * Creates a new StatsComponent with specified base stats
-     *
-     * @param baseStats The base stats for this item
      */
     public StatsComponent(@NotNull StatProfile baseStats) {
         this(baseStats, new ObjectArrayList<>());
@@ -49,9 +44,6 @@ public final class StatsComponent implements LoreComponent {
 
     /**
      * Creates a new StatsComponent with specified base stats and modifiers
-     *
-     * @param baseStats The base stats for this item
-     * @param modifiers The stat modifiers to apply
      */
     public StatsComponent(@NotNull StatProfile baseStats, @NotNull List<StatModifierComponent> modifiers) {
         this.baseStats = Objects.requireNonNull(baseStats);
@@ -59,9 +51,7 @@ public final class StatsComponent implements LoreComponent {
     }
 
     /**
-     * Gets the base stats of the item without modifiers
-     *
-     * @return The base stat profile
+     * Gets the base stats without modifiers
      */
     public @NotNull StatProfile getBaseStats() {
         return baseStats;
@@ -69,75 +59,56 @@ public final class StatsComponent implements LoreComponent {
 
     /**
      * Gets an unmodifiable list of all stat modifiers
-     *
-     * @return List of stat modifiers
      */
     public @NotNull List<StatModifierComponent> getModifiers() {
         return List.copyOf(modifiers);
     }
 
     /**
-     * Returns a new component with the given base stat added or modified
-     *
-     * @param stat  The statistic to modify
-     * @param value The value to set/add
-     * @return A new component with the modification
+     * Adds a base stat with BASE type
      */
     public StatsComponent withBaseStat(@NotNull Statistic stat, double value) {
         return withBaseStat(stat, StatValueType.BASE, value);
     }
 
     /**
-     * Returns a new component with the given base stat added or modified
-     *
-     * @param stat  The statistic to modify
-     * @param type  The type of modification
-     * @param value The value to apply
-     * @return A new component with the modification
+     * Adds a base stat with specified type
      */
     public StatsComponent withBaseStat(@NotNull Statistic stat, @NotNull StatValueType type, double value) {
-        StatProfile newBase = baseStats.copy();
+        var newBase = baseStats.copy();
         newBase.addStat(stat, type, value);
         return new StatsComponent(newBase, modifiers);
     }
 
     /**
-     * Returns a new component with the given modifier added
-     *
-     * @param modifier The stat modifier to add
-     * @return A new component with the modifier
+     * Adds a stat modifier
      */
     public StatsComponent withModifier(@NotNull StatModifierComponent modifier) {
-        ObjectList<StatModifierComponent> newModifiers = new ObjectArrayList<>(modifiers);
+        var newModifiers = new ObjectArrayList<>(modifiers);
         newModifiers.add(modifier);
         return new StatsComponent(baseStats, newModifiers);
     }
 
     /**
-     * Returns a new component with the given type of modifiers removed
-     *
-     * @param type The type of modifiers to remove
-     * @return A new component without the modifiers
+     * Removes modifiers of specified type
      */
     public StatsComponent withoutModifier(@NotNull ModifierType type) {
-        ObjectList<StatModifierComponent> newModifiers = new ObjectArrayList<>(modifiers);
+        var newModifiers = new ObjectArrayList<>(modifiers);
         newModifiers.removeIf(modifier -> modifier.getModifierType() == type);
         return new StatsComponent(baseStats, newModifiers);
     }
 
     /**
      * Calculates the final stats with all modifiers applied
-     *
-     * @return The combined stat profile
      */
     public @NotNull StatProfile calculateFinalStats(ComponentContainer container) {
         if (statsCacheValid && finalStatsCache != null) {
             return finalStatsCache;
         }
 
-        StatProfile result = baseStats.copy();
+        var result = baseStats.copy();
 
-        for (StatModifierComponent modifier : modifiers) {
+        for (var modifier : modifiers) {
             result.combineWith(modifier.getStatProfile(container));
         }
 
@@ -148,45 +119,50 @@ public final class StatsComponent implements LoreComponent {
 
     /**
      * Calculates stats and returns info about all modifiers for each stat
-     *
-     * @return Map of statistics to their modifier information
      */
     public @NotNull Map<Statistic, List<ModifierInfo>> getStatModifierInfo(ComponentContainer container) {
-        Object2ObjectOpenHashMap<Statistic, ObjectList<ModifierInfo>> result = new Object2ObjectOpenHashMap<>();
+        Map<Statistic, ObjectArrayList<ModifierInfo>> result = new EnumMap<>(Statistic.class);
 
-        // Process base stats and modifiers in one loop
-        for (Statistic stat : Statistic.getValues()) {
-            // Check if this stat has a base value
+        findRelevantStats(container, result);
+        addModifierInfo(container, result);
+        return convertToStandardMap(result);
+    }
+
+    /**
+     * Finds stats that have base values or are affected by modifiers
+     */
+    private void findRelevantStats(ComponentContainer container, Map<Statistic, ObjectArrayList<ModifierInfo>> result) {
+        for (var stat : Statistic.getValues()) {
+            // Add stats with base values
             if (baseStats.get(stat) != 0) {
                 result.put(stat, new ObjectArrayList<>());
                 continue;
             }
 
-            // Check if any modifier affects this stat
-            boolean hasModifier = false;
-            for (StatModifierComponent modifier : modifiers) {
+            // Add stats affected by modifiers
+            for (var modifier : modifiers) {
                 if (modifier.getStatProfile(container).get(stat) != 0) {
-                    hasModifier = true;
+                    result.put(stat, new ObjectArrayList<>());
                     break;
                 }
             }
-
-            if (hasModifier) {
-                result.put(stat, new ObjectArrayList<>());
-            }
         }
+    }
 
-        // Add modifier info for each stat
-        for (StatModifierComponent modifier : modifiers) {
-            StatProfile modProfile = modifier.getStatProfile(container);
+    /**
+     * Adds modifier info for relevant stats
+     */
+    private void addModifierInfo(ComponentContainer container, Map<Statistic, ObjectArrayList<ModifierInfo>> result) {
+        for (var modifier : modifiers) {
+            var modProfile = modifier.getStatProfile(container);
 
-            for (Statistic stat : Statistic.getValues()) {
-                double modValue = modProfile.get(stat);
-                if (modValue != 0) {
-                    ObjectList<ModifierInfo> modList = result.computeIfAbsent(stat, _ -> new ObjectArrayList<>());
-                    modList.add(new ModifierInfo(
+            for (var entry : result.entrySet()) {
+                var stat = entry.getKey();
+                double value = modProfile.get(stat);
+                if (value != 0) {
+                    entry.getValue().add(new ModifierInfo(
                             modifier.getModifierType(),
-                            modValue,
+                            value,
                             modifier.getOpenBracket(),
                             modifier.getCloseBracket(),
                             modifier.getModifierColor()
@@ -194,13 +170,19 @@ public final class StatsComponent implements LoreComponent {
                 }
             }
         }
+    }
 
-        // Convert ObjectLists to standard Lists for API compatibility
-        Map<Statistic, List<ModifierInfo>> standardResult = new EnumMap<>();
-        for (Map.Entry<Statistic, ObjectList<ModifierInfo>> entry : result.entrySet()) {
-            standardResult.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+    /**
+     * Converts FastUtil map to standard map
+     */
+    private Map<Statistic, List<ModifierInfo>> convertToStandardMap(Map<Statistic, ObjectArrayList<ModifierInfo>> result) {
+        var standardMap = new EnumMap<Statistic, List<ModifierInfo>>(Statistic.class);
+
+        for (var entry : result.entrySet()) {
+            standardMap.put(entry.getKey(), new ArrayList<>(entry.getValue()));
         }
-        return standardResult;
+
+        return standardMap;
     }
 
     @Override
@@ -210,15 +192,14 @@ public final class StatsComponent implements LoreComponent {
 
     @Override
     public @NotNull List<Component> generateLore(@NotNull ComponentContainer container) {
-        StatProfile finalStats = calculateFinalStats(container);
-        Map<Statistic, List<ModifierInfo>> modifierInfo = getStatModifierInfo(container);
+        var finalStats = calculateFinalStats(container);
+        var modifierInfo = getStatModifierInfo(container);
+        var lore = new ArrayList<Component>();
 
-        List<Component> lore = new ArrayList<>();
-
-        for (Statistic stat : Statistic.getValues()) {
+        for (var stat : Statistic.getValues()) {
             double value = finalStats.get(stat);
             if (value > 0) {
-                lore.add(formatStatLineWithModifiers(
+                lore.add(formatStatLine(
                         stat,
                         value,
                         modifierInfo.getOrDefault(stat, Collections.emptyList())
@@ -230,33 +211,28 @@ public final class StatsComponent implements LoreComponent {
     }
 
     /**
-     * Creates a formatted text component for a single stat line with modifiers
+     * Creates a formatted text component for a stat line with modifiers
      */
-    private Component formatStatLineWithModifiers(
-            Statistic stat,
-            double value,
-            List<ModifierInfo> modifiers) {
+    private Component formatStatLine(Statistic stat, double value, List<ModifierInfo> modifiers) {
+        boolean isPercent = stat.getPercentage();
+        String format = isPercent ? "%.1f%%" : "%.0f";
+        String formattedValue = String.format(format, value);
 
-        boolean isPercentage = stat.getPercentage();
-        String valueFormat = isPercentage ? "%.1f%%" : "%.0f";
-        String formattedValue = String.format(valueFormat, value);
-        String percentSign = isPercentage ? "%" : "";
-
-        TextComponent.Builder builder = Component.text()
+        var builder = Component.text()
                 .append(Component.text(stat.getDisplayName() + ": ", NamedTextColor.GRAY))
-                .append(Component.text("+" + formattedValue + percentSign, stat.getLoreColor()))
+                .append(Component.text("+" + formattedValue + (isPercent ? "%" : ""), stat.getLoreColor()))
                 .decoration(ITALIC, false);
 
-        // Add each modifier with its bracket type and color
-        for (ModifierInfo mod : modifiers) {
-            String modValueText = isPercentage
+        for (var mod : modifiers) {
+            String modValue = isPercent
                     ? String.format("%.1f%%", mod.getValue())
                     : String.format("%.0f", mod.getValue());
 
-            builder.append(Component.text(" ")).append();
-
-            builder.append(Component
-                    .text(" " + mod.getOpenBracket() + "+" + modValueText + mod.getCloseBracket(), mod.getColor()));
+            builder.append(Component.text(" "))
+                    .append(Component.text(
+                            mod.getOpenBracket() + "+" + modValue + mod.getCloseBracket(),
+                            mod.getColor()
+                    ));
         }
 
         return builder.build();
