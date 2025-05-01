@@ -3,6 +3,7 @@ package net.skyblock.item.handlers;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import net.skyblock.item.components.NameComponent;
+import net.skyblock.item.handlers.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class NameHandler implements StackWriterHandler<NameComponent> {

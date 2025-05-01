@@ -80,5 +80,6 @@ public class ItemComponentHandlerRegistry extends Registry<String, ItemComponent
         register(new HeadTextureHandler());
         register(new HotPotatoBookHandler());
         register(new MaterialHandler());
+        register(new StatsHandler());
     }
 }

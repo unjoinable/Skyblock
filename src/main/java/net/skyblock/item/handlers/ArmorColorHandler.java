@@ -1,12 +1,14 @@
 package net.skyblock.item.handlers;
 
+import net.minestom.server.color.Color;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
-import net.skyblock.item.components.MaterialComponent;
+import net.skyblock.item.components.ArmorColorComponent;
 import net.skyblock.item.handlers.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
-    private static final String ID = "skyblock:material_handler";
+public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent> {
+    private static final String ID = "color";
 
     /**
      * Writes component-specific data to the provided ItemStack builder.
@@ -18,16 +20,17 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
      * @param builder   the ItemStack builder to write component data to
      */
     @Override
-    public void write(@NotNull MaterialComponent component, ItemStack.@NotNull Builder builder) {
-        builder.material(component.material());
+    public void write(@NotNull ArmorColorComponent component, ItemStack.@NotNull Builder builder) {
+        int[] color = component.color();
+        builder.set(DataComponents.DYED_COLOR, new Color(color[0], color[1], color[2]));
     }
 
     /**
      * Returns the component type this handler is responsible for
      */
     @Override
-    public @NotNull Class<MaterialComponent> componentType() {
-        return MaterialComponent.class;
+    public @NotNull Class<ArmorColorComponent> componentType() {
+        return ArmorColorComponent.class;
     }
 
     /**

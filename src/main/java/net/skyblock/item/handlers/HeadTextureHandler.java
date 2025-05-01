@@ -5,6 +5,7 @@ import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.HeadProfile;
 import net.skyblock.item.components.HeadTextureComponent;
+import net.skyblock.item.handlers.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

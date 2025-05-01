@@ -1,12 +1,23 @@
 package net.skyblock.item.handlers;
 
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.text.Component;
+import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.components.HotPotatoBookComponent;
+import net.skyblock.item.enums.ItemCategory;
+import net.skyblock.item.handlers.trait.NBTHandler;
+import net.skyblock.item.handlers.trait.ModifierHandler;
+import net.skyblock.item.service.ComponentResolver;
+import net.skyblock.stats.StatProfile;
+import net.skyblock.stats.StatValueType;
+import net.skyblock.stats.Statistic;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent> {
+import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
+
+public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent>, ModifierHandler<HotPotatoBookComponent> {
     private static final String ID = "hot_potato_book";
     private static final String KEY_COUNT = "count";
 
@@ -54,5 +65,45 @@ public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent> 
     @Override
     public @NotNull String componentId() {
         return ID;
+    }
+
+    /**
+     * Gets the stat profile containing all statistic modifications provided by this component.
+     *
+     * @param component The component to get data from
+     * @param container The container holding the item component
+     * @return A stat profile with all applicable statistic modifications
+     */
+    @Override
+    public @NotNull StatProfile getStatProfile(@NotNull HotPotatoBookComponent component, @NotNull ComponentContainer container) {
+        StatProfile statProfile = new StatProfile();
+        ComponentResolver resolver = new ComponentResolver();
+        ItemCategory itemCategory = resolver.resolveCategory(container);
+        int count = component.count();
+
+        if (itemCategory.isWeapon()) {
+            // Weapon stats - Damage and Strength
+            statProfile.addStat(Statistic.DAMAGE, StatValueType.BASE, 2 * count);
+            statProfile.addStat(Statistic.STRENGTH, StatValueType.BASE, 2 * count);
+        } else if (itemCategory.isArmor()) {
+            // Armor stats - Defense and Health
+            statProfile.addStat(Statistic.DEFENSE, StatValueType.BASE, 2 * count);
+            statProfile.addStat(Statistic.HEALTH, StatValueType.BASE, 4 * count);
+        }
+
+        return statProfile;
+    }
+
+    /**
+     * Formats a statistic and its value into a displayable text component.
+     * Used for rendering the stat in tooltips, GUIs, or other displays.
+     *
+     * @param stat  The statistic to format
+     * @param value The value of the statistic
+     * @return A formatted text component for display
+     */
+    @Override
+    public @NotNull Component formatStatDisplay(@NotNull Statistic stat, int value) {
+        return Component.text("(" + value + ")", YELLOW);
     }
 }

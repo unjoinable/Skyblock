@@ -1,4 +1,4 @@
-package net.skyblock.item.handlers;
+package net.skyblock.item.handlers.trait;
 
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.ItemComponentHandler;
@@ -14,15 +14,16 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <C> The type of item component this handler manages
  */
-public interface StatModifierHandler <C extends ItemComponent> extends ItemComponentHandler<C> {
+public interface ModifierHandler<C extends ItemComponent> extends ItemComponentHandler<C> {
 
     /**
      * Gets the stat profile containing all statistic modifications provided by this component.
      *
+     * @param component The component to get data from
      * @param container The container holding the item component
      * @return A stat profile with all applicable statistic modifications
      */
-    @NotNull StatProfile getStatProfile(@NotNull ComponentContainer container);
+    @NotNull StatProfile getStatProfile(@NotNull C component, @NotNull ComponentContainer container);
 
     /**
      * Formats a statistic and its value into a displayable text component.

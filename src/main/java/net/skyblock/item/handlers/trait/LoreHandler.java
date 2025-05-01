@@ -1,4 +1,4 @@
-package net.skyblock.item.handlers;
+package net.skyblock.item.handlers.trait;
 
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.ItemComponentHandler;
