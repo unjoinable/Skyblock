@@ -1,9 +1,9 @@
 package net.skyblock.item.component.handlers.trait;
 
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
+import net.skyblock.item.component.ItemComponentHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

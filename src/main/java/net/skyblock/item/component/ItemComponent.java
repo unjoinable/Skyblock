@@ -15,8 +15,8 @@ public interface ItemComponent {
      *
      * @return The handler for this component type
      */
-    default <T extends ItemComponent> ItemComponentHandler<T> getHandler() {
-        Class<T> componentClass = this.getType();
+    default ItemComponentHandler<?> getHandler() {
+        Class<? extends ItemComponent> componentClass = this.getType();
         HandlerRegistry registry = Skyblock.getInstance().getHandlerRegistry();
         return registry.getHandler(componentClass);
     }

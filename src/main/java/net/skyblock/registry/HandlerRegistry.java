@@ -1,7 +1,7 @@
 package net.skyblock.registry;
 
-import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ItemComponent;
+import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.handlers.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,12 +29,10 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
      * Get a component handler by component class.
      *
      * @param componentClass The component class to look up
-     * @param <C>            The component type
      * @return The handler for the given component type, or null if not found
      */
-    @SuppressWarnings("unchecked")
-    public @Nullable <C extends ItemComponent> ItemComponentHandler<C> getHandler(@NotNull Class<C> componentClass) {
-        return (ItemComponentHandler<C>) find(handler ->
+    public @Nullable ItemComponentHandler<?> getHandler(@NotNull Class<? extends ItemComponent> componentClass) {
+        return find(handler ->
                 handler.componentType().equals(componentClass)
         ).orElse(null);
     }
@@ -81,5 +79,6 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
         register(new HotPotatoBookHandler());
         register(new MaterialHandler());
         register(new StatsHandler());
+        register(new ArmorColorHandler());
     }
 }

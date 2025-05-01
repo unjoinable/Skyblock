@@ -32,9 +32,9 @@ public interface ModifierComponent extends ItemComponent {
      * Helper method to get the specific ModifierHandler for this component
      * @return The ModifierHandler specialized for this component type
      */
-    default <T extends ModifierComponent> ModifierHandler<T> getModifierHandler() {
-        Class<T> componentClass = this.getType();
+    default ModifierHandler<?> getModifierHandler() {
+        Class<? extends ModifierComponent> componentClass = this.getType();
         HandlerRegistry registry = Skyblock.getInstance().getHandlerRegistry();
-        return (ModifierHandler<T>) registry.getHandler(componentClass);
+        return (ModifierHandler<?>) registry.getHandler(componentClass);
     }
 }

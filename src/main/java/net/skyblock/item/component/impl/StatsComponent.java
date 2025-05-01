@@ -1,7 +1,6 @@
 package net.skyblock.item.component.impl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.skyblock.Skyblock;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ModifierComponent;
@@ -63,7 +62,7 @@ public record StatsComponent(
     }
 
     public @NotNull StatProfile getFinalStats(@NotNull ComponentContainer container) {
-        StatsHandler handler = (StatsHandler) Skyblock.getInstance().getHandlerRegistry().getHandler(getClass());
+        StatsHandler handler = (StatsHandler) getHandler();
         assert handler != null;
         return handler.getFinalStats(this, container);
     }
