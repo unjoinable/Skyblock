@@ -1,15 +1,20 @@
 package net.skyblock.item.component.handlers;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ModifierComponent;
-import net.skyblock.item.component.impl.StatsComponent;
 import net.skyblock.item.component.handlers.trait.LoreHandler;
+import net.skyblock.item.component.impl.StatsComponent;
 import net.skyblock.stats.StatProfile;
+import net.skyblock.stats.StatValueType;
+import net.skyblock.stats.Statistic;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles the stats component for items.
@@ -81,5 +86,28 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
     @Override
     public @NotNull List<Component> generateLore(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
         return List.of();
+    }
+
+    /**
+     * Creates a component instance from JSON data
+     *
+     * @param json The JSON data to parse
+     * @return The created component instance
+     * @throws UnsupportedOperationException by default unless overridden
+     */
+    @Override
+    public StatsComponent fromJson(@NotNull JsonObject json) {
+        StatProfile profile = new StatProfile(false);
+
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+            String name = entry.getKey();
+            try {
+                Statistic stat = Statistic.valueOf(name);
+                double value = entry.getValue().getAsDouble();
+                profile.addStat(stat, StatValueType.BASE, value);
+            } catch (IllegalArgumentException _) {} //ignored exception
+        }
+
+        return new StatsComponent(profile);
     }
 }

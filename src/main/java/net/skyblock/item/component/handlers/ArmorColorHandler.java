@@ -1,10 +1,11 @@
 package net.skyblock.item.component.handlers;
 
+import com.google.gson.JsonObject;
 import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
-import net.skyblock.item.component.impl.ArmorColorComponent;
 import net.skyblock.item.component.handlers.trait.StackWriterHandler;
+import net.skyblock.item.component.impl.ArmorColorComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent> {
@@ -40,4 +41,28 @@ public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent
     public @NotNull String componentId() {
         return ID;
     }
+
+    /**
+     * Creates a component instance from JSON data
+     *
+     * @param json The JSON data to parse
+     * @return The created component instance
+     */
+    @Override
+    public ArmorColorComponent fromJson(@NotNull JsonObject json) {
+        if (json.has(ID)) {
+            String colorStr = json.get(ID).getAsString();
+            String[] colorParts = colorStr.split(",");
+
+            if (colorParts.length == 3) {
+                int[] rgb = new int[3];
+                for (int i = 0; i < 3; i++) {
+                    rgb[i] = Integer.parseInt(colorParts[i].trim());
+                }
+                return new ArmorColorComponent(rgb);
+            }
+        }
+        return new ArmorColorComponent(new int[]{0, 0, 0});
+    }
+
 }

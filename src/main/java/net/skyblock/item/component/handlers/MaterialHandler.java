@@ -1,12 +1,14 @@
 package net.skyblock.item.component.handlers;
 
+import com.google.gson.JsonObject;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 import net.skyblock.item.component.impl.MaterialComponent;
 import net.skyblock.item.component.handlers.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
-    private static final String ID = "skyblock:material_handler";
+    private static final String ID = "material";
 
     /**
      * Writes component-specific data to the provided ItemStack builder.
@@ -36,5 +38,21 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
     @Override
     public @NotNull String componentId() {
         return ID;
+    }
+
+    /**
+     * Creates a component instance from JSON data
+     *
+     * @param json The JSON data to parse
+     * @return The created component instance
+     */
+    @Override
+    public MaterialComponent fromJson(@NotNull JsonObject json) {
+        if (json.has(ID)) {
+            String value = json.get(ID).getAsString();
+            Material material = Material.fromKey(value.toLowerCase());
+            return new MaterialComponent(material);
+        }
+        return new MaterialComponent(Material.AIR);
     }
 }

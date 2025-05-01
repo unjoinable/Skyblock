@@ -73,12 +73,13 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
      */
     @Override
     public void init() {
-        register(new RarityHandler());
-        register(new NameHandler());
+        register(new ArmorColorHandler());
         register(new HeadTextureHandler());
         register(new HotPotatoBookHandler());
+        register(new ItemCategoryHandler());
         register(new MaterialHandler());
+        register(new NameHandler());
+        register(new RarityHandler());
         register(new StatsHandler());
-        register(new ArmorColorHandler());
     }
 }
