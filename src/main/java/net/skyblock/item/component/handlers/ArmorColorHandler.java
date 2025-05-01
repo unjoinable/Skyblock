@@ -1,6 +1,6 @@
 package net.skyblock.item.component.handlers;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
@@ -49,20 +49,18 @@ public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent
      * @return The created component instance
      */
     @Override
-    public ArmorColorComponent fromJson(@NotNull JsonObject json) {
-        if (json.has(ID)) {
-            String colorStr = json.get(ID).getAsString();
-            String[] colorParts = colorStr.split(",");
+    public ArmorColorComponent fromJson(@NotNull JsonElement json) {
+        String colorStr = json.getAsString();
+        String[] colorParts = colorStr.split(",");
 
-            if (colorParts.length == 3) {
-                int[] rgb = new int[3];
-                for (int i = 0; i < 3; i++) {
-                    rgb[i] = Integer.parseInt(colorParts[i].trim());
-                }
-                return new ArmorColorComponent(rgb);
+        if (colorParts.length == 3) {
+            int[] rgb = new int[3];
+            for (int i = 0; i < 3; i++) {
+                rgb[i] = Integer.parseInt(colorParts[i].trim());
             }
+            return new ArmorColorComponent(rgb);
         }
-        return new ArmorColorComponent(new int[]{0, 0, 0});
+        return new ArmorColorComponent(new int[]{0,0,0});
     }
 
 }

@@ -1,7 +1,6 @@
 package net.skyblock.item.component.handlers;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponentHandler;
@@ -23,7 +22,7 @@ import java.util.Map;
  * - Generating appropriate lore for displaying item stats
  */
 public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreHandler<StatsComponent> {
-    private static final String ID = "stats";
+    private static final String ID = "statistics";
 
     /**
      * Returns the component type this handler is responsible for.
@@ -96,10 +95,9 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public StatsComponent fromJson(@NotNull JsonObject json) {
+    public StatsComponent fromJson(@NotNull JsonElement json) {
         StatProfile profile = new StatProfile(false);
-
-        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
             String name = entry.getKey();
             try {
                 Statistic stat = Statistic.valueOf(name);

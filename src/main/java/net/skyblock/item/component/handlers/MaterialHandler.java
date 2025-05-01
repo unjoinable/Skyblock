@@ -1,6 +1,6 @@
 package net.skyblock.item.component.handlers;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.skyblock.item.component.impl.MaterialComponent;
@@ -47,12 +47,10 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
      * @return The created component instance
      */
     @Override
-    public MaterialComponent fromJson(@NotNull JsonObject json) {
-        if (json.has(ID)) {
-            String value = json.get(ID).getAsString();
-            Material material = Material.fromKey(value.toLowerCase());
-            return new MaterialComponent(material);
-        }
-        return new MaterialComponent(Material.AIR);
+    public MaterialComponent fromJson(@NotNull JsonElement json) {
+        String value = json.getAsString();
+        Material material = Material.fromKey(value.toLowerCase());
+        return new MaterialComponent(material);
+
     }
 }

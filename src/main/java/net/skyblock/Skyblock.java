@@ -66,8 +66,8 @@ public class Skyblock {
         registerListeners(eventHandler);
 
         // Initialize item and component registries
-        this.itemRegistry = new ItemRegistry();
         this.handlerRegistry = new HandlerRegistry();
+        this.itemRegistry = new ItemRegistry(this.handlerRegistry);
         initRegistries();
 
         // Processor

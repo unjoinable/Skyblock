@@ -1,6 +1,6 @@
 package net.skyblock.item.component.handlers;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import net.skyblock.item.component.handlers.trait.StackWriterHandler;
@@ -48,11 +48,8 @@ public class NameHandler implements StackWriterHandler<NameComponent> {
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public NameComponent fromJson(@NotNull JsonObject json) {
-        if (json.has(ID)) {
-            String textureValue = json.get(ID).getAsString();
-            return new NameComponent(textureValue);
-        }
-        return new NameComponent("");
+    public NameComponent fromJson(@NotNull JsonElement json) {
+        String textureValue = json.getAsString();
+        return new NameComponent(textureValue);
     }
 }

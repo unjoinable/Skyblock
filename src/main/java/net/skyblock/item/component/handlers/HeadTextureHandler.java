@@ -1,6 +1,6 @@
 package net.skyblock.item.component.handlers;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
@@ -53,11 +53,8 @@ public class HeadTextureHandler implements StackWriterHandler<HeadTextureCompone
      * @return The created component instance
      */
     @Override
-    public HeadTextureComponent fromJson(@NotNull JsonObject json) {
-        if (json.has(ID)) {
-            String textureValue = json.get(ID).getAsString();
-            return new HeadTextureComponent(textureValue);
-        }
-        return new HeadTextureComponent("");
+    public HeadTextureComponent fromJson(@NotNull JsonElement json) {
+        String textureValue = json.getAsString();
+        return new HeadTextureComponent(textureValue);
     }
 }

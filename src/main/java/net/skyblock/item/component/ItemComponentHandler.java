@@ -1,7 +1,7 @@
 package net.skyblock.item.component;
 
+import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
-import com.google.gson.JsonObject;
 
 /**
  * Interface for handling specific {@link ItemComponent} types.
@@ -27,7 +27,7 @@ public interface ItemComponentHandler<C extends ItemComponent> {
      * @return The created component instance
      * @throws UnsupportedOperationException by default unless overridden
      */
-    default C fromJson(@NotNull JsonObject json) {
+    default C fromJson(@NotNull JsonElement json) {
         throw new UnsupportedOperationException("fromJson not implemented for component: " + componentId());
     }
 }

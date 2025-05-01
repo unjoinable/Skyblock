@@ -1,6 +1,6 @@
 package net.skyblock.item.component.handlers;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -114,12 +114,9 @@ public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<R
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public RarityComponent fromJson(@NotNull JsonObject json) {
-        if (json.has(ID)) {
-            String value = json.get(ID).getAsString();
-            Rarity rarity = Rarity.getRarity(value);
-            return new RarityComponent(rarity, false);
-        }
-        return new RarityComponent(Rarity.UNOBTAINABLE, false);
+    public RarityComponent fromJson(@NotNull JsonElement json) {
+        String value = json.getAsString();
+        Rarity rarity = Rarity.getRarity(value);
+        return new RarityComponent(rarity, false);
     }
 }

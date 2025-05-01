@@ -1,6 +1,6 @@
 package net.skyblock.item.component.handlers;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.impl.ItemCategoryComponent;
 import net.skyblock.item.enums.ItemCategory;
@@ -33,12 +33,9 @@ public class ItemCategoryHandler implements ItemComponentHandler<ItemCategoryCom
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public ItemCategoryComponent fromJson(@NotNull JsonObject json) {
-        if (json.has(ID)) {
-            String value = json.get(ID).getAsString();
-            ItemCategory category = ItemCategory.valueOf(value);
-            return new ItemCategoryComponent(category);
-        }
-        return new ItemCategoryComponent(ItemCategory.NONE);
+    public ItemCategoryComponent fromJson(@NotNull JsonElement json) {
+        String value = json.getAsString();
+        ItemCategory category = ItemCategory.valueOf(value);
+        return new ItemCategoryComponent(category);
     }
 }
