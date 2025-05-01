@@ -3,13 +3,7 @@ package net.skyblock.item;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import net.kyori.adventure.text.Component;
-import net.minestom.server.item.Material;
 import net.skyblock.Skyblock;
-import net.skyblock.item.component.adapters.*;
-import net.skyblock.item.enums.ItemCategory;
-import net.skyblock.item.enums.Rarity;
-import net.skyblock.stats.StatProfile;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
@@ -32,12 +26,6 @@ public class SkyblockItemLoader {
      */
     public SkyblockItemLoader() {
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(StatProfile.class, new StatProfileAdapter())
-                .registerTypeAdapter(Rarity.class, new RarityAdapter())
-                .registerTypeAdapter(ItemCategory.class, new ItemCategoryAdapter())
-                .registerTypeAdapter(Material.class, new MaterialAdapter())
-                .registerTypeAdapter(Component.class, new ComponentAdapter())
-                .registerTypeAdapter(SkyblockItem.class, new SkyblockItemAdapter())
                 .create();
     }
 

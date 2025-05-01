@@ -1,7 +1,7 @@
 package net.skyblock.item.component.event;
 
-import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponent;
 
 /**
  * Interface for receiving notifications when components change.

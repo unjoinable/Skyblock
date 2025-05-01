@@ -1,16 +1,5 @@
 package net.skyblock;
 
-import net.skyblock.command.commands.ItemCommand;
-import net.skyblock.command.commands.TestCommand;
-import net.skyblock.item.SkyblockItemProcessor;
-import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.components.ArtOfPeaceComponent;
-import net.skyblock.item.component.components.HotPotatoBookComponent;
-import net.skyblock.item.component.components.RarityComponent;
-import net.skyblock.listeners.*;
-import net.skyblock.player.SkyblockPlayer;
-import net.skyblock.registry.ItemComponentHandlerRegistry;
-import net.skyblock.registry.ItemRegistry;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
@@ -19,6 +8,14 @@ import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.skyblock.command.commands.ItemCommand;
+import net.skyblock.command.commands.TestCommand;
+import net.skyblock.item.SkyblockItemProcessor;
+import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.listeners.*;
+import net.skyblock.player.SkyblockPlayer;
+import net.skyblock.registry.HandlerRegistry;
+import net.skyblock.registry.ItemRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +33,7 @@ public class Skyblock {
 
     // Registries
     private final ItemRegistry itemRegistry;
-    private final ItemComponentHandlerRegistry itemComponentHandlerRegistry;
+    private final HandlerRegistry handlerRegistry;
 
     /**
      * Main entry point for the Skyblock server.
@@ -70,9 +67,11 @@ public class Skyblock {
 
         // Initialize item and component registries
         this.itemRegistry = new ItemRegistry();
-        this.itemComponentHandlerRegistry = new ItemComponentHandlerRegistry();
+        this.handlerRegistry = new HandlerRegistry();
         initRegistries();
-        this.processor = initProcessor();
+
+        // Processor
+        this.processor = new SkyblockItemProcessor(handlerRegistry);
 
         // Register commands
         CommandManager cmdManager = MinecraftServer.getCommandManager();
@@ -113,20 +112,7 @@ public class Skyblock {
      */
     private void initRegistries() {
         itemRegistry.init();
-        itemComponentHandlerRegistry.init();
-    }
-
-    /**
-     * Registers all default components to processor
-     *
-     * @return The initialized SkyblockItemProcessor
-     */
-    private SkyblockItemProcessor initProcessor() {
-        SkyblockItemProcessor itemProcessor = new SkyblockItemProcessor();
-        itemProcessor.registerDeserializer(HotPotatoBookComponent::read);
-        itemProcessor.registerDeserializer(RarityComponent::read);
-        itemProcessor.registerDeserializer(ArtOfPeaceComponent::read);
-        return itemProcessor;
+        handlerRegistry.init();
     }
 
     /**
@@ -177,6 +163,15 @@ public class Skyblock {
      */
     public ItemRegistry getItemRegistry() {
         return itemRegistry;
+    }
+
+    /**
+     * Returns the component registry with default handlers registered
+     *
+     * @return The Handler Registry
+     */
+    public HandlerRegistry getHandlerRegistry() {
+        return handlerRegistry;
     }
 
     /**
