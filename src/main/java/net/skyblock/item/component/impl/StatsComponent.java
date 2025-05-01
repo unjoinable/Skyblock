@@ -44,21 +44,18 @@ public record StatsComponent(
      * Adds a new stat modifier to this component.
      *
      * @param modifier The modifier to add
-     * @return This StatsComponent instance for method chaining
      */
-    public StatsComponent addModifier(ModifierComponent modifier) {
+    public void addModifier(ModifierComponent modifier) {
         modifiers.add(modifier);
-        return this;
     }
 
     /**
      * Removes a stat modifier from this component.
      *
      * @param modifier The modifier to remove
-     * @return True if the modifier was found and removed, false otherwise
      */
-    public boolean removeModifier(ModifierComponent modifier) {
-        return modifiers.remove(modifier);
+    public void removeModifier(ModifierComponent modifier) {
+        modifiers.remove(modifier);
     }
 
     public @NotNull StatProfile getFinalStats(@NotNull ComponentContainer container) {
