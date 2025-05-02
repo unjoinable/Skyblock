@@ -16,7 +16,7 @@ public record HotPotatoBookComponent(int count) implements ModifierComponent {
      * @param count The number of Hot Potato Books applied
      * @return A new HotPotatoBookComponent with the updated count
      */
-    public HotPotatoBookComponent with(int count) {
+    public static HotPotatoBookComponent with(int count) {
         return new HotPotatoBookComponent(count);
     }
 }

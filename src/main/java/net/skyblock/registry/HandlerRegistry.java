@@ -1,14 +1,10 @@
 package net.skyblock.registry;
 
-import net.skyblock.Skyblock;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
+import net.skyblock.item.component.handlers.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-
-import java.lang.reflect.Modifier;
 
 /**
  * A registry for {@link ItemComponentHandler} instances.
@@ -17,8 +13,6 @@ import java.lang.reflect.Modifier;
  * - Component IDs and their handlers
  */
 public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
-    private static final String HANDLERS_PACKAGE = "net.skyblock.item.component.handlers";
-
     /**
      * Register a component handler.
      * Uses the handler's componentId() as the key.
@@ -75,25 +69,15 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
      */
     @Override
     public void init() {
-        try {
-            Reflections reflections = new Reflections(HANDLERS_PACKAGE, new SubTypesScanner(false));
-
-            int count = 0;
-            for (Class<? extends ItemComponentHandler> cls : reflections.getSubTypesOf(ItemComponentHandler.class)) {
-                if (cls.isInterface() || Modifier.isAbstract(cls.getModifiers()))
-                    continue;
-
-                try {
-                    register(cls.getDeclaredConstructor().newInstance());
-                    count++;
-                } catch (Exception e) {
-                    Skyblock.getLogger().warn("Failed to load handler: {}", cls.getName(), e);
-                }
-            }
-
-            Skyblock.getLogger().info("Registered {} component handlers", count);
-        } catch (Exception e) {
-            Skyblock.getLogger().error("Failed to scan component handlers", e);
-        }
+        register(new ArmorColorHandler());
+        register(new DescriptionHandler());
+        register(new HeadTextureHandler());
+        register(new HotPotatoBookHandler());
+        register(new ItemCategoryHandler());
+        register(new MaterialHandler());
+        register(new NameHandler());
+        register(new RarityHandler());
+        register(new ReforgeHandler());
+        register(new StatsHandler());
     }
 }
