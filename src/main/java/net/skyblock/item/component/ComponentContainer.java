@@ -65,7 +65,7 @@ public final class ComponentContainer {
 
         // Only copy if necessary
         ItemComponent existing = components.get(type);
-        if (Objects.equals(existing, component)) {
+        if (Objects.equals(existing, component)) {;
             return this;
         }
 
@@ -147,6 +147,22 @@ public final class ComponentContainer {
      */
     public Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> asMap() {
         return components;
+    }
+
+    /**
+     * Creates a deep copy of the component container.
+     * This is useful when you need a fresh container with the same components.
+     *
+     * @return a new ComponentContainer with copies of all components
+     */
+    public @NotNull ComponentContainer copy() {
+        if (components.isEmpty()) {
+            return new ComponentContainer();
+        }
+
+        var newMap = new Object2ObjectOpenHashMap<Class<? extends ItemComponent>, ItemComponent>();
+        newMap.putAll(components);
+        return new ComponentContainer(newMap);
     }
 
     private static ComponentContainer notifyComponentAdded(ComponentContainer container, ItemComponent component) {

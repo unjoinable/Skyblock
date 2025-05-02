@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 import static net.kyori.adventure.text.format.NamedTextColor.YELLOW;
+import static net.skyblock.utils.Utils.formatStatValue;
 
 public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent>, ModifierHandler<HotPotatoBookComponent> {
     private static final String ID = "hot_potato_book";
@@ -104,6 +105,6 @@ public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent>,
      */
     @Override
     public @NotNull Component formatStatDisplay(@NotNull Statistic stat, double value) {
-        return Component.text("(" + value + ")", YELLOW);
+        return Component.text("(" + formatStatValue(value, stat) + ")", YELLOW);
     }
 }

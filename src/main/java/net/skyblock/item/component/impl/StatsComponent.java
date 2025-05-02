@@ -41,21 +41,27 @@ public record StatsComponent(
     }
 
     /**
-     * Adds a new stat modifier to this component.
+     * Creates a new StatsComponent with an additional modifier.
      *
      * @param modifier The modifier to add
+     * @return A new StatsComponent with the added modifier
      */
-    public void addModifier(ModifierComponent modifier) {
-        modifiers.add(modifier);
+    public StatsComponent withModifier(ModifierComponent modifier) {
+        ObjectArrayList<ModifierComponent> newModifiers = new ObjectArrayList<>(this.modifiers);
+        newModifiers.add(modifier);
+        return new StatsComponent(this.baseStats, newModifiers);
     }
 
     /**
-     * Removes a stat modifier from this component.
+     * Creates a new StatsComponent without the specified modifier.
      *
      * @param modifier The modifier to remove
+     * @return A new StatsComponent without the specified modifier
      */
-    public void removeModifier(ModifierComponent modifier) {
-        modifiers.remove(modifier);
+    public StatsComponent withoutModifier(ModifierComponent modifier) {
+        ObjectArrayList<ModifierComponent> newModifiers = new ObjectArrayList<>(this.modifiers);
+        newModifiers.remove(modifier);
+        return new StatsComponent(this.baseStats, newModifiers);
     }
 
     public @NotNull StatProfile getFinalStats(@NotNull ComponentContainer container) {

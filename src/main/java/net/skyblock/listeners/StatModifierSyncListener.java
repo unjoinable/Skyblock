@@ -20,7 +20,8 @@ public final class StatModifierSyncListener implements ComponentChangeListener {
                     .get(StatsComponent.class)
                     .orElse(new StatsComponent());
 
-            stats.addModifier(modifier);
+            StatsComponent updatedStats = stats.withModifier(modifier);
+            return container.with(updatedStats);
         }
         return container;
     }
@@ -31,8 +32,8 @@ public final class StatModifierSyncListener implements ComponentChangeListener {
             StatsComponent stats = container
                     .get(StatsComponent.class)
                     .orElse(new StatsComponent());
-
-            stats.removeModifier(modifier);
+            StatsComponent updatedStats = stats.withoutModifier(modifier);
+            return container.with(updatedStats);
         }
         return container;
     }

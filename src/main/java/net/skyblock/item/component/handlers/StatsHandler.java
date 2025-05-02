@@ -11,6 +11,7 @@ import net.skyblock.item.component.impl.StatsComponent;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.StatValueType;
 import net.skyblock.stats.Statistic;
+import net.skyblock.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
+import static net.skyblock.utils.Utils.formatStatValue;
 
 /**
  * Handles the stats component for items.
@@ -29,16 +31,21 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
  * - Generating appropriate lore for displaying item stats
  */
 public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreHandler<StatsComponent> {
-    private static final String ID = "statistics";
+    private static final String COMPONENT_ID = "statistics";
 
-    /**
-     * Returns the component type this handler is responsible for.
-     *
-     * @return The StatsComponent class
-     */
     @Override
     public @NotNull Class<StatsComponent> componentType() {
         return StatsComponent.class;
+    }
+
+    @Override
+    public @NotNull String componentId() {
+        return COMPONENT_ID;
+    }
+
+    @Override
+    public int lorePriority() {
+        return 0;
     }
 
     /**
@@ -48,9 +55,7 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      * @param container The full component container, which may be needed by modifiers
      * @return A new StatProfile containing the combined stats
      */
-    public @NotNull StatProfile getFinalStats(
-            @NotNull StatsComponent component,
-            @NotNull ComponentContainer container) {
+    public @NotNull StatProfile getFinalStats(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
         StatProfile result = component.baseStats().copy();
 
         for (ModifierComponent modifier : component.modifiers()) {
@@ -61,29 +66,7 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
     }
 
     /**
-     * Returns the unique identifier for this component type.
-     *
-     * @return The component ID
-     */
-    @Override
-    public @NotNull String componentId() {
-        return ID;
-    }
-
-    /**
-     * Determines the lore position priority.
-     * Lower values appear earlier in the item lore.
-     *
-     * @return The priority value for sorting
-     */
-    @Override
-    public int lorePriority() {
-        return 0;
-    }
-
-    /**
      * Generates lore lines for this component to be displayed on the item.
-     * Currently returns an empty list, but can be extended to show stats information.
      *
      * @param component The stats component to generate lore for
      * @param container The full component container, in case lore depends on other components
@@ -91,16 +74,17 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      */
     @Override
     public @NotNull List<Component> generateLore(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
-        var profile = component.getFinalStats(container);
-        var modifiers = component.modifiers();
-        var lore = new ArrayList<Component>();
+        StatProfile profile = component.getFinalStats(container);
+        ObjectArrayList<ModifierComponent> modifiers = component.modifiers();
+        List<Component> lore = new ArrayList<>();
 
         for (Statistic stat : Statistic.getValues()) {
             double value = profile.get(stat);
             if (value > 0) {
-                lore.add(formatStatLine(stat, value, modifiers));
+                lore.add(formatStatLine(stat, value, modifiers, container));
             }
         }
+
         return lore;
     }
 
@@ -109,18 +93,20 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      *
      * @param json The JSON data to parse
      * @return The created component instance
-     * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
     public StatsComponent fromJson(@NotNull JsonElement json) {
         StatProfile profile = new StatProfile(false);
+
         for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
             String name = entry.getKey();
             try {
                 Statistic stat = Statistic.valueOf(name);
                 double value = entry.getValue().getAsDouble();
                 profile.addStat(stat, StatValueType.BASE, value);
-            } catch (IllegalArgumentException _) {} //ignored exception
+            } catch (IllegalArgumentException e) {
+                // Silently ignore invalid statistics
+            }
         }
 
         return new StatsComponent(profile);
@@ -128,23 +114,30 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
 
     /**
      * Creates a formatted text component for a stat line with modifiers
+     *
+     * @param stat The statistic being formatted
+     * @param finalValue The final calculated value of the stat
+     * @param modifiers List of modifiers affecting the stat
+     * @param container The full component container
+     * @return A formatted Component for display in lore
      */
-    private Component formatStatLine(Statistic stat, double value, ObjectArrayList<ModifierComponent> modifiers) {
-        boolean isPercent = stat.getPercentage();
-        String format = isPercent ? "%.1f%%" : "%.0f";
-        String formattedValue = String.format(format, value);
+    private Component formatStatLine(@NotNull Statistic stat, double finalValue, @NotNull ObjectArrayList<ModifierComponent> modifiers, @NotNull ComponentContainer container) {
+        String formattedValue = formatStatValue(finalValue, stat);
 
-        var line = textOfChildren(
+        Component line = textOfChildren(
                 text(stat.getDisplayName() + ": ", GRAY),
-                text("+" + formattedValue + (isPercent ? "%" : ""), stat.getLoreColor()));
+                text(formattedValue, stat.getLoreColor()));
 
         for (ModifierComponent modifier : modifiers) {
             var handler = modifier.getModifierHandler();
-            var text = handler.formatStatDisplay(stat, value);
-            line = line.append(text(" ")).append(text);
+            double modifierValue = handler.getStatProfile(modifier, container).get(stat);
+
+            if (modifierValue == 0) continue;
+
+            Component modifierText = handler.formatStatDisplay(stat, modifierValue);
+            line = line.append(text(" ")).append(modifierText);
         }
 
         return line.decoration(ITALIC, false);
     }
-
 }

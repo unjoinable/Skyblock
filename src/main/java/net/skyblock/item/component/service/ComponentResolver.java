@@ -1,11 +1,14 @@
 package net.skyblock.item.component.service;
 
+import net.skyblock.item.Reforge;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.impl.ItemCategoryComponent;
 import net.skyblock.item.component.impl.RarityComponent;
+import net.skyblock.item.component.impl.ReforgeComponent;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Service for resolving component from component containers.
@@ -34,5 +37,15 @@ public class ComponentResolver {
                         ? component.rarity().upgrade()
                         : component.rarity())
                 .orElse(Rarity.UNOBTAINABLE);
+    }
+
+    /**
+     * Resolves the reforge of an item from its component container.
+     * @param container The component container to check
+     * @return The item's rarity, null if not found
+     */
+    public @Nullable Reforge resolveReforge(@NotNull ComponentContainer container) {
+        return container.get(ReforgeComponent.class)
+                .map(ReforgeComponent::reforge).orElse(null);
     }
 }
