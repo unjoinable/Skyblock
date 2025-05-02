@@ -36,7 +36,8 @@ public class SkyblockItemProcessor {
         ItemStack.Builder builder = ItemStack.builder(Material.AIR);
 
         // Process components
-        skyblockItem.components().asMap().values().forEach(component -> processComponent(builder, component));
+        skyblockItem.components().asMap()
+                .values().forEach(component -> processComponent(builder, component, skyblockItem.components()));
 
         builder.lore(new LoreGenerator(skyblockItem).generate());
         builder.setTag(ID_TAG, skyblockItem.itemId());
@@ -46,7 +47,7 @@ public class SkyblockItemProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends ItemComponent> void processComponent(ItemStack.Builder builder, T component) {
+    private <T extends ItemComponent> void processComponent(ItemStack.Builder builder, T component, ComponentContainer container) {
         if (component == null) return;
 
         try {
@@ -62,7 +63,7 @@ public class SkyblockItemProcessor {
 
             // Handle Stack Writers
             if (handler instanceof StackWriterHandler<T> stackWriter) {
-                stackWriter.write(component, builder);
+                stackWriter.write(component, builder, container);
             }
         } catch (Exception _) {} //ignored
     }

@@ -3,8 +3,11 @@ package net.skyblock.item.component.handlers;
 import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
+import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.handlers.trait.StackWriterHandler;
 import net.skyblock.item.component.impl.NameComponent;
+import net.skyblock.item.component.service.ComponentResolver;
+import net.skyblock.item.enums.Rarity;
 import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
@@ -20,10 +23,13 @@ public class NameHandler implements StackWriterHandler<NameComponent> {
      *
      * @param component the component to write data from
      * @param builder   the ItemStack builder to write component data to
+     * @param container the container containing all components
      */
     @Override
-    public void write(@NotNull NameComponent component, ItemStack.@NotNull Builder builder) {
-        builder.customName(Component.text(component.name()).decoration(ITALIC, false));
+    public void write(@NotNull NameComponent component, ItemStack.@NotNull Builder builder, @NotNull ComponentContainer container) {
+        ComponentResolver resolver = new ComponentResolver();
+        Rarity rarity = resolver.resolveRarity(container);
+        builder.customName(Component.text(component.name(), rarity.getColor()).decoration(ITALIC, false));
     }
 
     /**

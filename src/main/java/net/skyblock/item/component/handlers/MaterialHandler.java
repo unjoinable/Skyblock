@@ -3,6 +3,7 @@ package net.skyblock.item.component.handlers;
 import com.google.gson.JsonElement;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.impl.MaterialComponent;
 import net.skyblock.item.component.handlers.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +19,10 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
      *
      * @param component the component to write data from
      * @param builder   the ItemStack builder to write component data to
+     * @param container the container containing all components
      */
     @Override
-    public void write(@NotNull MaterialComponent component, ItemStack.@NotNull Builder builder) {
+    public void write(@NotNull MaterialComponent component, ItemStack.@NotNull Builder builder, @NotNull ComponentContainer container) {
         builder.material(component.material());
     }
 
