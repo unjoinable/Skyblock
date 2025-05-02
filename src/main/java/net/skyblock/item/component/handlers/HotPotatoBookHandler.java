@@ -103,7 +103,7 @@ public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent>,
      * @return A formatted text component for display
      */
     @Override
-    public @NotNull Component formatStatDisplay(@NotNull Statistic stat, int value) {
+    public @NotNull Component formatStatDisplay(@NotNull Statistic stat, double value) {
         return Component.text("(" + value + ")", YELLOW);
     }
 }

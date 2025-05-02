@@ -7,6 +7,8 @@ import net.skyblock.item.component.handlers.trait.StackWriterHandler;
 import net.skyblock.item.component.impl.NameComponent;
 import org.jetbrains.annotations.NotNull;
 
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
+
 public class NameHandler implements StackWriterHandler<NameComponent> {
     private static final String ID = "name";
 
@@ -21,7 +23,7 @@ public class NameHandler implements StackWriterHandler<NameComponent> {
      */
     @Override
     public void write(@NotNull NameComponent component, ItemStack.@NotNull Builder builder) {
-        builder.customName(Component.text(component.name()));
+        builder.customName(Component.text(component.name()).decoration(ITALIC, false));
     }
 
     /**

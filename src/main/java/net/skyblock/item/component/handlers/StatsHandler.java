@@ -1,6 +1,7 @@
 package net.skyblock.item.component.handlers;
 
 import com.google.gson.JsonElement;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponentHandler;
@@ -12,8 +13,14 @@ import net.skyblock.stats.StatValueType;
 import net.skyblock.stats.Statistic;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 /**
  * Handles the stats component for items.
@@ -84,7 +91,17 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      */
     @Override
     public @NotNull List<Component> generateLore(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
-        return List.of();
+        var profile = component.getFinalStats(container);
+        var modifiers = component.modifiers();
+        var lore = new ArrayList<Component>();
+
+        for (Statistic stat : Statistic.getValues()) {
+            double value = profile.get(stat);
+            if (value > 0) {
+                lore.add(formatStatLine(stat, value, modifiers));
+            }
+        }
+        return lore;
     }
 
     /**
@@ -108,4 +125,26 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
 
         return new StatsComponent(profile);
     }
+
+    /**
+     * Creates a formatted text component for a stat line with modifiers
+     */
+    private Component formatStatLine(Statistic stat, double value, ObjectArrayList<ModifierComponent> modifiers) {
+        boolean isPercent = stat.getPercentage();
+        String format = isPercent ? "%.1f%%" : "%.0f";
+        String formattedValue = String.format(format, value);
+
+        var line = textOfChildren(
+                text(stat.getDisplayName() + ": ", GRAY),
+                text("+" + formattedValue + (isPercent ? "%" : ""), stat.getLoreColor()));
+
+        for (ModifierComponent modifier : modifiers) {
+            var handler = modifier.getModifierHandler();
+            var text = handler.formatStatDisplay(stat, value);
+            line = line.append(text(" ")).append(text);
+        }
+
+        return line.decoration(ITALIC, false);
+    }
+
 }

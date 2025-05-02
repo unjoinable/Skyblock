@@ -46,5 +46,5 @@ public interface ModifierHandler<C extends ItemComponent> extends ItemComponentH
      * @param value The value of the statistic
      * @return A formatted text component for display
      */
-    @NotNull Component formatStatDisplay(@NotNull Statistic stat, int value);
+    @NotNull Component formatStatDisplay(@NotNull Statistic stat, double value);
 }
