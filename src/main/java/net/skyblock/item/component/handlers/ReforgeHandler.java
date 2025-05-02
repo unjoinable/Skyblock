@@ -2,13 +2,12 @@ package net.skyblock.item.component.handlers;
 
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.handlers.trait.ModifierHandler;
+import net.skyblock.item.component.trait.ModifierHandler;
 import net.skyblock.item.component.impl.ReforgeComponent;
 import net.skyblock.item.component.service.ComponentResolver;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
-import net.skyblock.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.format.NamedTextColor.BLUE;

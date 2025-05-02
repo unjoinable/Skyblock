@@ -1,10 +1,14 @@
 package net.skyblock.registry;
 
+import net.skyblock.Skyblock;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
-import net.skyblock.item.component.handlers.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+
+import java.lang.reflect.Modifier;
 
 /**
  * A registry for {@link ItemComponentHandler} instances.
@@ -13,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * - Component IDs and their handlers
  */
 public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
+    private static final String HANDLERS_PACKAGE = "net.skyblock.item.component.handlers";
 
     /**
      * Register a component handler.
@@ -32,9 +37,7 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
      * @return The handler for the given component type, or null if not found
      */
     public @Nullable ItemComponentHandler<?> getHandler(@NotNull Class<? extends ItemComponent> componentClass) {
-        return find(handler ->
-                handler.componentType().equals(componentClass)
-        ).orElse(null);
+        return find(handler -> handler.componentType().equals(componentClass)).orElse(null);
     }
 
     /**
@@ -68,20 +71,29 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
     }
 
     /**
-     * Initialize the registry with default handlers.
-     * Override this method to register default handlers.
+     * Initialize the registry using reflection to find and register all handlers.
      */
     @Override
     public void init() {
-        register(new ArmorColorHandler());
-        register(new HeadTextureHandler());
-        register(new HotPotatoBookHandler());
-        register(new ItemCategoryHandler());
-        register(new MaterialHandler());
-        register(new NameHandler());
-        register(new RarityHandler());
-        register(new StatsHandler());
-        register(new DescriptionHandler());
-        register(new ReforgeHandler());
+        try {
+            Reflections reflections = new Reflections(HANDLERS_PACKAGE, new SubTypesScanner(false));
+
+            int count = 0;
+            for (Class<? extends ItemComponentHandler> cls : reflections.getSubTypesOf(ItemComponentHandler.class)) {
+                if (cls.isInterface() || Modifier.isAbstract(cls.getModifiers()))
+                    continue;
+
+                try {
+                    register(cls.getDeclaredConstructor().newInstance());
+                    count++;
+                } catch (Exception e) {
+                    Skyblock.getLogger().warn("Failed to load handler: {}", cls.getName(), e);
+                }
+            }
+
+            Skyblock.getLogger().info("Registered {} component handlers", count);
+        } catch (Exception e) {
+            Skyblock.getLogger().error("Failed to scan component handlers", e);
+        }
     }
 }

@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import net.skyblock.item.Reforge;
 import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.handlers.trait.StackWriterHandler;
+import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.item.component.impl.NameComponent;
 import net.skyblock.item.component.service.ComponentResolver;
 import net.skyblock.item.enums.Rarity;

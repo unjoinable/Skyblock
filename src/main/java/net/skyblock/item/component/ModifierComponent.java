@@ -1,7 +1,7 @@
 package net.skyblock.item.component;
 
 import net.skyblock.Skyblock;
-import net.skyblock.item.component.handlers.trait.ModifierHandler;
+import net.skyblock.item.component.trait.ModifierHandler;
 import net.skyblock.registry.HandlerRegistry;
 
 /**

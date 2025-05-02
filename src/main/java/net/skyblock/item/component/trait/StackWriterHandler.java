@@ -1,4 +1,4 @@
-package net.skyblock.item.component.handlers.trait;
+package net.skyblock.item.component.trait;
 
 import net.minestom.server.item.ItemStack;
 import net.skyblock.item.component.ComponentContainer;

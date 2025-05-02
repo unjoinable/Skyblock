@@ -3,7 +3,7 @@ package net.skyblock.item;
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
-import net.skyblock.item.component.handlers.trait.LoreHandler;
+import net.skyblock.item.component.trait.LoreHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

@@ -6,12 +6,11 @@ import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ModifierComponent;
-import net.skyblock.item.component.handlers.trait.LoreHandler;
+import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.item.component.impl.StatsComponent;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.StatValueType;
 import net.skyblock.stats.Statistic;
-import net.skyblock.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

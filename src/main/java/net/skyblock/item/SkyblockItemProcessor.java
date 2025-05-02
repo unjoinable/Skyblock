@@ -10,8 +10,8 @@ import net.skyblock.Skyblock;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
-import net.skyblock.item.component.handlers.trait.NBTHandler;
-import net.skyblock.item.component.handlers.trait.StackWriterHandler;
+import net.skyblock.item.component.trait.NBTHandler;
+import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.registry.HandlerRegistry;
 import org.jetbrains.annotations.NotNull;
 

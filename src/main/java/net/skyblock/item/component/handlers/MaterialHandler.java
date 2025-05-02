@@ -5,7 +5,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.impl.MaterialComponent;
-import net.skyblock.item.component.handlers.trait.StackWriterHandler;
+import net.skyblock.item.component.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class MaterialHandler implements StackWriterHandler<MaterialComponent> {

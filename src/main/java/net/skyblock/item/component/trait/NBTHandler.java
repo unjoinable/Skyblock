@@ -1,4 +1,4 @@
-package net.skyblock.item.component.handlers.trait;
+package net.skyblock.item.component.trait;
 
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.skyblock.item.component.ItemComponentHandler;

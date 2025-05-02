@@ -7,7 +7,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.HeadProfile;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.impl.HeadTextureComponent;
-import net.skyblock.item.component.handlers.trait.StackWriterHandler;
+import net.skyblock.item.component.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

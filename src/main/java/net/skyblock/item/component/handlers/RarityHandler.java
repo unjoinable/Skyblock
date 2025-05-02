@@ -7,8 +7,8 @@ import net.kyori.adventure.text.format.TextColor;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.impl.RarityComponent;
 import net.skyblock.item.enums.Rarity;
-import net.skyblock.item.component.handlers.trait.LoreHandler;
-import net.skyblock.item.component.handlers.trait.NBTHandler;
+import net.skyblock.item.component.trait.LoreHandler;
+import net.skyblock.item.component.trait.NBTHandler;
 import net.skyblock.item.component.service.ComponentResolver;
 import org.jetbrains.annotations.NotNull;
 

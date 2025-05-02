@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.handlers.trait.LoreHandler;
+import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.item.component.impl.DescriptionComponent;
 import org.jetbrains.annotations.NotNull;
 

@@ -5,7 +5,7 @@ import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
 import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.handlers.trait.StackWriterHandler;
+import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.item.component.impl.ArmorColorComponent;
 import org.jetbrains.annotations.NotNull;
 
