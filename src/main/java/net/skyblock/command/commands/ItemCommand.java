@@ -33,7 +33,6 @@ public class ItemCommand extends SkyblockCommand {
      */
     public ItemCommand() {
         super("item");
-
         Argument<String> itemArg = ArgumentType.String("itemId")
                 .setSuggestionCallback((_, _, suggestion) -> Skyblock.getInstance().getItemRegistry().iterator()
                         .forEachRemaining(item -> suggestion.addEntry(new SuggestionEntry(item.itemId()))));

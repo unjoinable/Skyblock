@@ -62,5 +62,4 @@ public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent
         }
         return new ArmorColorComponent(new int[]{0,0,0});
     }
-
 }

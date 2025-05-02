@@ -127,9 +127,9 @@ public final class LoreGenerator {
         return handler.generateLore((C) component, container);
     }
 
+
     /**
-         * Helper class to pair a component with its handler
-         */
-        private record ComponentWithHandler(ItemComponent component, LoreHandler<?> handler) {
-    }
+     * Helper class to pair a component with its handler
+     */
+    private record ComponentWithHandler(ItemComponent component, LoreHandler<?> handler) {}
 }

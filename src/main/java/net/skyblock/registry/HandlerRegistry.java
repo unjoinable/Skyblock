@@ -81,5 +81,6 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
         register(new NameHandler());
         register(new RarityHandler());
         register(new StatsHandler());
+        register(new DescriptionHandler());
     }
 }
