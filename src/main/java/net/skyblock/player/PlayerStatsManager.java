@@ -1,7 +1,7 @@
 package net.skyblock.player;
 
 import net.skyblock.item.SkyblockItem;
-import net.skyblock.item.component.components.StatsComponent;
+import net.skyblock.item.component.impl.StatsComponent;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
 import org.jetbrains.annotations.NotNull;
@@ -73,9 +73,9 @@ public class PlayerStatsManager {
         StatProfile profile = new StatProfile();
 
         if (item != null && item.components() != null) {
-            Optional<StatsComponent> statsComponent = item.get(StatsComponent.class);
+            Optional<StatsComponent> statsComponent = item.components().get(StatsComponent.class);
             if (statsComponent.isPresent()) {
-                profile = statsComponent.get().calculateFinalStats(item.components()).copy();
+                profile = statsComponent.get().getFinalStats(item.components());
             }
         }
 

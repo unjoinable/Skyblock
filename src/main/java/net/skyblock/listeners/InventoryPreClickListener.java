@@ -5,7 +5,6 @@ import net.minestom.server.event.EventListener;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.skyblock.player.ItemSlot;
 import net.skyblock.player.SkyblockPlayer;
-import net.skyblock.ui.gui.SkyblockInventory;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,7 +38,7 @@ public class InventoryPreClickListener implements EventListener<InventoryPreClic
     public @NotNull Result run(@NotNull InventoryPreClickEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
 
-        SkyblockInventory.handleInventoryClick(event);
+        //SkyblockInventory.handleInventoryClick(event);
 
         // Player Stats
 

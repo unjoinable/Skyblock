@@ -13,6 +13,11 @@ import java.util.concurrent.CompletableFuture;
  * on registration and lookup functionality.
  */
 public class ItemRegistry extends Registry<String, SkyblockItem> {
+    private final HandlerRegistry handlerRegistry;
+
+    public ItemRegistry(HandlerRegistry handlerRegistry) {
+        this.handlerRegistry = handlerRegistry;
+    }
 
     /**
      * Initializes the item registry by loading items from the JSON file
@@ -23,7 +28,7 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
         final long startTime = System.nanoTime(); // Benchmark start
 
         CompletableFuture.supplyAsync(() -> {
-            SkyblockItemLoader loader = new SkyblockItemLoader();
+            SkyblockItemLoader loader = new SkyblockItemLoader(handlerRegistry);
             try {
                 return loader.loadItems();
             } catch (Exception e) {

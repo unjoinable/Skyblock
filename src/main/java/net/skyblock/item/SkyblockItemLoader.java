@@ -1,83 +1,86 @@
 package net.skyblock.item;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import net.kyori.adventure.text.Component;
-import net.minestom.server.item.Material;
-import net.skyblock.item.component.adapters.*;
-import net.skyblock.item.enums.ItemCategory;
-import net.skyblock.item.enums.Rarity;
-import net.skyblock.stats.StatProfile;
+import com.google.gson.*;
+import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponent;
+import net.skyblock.item.component.ItemComponentHandler;
+import net.skyblock.registry.HandlerRegistry;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * A dedicated loader class responsible for loading {@link SkyblockItem}s
- * from a JSON file in the resources' directory.
+ * Loads {@link SkyblockItem}s from JSON
  */
 public class SkyblockItemLoader {
-
     private static final String ITEM_FILE_PATH = "/skyblock_items.json";
+    private static final String DEFAULT_ITEM_ID = "AIR";
+    private final HandlerRegistry handlerRegistry;
 
-    private final Gson gson;
-
-    /**
-     * Creates a new SkyblockItemLoader with properly configured Gson instance.
-     */
-    public SkyblockItemLoader() {
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(StatProfile.class, new StatProfileAdapter())
-                .registerTypeAdapter(Rarity.class, new RarityAdapter())
-                .registerTypeAdapter(ItemCategory.class, new ItemCategoryAdapter())
-                .registerTypeAdapter(Material.class, new MaterialAdapter())
-                .registerTypeAdapter(Component.class, new ComponentAdapter())
-                .registerTypeAdapter(SkyblockItem.class, new SkyblockItemAdapter())
-                .create();
+    public SkyblockItemLoader(@NotNull HandlerRegistry handlerRegistry) {
+        this.handlerRegistry = handlerRegistry;
     }
 
     /**
-     * Loads Skyblock items from the JSON file in the resources directory.
-     *
-     * @return A list of {@link SkyblockItem} instances
-     * @throws IllegalStateException if the file is missing, malformed, or if parsing fails
+     * Loads Skyblock items from the JSON file in resources
      */
     public List<SkyblockItem> loadItems() {
-        System.out.println("Loading items from: " + ITEM_FILE_PATH);
-
-        // Load resource from classpath instead of file system
         InputStream inputStream = getClass().getResourceAsStream(ITEM_FILE_PATH);
         if (inputStream == null) {
-            throw new IllegalStateException("Items file not found in resources: " + ITEM_FILE_PATH);
+            throw new IllegalStateException("Items file not found: " + ITEM_FILE_PATH);
         }
 
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
-            System.out.println("Parsing JSON...");
             return parseItemsFromJson(reader);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load Skyblock items from resources", e);
+            throw new IllegalStateException("Failed to load Skyblock items", e);
         }
     }
 
     /**
-     * Parses the list of items from JSON.
-     *
-     * @param reader A reader for the item JSON file.
-     * @return A list of {@link SkyblockItem} instances.
-     * @throws RuntimeException if parsing fails.
+     * Parses items from JSON
      */
     private List<SkyblockItem> parseItemsFromJson(InputStreamReader reader) {
-        Type listType = new TypeToken<List<SkyblockItem>>() {}.getType();
-        List<SkyblockItem> items = gson.fromJson(reader, listType);
+        JsonArray itemsArray = JsonParser.parseReader(reader).getAsJsonArray();
+        List<SkyblockItem> items = new ArrayList<>();
 
-        if (items == null) {
-            throw new RuntimeException("Failed to parse items file — JSON is null");
+        for (JsonElement itemElement : itemsArray) {
+            try {
+                JsonObject itemObject = itemElement.getAsJsonObject();
+                String id = itemObject.has("id") ? itemObject.get("id").getAsString() : DEFAULT_ITEM_ID;
+                ComponentContainer components = parseComponents(itemObject);
+                items.add(new SkyblockItem(id, components));
+            } catch (Exception _) {} // ignored
         }
 
         return items;
+    }
+
+    /**
+     * Extracts components from item JSON
+     */
+    private ComponentContainer parseComponents(JsonObject itemObject) {
+        ComponentContainer components = new ComponentContainer();
+
+        for (Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
+            String componentId = entry.getKey();
+            if ("id".equals(componentId)) continue;
+
+            ItemComponentHandler<?> handler = handlerRegistry.getHandler(componentId);
+            if (handler != null) {
+                try {
+                    ItemComponent component = handler.fromJson(entry.getValue());
+                    if (component != null) {
+                        components = components.with(component);
+                    }
+                } catch (Exception _) {}//ignored
+            }
+        }
+
+        return components;
     }
 }

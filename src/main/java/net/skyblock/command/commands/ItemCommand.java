@@ -1,16 +1,16 @@
 package net.skyblock.command.commands;
 
-import net.skyblock.Skyblock;
-import net.skyblock.command.SkyblockCommand;
-import net.skyblock.item.SkyblockItem;
-import net.skyblock.player.rank.PlayerRank;
-import net.skyblock.player.SkyblockPlayer;
-import net.skyblock.registry.ItemRegistry;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.minecraft.ArgumentEntity;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.Player;
+import net.skyblock.Skyblock;
+import net.skyblock.command.SkyblockCommand;
+import net.skyblock.item.SkyblockItem;
+import net.skyblock.player.SkyblockPlayer;
+import net.skyblock.player.rank.PlayerRank;
+import net.skyblock.registry.ItemRegistry;
 
 /**
  * Command for giving items to players.
@@ -33,7 +33,6 @@ public class ItemCommand extends SkyblockCommand {
      */
     public ItemCommand() {
         super("item");
-
         Argument<String> itemArg = ArgumentType.String("itemId")
                 .setSuggestionCallback((_, _, suggestion) -> Skyblock.getInstance().getItemRegistry().iterator()
                         .forEachRemaining(item -> suggestion.addEntry(new SuggestionEntry(item.itemId()))));

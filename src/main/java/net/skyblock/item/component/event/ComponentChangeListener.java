@@ -1,7 +1,7 @@
 package net.skyblock.item.component.event;
 
-import net.skyblock.item.component.Component;
 import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponent;
 
 /**
  * Interface for receiving notifications when components change.
@@ -13,7 +13,7 @@ public interface ComponentChangeListener {
      * @param component The component that was added
      * @return The container with changed values
      */
-    ComponentContainer onComponentAdded(ComponentContainer container, Component component);
+    ComponentContainer onComponentAdded(ComponentContainer container, ItemComponent component);
 
     /**
      * Called when a component is removed from a container.
@@ -21,5 +21,5 @@ public interface ComponentChangeListener {
      * @param component The component that was removed
      * @return The container with changed values
      */
-    ComponentContainer onComponentRemoved(ComponentContainer container, Component component);
+    ComponentContainer onComponentRemoved(ComponentContainer container, ItemComponent component);
 }

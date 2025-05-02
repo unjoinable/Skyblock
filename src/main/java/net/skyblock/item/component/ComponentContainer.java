@@ -1,32 +1,34 @@
 package net.skyblock.item.component;
 
-import net.skyblock.item.component.event.ComponentChangeListener;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.skyblock.item.component.event.ComponentChangeListener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Immutable, thread-safe container for {@link Component}s.
+ * Immutable, thread-safe container for {@link ItemComponent}s.
  *
  * <p>
  * This class stores components keyed by their declared type,
  * and supports efficient structural sharing (copy-on-write).
- * Use {@link #with(Component)} and {@link #without(Class)} to
+ * Use {@link #with(ItemComponent)} and {@link #without(Class)} to
  * create modified copies of the container.
  */
 public final class ComponentContainer {
 
-    private static final Object2ObjectMap<Class<? extends Component>, Component> EMPTY =
+    private static final Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> EMPTY =
             Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>());
 
     // Static list of listeners that will be notified of all component changes
     private static final List<ComponentChangeListener> GLOBAL_LISTENERS = new CopyOnWriteArrayList<>();
 
-    private final Object2ObjectMap<Class<? extends Component>, Component> components;
+    private final Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> components;
 
     /**
      * Creates an empty component container.
@@ -40,7 +42,7 @@ public final class ComponentContainer {
      * @param components backing component map (will be wrapped as unmodifiable)
      */
     private ComponentContainer(
-            @NotNull Object2ObjectMap<Class<? extends Component>, Component> components) {
+            @NotNull Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> components) {
         this.components = Object2ObjectMaps.unmodifiable(components);
     }
 
@@ -50,20 +52,20 @@ public final class ComponentContainer {
      * @param component the component to add (must not be null)
      * @return a new container with the component
      */
-    public ComponentContainer with(@NotNull Component component) {
+    public ComponentContainer with(@NotNull ItemComponent component) {
         Objects.requireNonNull(component);
-        Class<? extends Component> type = component.getType();
+        Class<? extends ItemComponent> type = component.getType();
 
         if (components.isEmpty()) {
-            var newMap = new Object2ObjectOpenHashMap<Class<? extends Component>, Component>(1);
+            var newMap = new Object2ObjectOpenHashMap<Class<? extends ItemComponent>, ItemComponent>(1);
             newMap.put(type, component);
             var result = new ComponentContainer(newMap);
             return notifyComponentAdded(result, component);
         }
 
         // Only copy if necessary
-        Component existing = components.get(type);
-        if (Objects.equals(existing, component)) {
+        ItemComponent existing = components.get(type);
+        if (Objects.equals(existing, component)) {;
             return this;
         }
 
@@ -83,10 +85,10 @@ public final class ComponentContainer {
      * @param type the component class to remove
      * @return a new container without the component
      */
-    public ComponentContainer without(@NotNull Class<? extends Component> type) {
+    public ComponentContainer without(@NotNull Class<? extends ItemComponent> type) {
         Objects.requireNonNull(type);
 
-        Component removed = components.get(type);
+        ItemComponent removed = components.get(type);
         if (removed == null) {
             return this;
         }
@@ -123,9 +125,9 @@ public final class ComponentContainer {
      * @return an Optional containing the component if present
      */
     @SuppressWarnings("unchecked")
-    public <T extends Component> Optional<T> get(@NotNull Class<T> type) {
+    public <T extends ItemComponent> Optional<T> get(@NotNull Class<T> type) {
         Objects.requireNonNull(type);
-        Component component = components.get(type);
+        ItemComponent component = components.get(type);
         return component != null ? Optional.of((T) component) : Optional.empty();
     }
 
@@ -134,7 +136,7 @@ public final class ComponentContainer {
      * @param type the component class to check
      * @return true if present, false otherwise
      */
-    public boolean contains(@NotNull Class<? extends Component> type) {
+    public boolean contains(@NotNull Class<? extends ItemComponent> type) {
         Objects.requireNonNull(type);
         return components.containsKey(type);
     }
@@ -143,18 +145,34 @@ public final class ComponentContainer {
      * Returns an unmodifiable view of the internal component map.
      * @return unmodifiable component map
      */
-    public Object2ObjectMap<Class<? extends Component>, Component> asMap() {
+    public Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> asMap() {
         return components;
     }
 
-    private static ComponentContainer notifyComponentAdded(ComponentContainer container, Component component) {
+    /**
+     * Creates a deep copy of the component container.
+     * This is useful when you need a fresh container with the same components.
+     *
+     * @return a new ComponentContainer with copies of all components
+     */
+    public @NotNull ComponentContainer copy() {
+        if (components.isEmpty()) {
+            return new ComponentContainer();
+        }
+
+        var newMap = new Object2ObjectOpenHashMap<Class<? extends ItemComponent>, ItemComponent>();
+        newMap.putAll(components);
+        return new ComponentContainer(newMap);
+    }
+
+    private static ComponentContainer notifyComponentAdded(ComponentContainer container, ItemComponent component) {
         for (ComponentChangeListener listener : GLOBAL_LISTENERS) {
             container = listener.onComponentAdded(container, component);
         }
         return container;
     }
 
-    private static ComponentContainer notifyComponentRemoved(ComponentContainer container, Component component) {
+    private static ComponentContainer notifyComponentRemoved(ComponentContainer container, ItemComponent component) {
         for (ComponentChangeListener listener : GLOBAL_LISTENERS) {
             container = listener.onComponentRemoved(container, component);
         }
