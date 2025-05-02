@@ -36,7 +36,8 @@ public class TestCommand extends SkyblockCommand {
 
 
             assert item != null;
-            var w = new SkyblockItem(item.itemId(), item.components().with(new ReforgeComponent(reforge)).with(new HotPotatoBookComponent(10)));
+            SkyblockItem w = new SkyblockItem(item.itemId(), item.components());
+            System.out.println(w);
             ((Player) sender).getInventory().addItemStack(Skyblock.getInstance().getProcessor().toItemStack(w));
         });
 

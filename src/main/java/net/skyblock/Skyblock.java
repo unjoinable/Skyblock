@@ -10,6 +10,7 @@ import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.skyblock.command.commands.ItemCommand;
 import net.skyblock.command.commands.TestCommand;
+import net.skyblock.item.SkyblockItemLoader;
 import net.skyblock.item.SkyblockItemProcessor;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.listeners.*;
@@ -103,6 +104,7 @@ public class Skyblock {
         eventHandler.addListener(new EntityAttackListener());
         eventHandler.addListener(new InventoryCloseListener());
         ComponentContainer.addListener(new StatModifierSyncListener());
+        SkyblockItemLoader.addListener(new ItemLoadListenerImpl());
     }
 
     /**
@@ -111,8 +113,8 @@ public class Skyblock {
      * custom items and their associated components/behaviors.
      */
     private void initRegistries() {
-        itemRegistry.init();
         handlerRegistry.init();
+        itemRegistry.init();
     }
 
     /**

@@ -53,6 +53,5 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
         String value = json.getAsString();
         Material material = Material.fromKey(value.toLowerCase());
         return new MaterialComponent(material);
-
     }
 }

@@ -4,6 +4,8 @@ import com.google.gson.*;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
+import net.skyblock.item.component.event.ComponentChangeListener;
+import net.skyblock.item.component.event.SkyblockItemLoadListener;
 import net.skyblock.registry.HandlerRegistry;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,11 +14,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Loads {@link SkyblockItem}s from JSON
  */
 public class SkyblockItemLoader {
+    private static final List<SkyblockItemLoadListener> GLOBAL_LISTENERS = new CopyOnWriteArrayList<>();
     private static final String ITEM_FILE_PATH = "/skyblock_items.json";
     private static final String DEFAULT_ITEM_ID = "AIR";
     private final HandlerRegistry handlerRegistry;
@@ -53,6 +58,7 @@ public class SkyblockItemLoader {
                 JsonObject itemObject = itemElement.getAsJsonObject();
                 String id = itemObject.has("id") ? itemObject.get("id").getAsString() : DEFAULT_ITEM_ID;
                 ComponentContainer components = parseComponents(itemObject);
+                components = notifyListener(components);
                 items.add(new SkyblockItem(id, components));
             } catch (Exception _) {} // ignored
         }
@@ -82,5 +88,20 @@ public class SkyblockItemLoader {
         }
 
         return components;
+    }
+
+    private static @NotNull ComponentContainer notifyListener(@NotNull ComponentContainer container) {
+        for (SkyblockItemLoadListener listener : GLOBAL_LISTENERS) {
+            container = listener.onItemLoad(container);
+        }
+        return container;
+    }
+
+    /**
+     * Adds a global event listener that will be notified of all component changes.
+     * @param listener the listener to add
+     */
+    public static void addListener(@NotNull SkyblockItemLoadListener listener) {
+        GLOBAL_LISTENERS.add(listener);
     }
 }

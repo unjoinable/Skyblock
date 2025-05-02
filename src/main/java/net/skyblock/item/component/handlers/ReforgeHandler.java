@@ -1,11 +1,13 @@
 package net.skyblock.item.component.handlers;
 
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.impl.ReforgeComponent;
 import net.skyblock.item.component.service.ComponentResolver;
 import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.item.component.trait.ModifierHandler;
+import net.skyblock.item.component.trait.NBTHandler;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.stats.StatProfile;
 import net.skyblock.stats.Statistic;
@@ -13,12 +15,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static net.kyori.adventure.text.format.NamedTextColor.BLUE;
-import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 import static net.skyblock.utils.Utils.formatStatValue;
 
-public class ReforgeHandler implements ModifierHandler<ReforgeComponent>, LoreHandler<ReforgeComponent> {
+public class ReforgeHandler implements ModifierHandler<ReforgeComponent>, LoreHandler<ReforgeComponent>, NBTHandler<ReforgeComponent> {
+    private static final String KEY_REFORGE = "reforge";
     private static final String ID = "reforge";
 
     /**
@@ -49,7 +54,7 @@ public class ReforgeHandler implements ModifierHandler<ReforgeComponent>, LoreHa
      */
     @Override
     public @NotNull Component formatStatDisplay(@NotNull Statistic stat, double value) {
-        return Component.text("(" + formatStatValue(value, stat) +")", BLUE);
+        return text("(" + formatStatValue(value, stat) +")", BLUE);
     }
 
     /**
@@ -88,9 +93,32 @@ public class ReforgeHandler implements ModifierHandler<ReforgeComponent>, LoreHa
      */
     @Override
     public @NotNull List<Component> generateLore(@NotNull ReforgeComponent component, @NotNull ComponentContainer container) {
-        if (!component.hasReforge()) {
+        if (component.hasReforge()) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(Component.text("This item can be reforged!", GRAY)); //TODO see if it is worth cacheing.
+        return Collections.singletonList(text("This item can be reforged!", DARK_GRAY).decoration(ITALIC, false));
+    }
+
+    /**
+     * Deserializes an ItemComponent from NBT data.
+     *
+     * @param nbt The NBT data containing component information
+     * @return An optional new component instance created from the NBT data
+     */
+    @Override
+    public @NotNull Optional<ReforgeComponent> fromNbt(CompoundBinaryTag nbt) {
+
+        return Optional.empty();
+    }
+
+    /**
+     * Serializes an ItemComponent to NBT data.
+     *
+     * @param component The component to serialize
+     * @return The NBT representation of the component
+     */
+    @Override
+    public CompoundBinaryTag toNbt(@NotNull ReforgeComponent component) {
+        return null;
     }
 }

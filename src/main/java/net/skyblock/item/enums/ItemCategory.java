@@ -56,8 +56,12 @@ public enum ItemCategory {
     );
 
     private static final Set<ItemCategory> WEAPON_CATEGORIES = EnumSet.of(
-            ItemCategory.SWORD,
-            ItemCategory.AXE
+            SWORD, AXE
+    );
+
+    private static final Set<ItemCategory> REFORGEABLE_CATEGORIES = EnumSet.of(
+            HELMET, CHESTPLATE, LEGGINGS, BOOTS, SWORD, BOW, FISHING_ROD, PICKAXE,
+            AXE, HOE, DRILL, SHEARS, ACCESSORY, BELT, NECKLACE, BRACELET, CLOAK
     );
 
     /**
@@ -101,5 +105,12 @@ public enum ItemCategory {
      */
     public boolean isWeapon() {
         return WEAPON_CATEGORIES.contains(this);
+    }
+
+    /**
+     * @return True if this is reforgable
+     */
+    public boolean isReforgeable() {
+        return REFORGEABLE_CATEGORIES.contains(this);
     }
 }
