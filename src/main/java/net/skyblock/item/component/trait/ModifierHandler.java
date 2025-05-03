@@ -5,8 +5,8 @@ import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ModifierComponent;
-import net.skyblock.stats.StatProfile;
-import net.skyblock.stats.Statistic;
+import net.skyblock.stats.calculator.StatProfile;
+import net.skyblock.stats.definition.Statistic;
 import org.jetbrains.annotations.NotNull;
 
 /**

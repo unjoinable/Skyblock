@@ -3,30 +3,27 @@ package net.skyblock.item.component;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.skyblock.item.component.event.ComponentChangeListener;
+import net.minestom.server.event.EventDispatcher;
+import net.skyblock.event.custom.ComponentAddEvent;
+import net.skyblock.event.custom.ComponentRemoveEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Immutable, thread-safe container for {@link ItemComponent}s.
  *
  * <p>
  * This class stores components keyed by their declared type,
- * and supports efficient structural sharing (copy-on-write).
- * Use {@link #with(ItemComponent)} and {@link #without(Class)} to
- * create modified copies of the container.
+ * and supports efficient structural sharing. Use {@link #builder()} to
+ * create a new builder or modify an existing container.
  */
+@SuppressWarnings("unchecked")
 public final class ComponentContainer {
 
     private static final Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> EMPTY =
             Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>());
-
-    // Static list of listeners that will be notified of all component changes
-    private static final List<ComponentChangeListener> GLOBAL_LISTENERS = new CopyOnWriteArrayList<>();
 
     private final Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> components;
 
@@ -47,6 +44,22 @@ public final class ComponentContainer {
     }
 
     /**
+     * Creates a new builder for creating or modifying component containers.
+     * @return a new builder instance
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Creates a new builder initialized with the components from this container.
+     * @return a new builder with this container's components
+     */
+    public Builder toBuilder() {
+        return new Builder(this);
+    }
+
+    /**
      * Returns a new container with the given component added or replaced.
      *
      * @param component the component to add (must not be null)
@@ -59,24 +72,18 @@ public final class ComponentContainer {
         if (components.isEmpty()) {
             var newMap = new Object2ObjectOpenHashMap<Class<? extends ItemComponent>, ItemComponent>(1);
             newMap.put(type, component);
-            var result = new ComponentContainer(newMap);
-            return notifyComponentAdded(result, component);
+            return new ComponentContainer(newMap);
         }
 
         // Only copy if necessary
         ItemComponent existing = components.get(type);
-        if (Objects.equals(existing, component)) {;
+        if (Objects.equals(existing, component)) {
             return this;
         }
 
         var newMap = new Object2ObjectOpenHashMap<>(components);
         newMap.put(type, component);
-        var result = new ComponentContainer(newMap);
-
-        if (existing != null) {
-            result = notifyComponentRemoved(result, existing);
-        }
-        return notifyComponentAdded(result, component);
+        return new ComponentContainer(newMap);
     }
 
     /**
@@ -95,27 +102,7 @@ public final class ComponentContainer {
 
         var newMap = new Object2ObjectOpenHashMap<>(components);
         newMap.remove(type);
-        var result = new ComponentContainer(newMap);
-        return notifyComponentRemoved(result, removed);
-    }
-
-    /**
-     * Adds a global event listener that will be notified of all component changes.
-     * @param listener the listener to add
-     */
-    public static void addListener(@NotNull ComponentChangeListener listener) {
-        Objects.requireNonNull(listener);
-        GLOBAL_LISTENERS.add(listener);
-    }
-
-    /**
-     * Removes a global event listener.
-     * @param listener the listener to remove
-     * @return true if the listener was removed, false if it wasn't registered
-     */
-    public static boolean removeListener(@NotNull ComponentChangeListener listener) {
-        Objects.requireNonNull(listener);
-        return GLOBAL_LISTENERS.remove(listener);
+        return new ComponentContainer(newMap);
     }
 
     /**
@@ -124,7 +111,6 @@ public final class ComponentContainer {
      * @param <T> the expected component type
      * @return an Optional containing the component if present
      */
-    @SuppressWarnings("unchecked")
     public <T extends ItemComponent> Optional<T> get(@NotNull Class<T> type) {
         Objects.requireNonNull(type);
         ItemComponent component = components.get(type);
@@ -165,17 +151,86 @@ public final class ComponentContainer {
         return new ComponentContainer(newMap);
     }
 
-    private static ComponentContainer notifyComponentAdded(ComponentContainer container, ItemComponent component) {
-        for (ComponentChangeListener listener : GLOBAL_LISTENERS) {
-            container = listener.onComponentAdded(container, component);
-        }
-        return container;
-    }
+    /**
+     * Mutable builder for creating {@link ComponentContainer} instances.
+     * The builder allows adding and removing components before creating
+     * an immutable ComponentContainer.
+     */
+    public static final class Builder {
+        private final Object2ObjectOpenHashMap<Class<? extends ItemComponent>, ItemComponent> components;
 
-    private static ComponentContainer notifyComponentRemoved(ComponentContainer container, ItemComponent component) {
-        for (ComponentChangeListener listener : GLOBAL_LISTENERS) {
-            container = listener.onComponentRemoved(container, component);
+        /**
+         * Creates a new empty builder.
+         */
+        public Builder() {
+            this.components = new Object2ObjectOpenHashMap<>();
         }
-        return container;
+
+        /**
+         * Creates a new builder with components from an existing container.
+         * @param container the existing container to copy components from
+         */
+        public Builder(ComponentContainer container) {
+            this.components = new Object2ObjectOpenHashMap<>(container.components);
+        }
+
+        /**
+         * Adds or replaces a component in the builder.
+         * @param component the component to add
+         * @return this builder for chaining
+         */
+        public Builder with(@NotNull ItemComponent component) {
+            Objects.requireNonNull(component);
+            ComponentAddEvent event = new ComponentAddEvent(this, component);
+            EventDispatcher.callCancellable(event, () -> components.put(component.getType(), component));
+            return this;
+        }
+
+        /**
+         * Removes a component from the builder.
+         * @param type the component type to remove
+         * @return this builder for chaining
+         */
+        public Builder without(@NotNull Class<? extends ItemComponent> type) {
+            Objects.requireNonNull(type);
+            if (components.containsKey(type)) {
+                ComponentRemoveEvent event = new ComponentRemoveEvent(this, components.get(type));
+                EventDispatcher.callCancellable(event, () -> components.remove(type));
+            }
+            return this;
+        }
+
+        /**
+         * Checks if a component is present in the builder.
+         * @param type the component type to check for
+         * @return true if the component is present, false otherwise
+         */
+        public boolean contains(@NotNull Class<? extends ItemComponent> type) {
+            Objects.requireNonNull(type);
+            return components.containsKey(type);
+        }
+
+        /**
+         * Gets a component by its type.
+         * @param type the component class to retrieve
+         * @param <T> the expected component type
+         * @return an Optional containing the component if present
+         */
+        public <T extends ItemComponent> Optional<T> get(@NotNull Class<T> type) {
+            Objects.requireNonNull(type);
+            ItemComponent component = components.get(type);
+            return component != null ? Optional.of((T) component) : Optional.empty();
+        }
+
+        /**
+         * Builds an immutable ComponentContainer with the current components.
+         * @return a new immutable ComponentContainer
+         */
+        public ComponentContainer build() {
+            if (components.isEmpty()) {
+                return new ComponentContainer();
+            }
+            return new ComponentContainer(new Object2ObjectOpenHashMap<>(components));
+        }
     }
 }

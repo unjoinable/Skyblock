@@ -1,6 +1,6 @@
 package net.skyblock.utils;
 
-import net.skyblock.stats.Statistic;
+import net.skyblock.stats.definition.Statistic;
 
 public class Utils {
 

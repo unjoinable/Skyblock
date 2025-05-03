@@ -1,7 +1,7 @@
 package net.skyblock.item.component;
 
 import net.skyblock.Skyblock;
-import net.skyblock.registry.HandlerRegistry;
+import net.skyblock.registry.impl.HandlerRegistry;
 
 /**
  * Base marker interface for all components.
@@ -17,7 +17,7 @@ public interface ItemComponent {
      */
     default ItemComponentHandler<?> getHandler() {
         Class<? extends ItemComponent> componentClass = this.getType();
-        HandlerRegistry registry = Skyblock.getInstance().getHandlerRegistry();
+        HandlerRegistry registry = Skyblock.getInstance().handlers();
         return registry.getHandler(componentClass);
     }
 

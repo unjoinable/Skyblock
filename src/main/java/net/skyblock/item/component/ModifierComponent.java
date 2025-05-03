@@ -2,7 +2,7 @@ package net.skyblock.item.component;
 
 import net.skyblock.Skyblock;
 import net.skyblock.item.component.trait.ModifierHandler;
-import net.skyblock.registry.HandlerRegistry;
+import net.skyblock.registry.impl.HandlerRegistry;
 
 /**
  * An interface that represents components which contain data for item stat modifications.
@@ -34,7 +34,7 @@ public interface ModifierComponent extends ItemComponent {
      */
     default ModifierHandler<?> getModifierHandler() {
         Class<? extends ModifierComponent> componentClass = this.getType();
-        HandlerRegistry registry = Skyblock.getInstance().getHandlerRegistry();
+        HandlerRegistry registry = Skyblock.getInstance().handlers();
         return (ModifierHandler<?>) registry.getHandler(componentClass);
     }
 }

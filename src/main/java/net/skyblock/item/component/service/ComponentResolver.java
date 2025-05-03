@@ -1,10 +1,10 @@
 package net.skyblock.item.component.service;
 
-import net.skyblock.item.Reforge;
+import net.skyblock.item.definition.Reforge;
 import net.skyblock.item.component.ComponentContainer;
-import net.skyblock.item.component.impl.ItemCategoryComponent;
-import net.skyblock.item.component.impl.RarityComponent;
-import net.skyblock.item.component.impl.ReforgeComponent;
+import net.skyblock.item.component.definition.ItemCategoryComponent;
+import net.skyblock.item.component.definition.RarityComponent;
+import net.skyblock.item.component.definition.ReforgeComponent;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.enums.Rarity;
 import org.jetbrains.annotations.NotNull;
