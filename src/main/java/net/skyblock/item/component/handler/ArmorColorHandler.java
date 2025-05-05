@@ -8,6 +8,7 @@ import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.item.component.definition.ArmorColorComponent;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent> {
     private static final String ID = "color";
@@ -51,17 +52,25 @@ public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent
      * @return The created component instance
      */
     @Override
-    public ArmorColorComponent fromJson(@NotNull JsonElement json) {
+    public @NotNull ArmorColorComponent fromJson(@NotNull JsonElement json) {
         String colorStr = json.getAsString();
-        String[] colorParts = colorStr.split(",");
+        int[] defaultColor = {0, 0, 0};
 
-        if (colorParts.length == 3) {
+        try {
+            String[] colorParts = colorStr.split(",");
+            if (colorParts.length != 3) {
+                Logger.warn("Invalid color format: '{}'. Expected 'r,g,b' format. Defaulting to black.", colorStr);
+                return new ArmorColorComponent(defaultColor);
+            }
+
             int[] rgb = new int[3];
             for (int i = 0; i < 3; i++) {
                 rgb[i] = Integer.parseInt(colorParts[i].trim());
             }
             return new ArmorColorComponent(rgb);
+        } catch (NumberFormatException _) {
+            Logger.warn("Invalid color component in '{}', Defaulting to black.", colorStr);
+            return new ArmorColorComponent(defaultColor);
         }
-        return new ArmorColorComponent(new int[]{0,0,0});
     }
 }

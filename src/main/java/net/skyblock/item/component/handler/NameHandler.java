@@ -64,7 +64,7 @@ public class NameHandler implements StackWriterHandler<NameComponent> {
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public NameComponent fromJson(@NotNull JsonElement json) {
+    public @NotNull NameComponent fromJson(@NotNull JsonElement json) {
         String textureValue = json.getAsString();
         return new NameComponent(textureValue);
     }

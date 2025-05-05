@@ -9,97 +9,76 @@ import org.tinylog.Logger;
 
 /**
  * Main class for the Skyblock server implementation.
- * This class handles server initialization, registry loading, and world setup.
- * It serves as the entry point for the entire Skyblock server application.
+ * This class holds the registry access points and core components while delegating
+ * initialization and server operation to ServerBootstrap.
  */
 public class Skyblock implements Registries {
     private static Skyblock instance;
-    private final ItemRegistry itemRegistry;
-    private final HandlerRegistry handlerRegistry;
-    private final ReforgeRegistry reforgeRegistry;
+    private final DependencyContainer container;
     private final ServerBootstrap serverBootstrap;
+    private boolean isRunning = false;
 
     /**
      * Main entry point for the Skyblock server.
-     *
-     * @param args Command line arguments (unused)
      */
     public static void main(String[] args) {
         Logger.info("Starting Skyblock application");
-        instance = new Skyblock();
-        instance.start("0.0.0.0", 25565);
+        try {
+            instance = new Skyblock();
+            instance.getServerBootstrap().start("0.0.0.0", 25565);
+        } catch (Exception e) {
+            Logger.error(e, "Failed to start Skyblock server");
+            System.exit(1);
+        }
     }
 
     /**
      * Constructs a new Skyblock server instance.
-     * Initializes the server, registers event listeners, loads registries,
-     * creates the hub world.
      */
     public Skyblock() {
-        // Create registries
-        this.handlerRegistry = new HandlerRegistry();
-        this.itemRegistry = new ItemRegistry(handlerRegistry);
-        this.reforgeRegistry = new ReforgeRegistry();
-
-        // Bootstrap the server with our registries
+        Logger.info("Creating Skyblock instance");
+        this.container = new DependencyContainer();
         this.serverBootstrap = new ServerBootstrap(this);
     }
 
     /**
-     * Starts the server on the specified address and port.
-     *
-     * @param address The address to bind to
-     * @param port The port to listen on
+     * Returns the skyblock instance
      */
-    public void start(String address, int port) {
-        serverBootstrap.start(address, port);
+    public static @NotNull Skyblock getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Skyblock instance has not been initialized");
+        }
+        return instance;
     }
 
-    /**
-     * Gets the server bootstrap instance
-     *
-     * @return The server bootstrap
-     */
     public @NotNull ServerBootstrap getServerBootstrap() {
         return serverBootstrap;
     }
 
-    /**
-     * Returns the skyblock instance
-     *
-     * @return The skyblock instance
-     */
-    public static Skyblock getInstance() {
-        return instance;
+    public @NotNull DependencyContainer getContainer() {
+        return container;
     }
 
-    /**
-     * Gets the item registry
-     *
-     * @return The item registry
-     */
     @Override
     public @NotNull ItemRegistry items() {
-        return itemRegistry;
+        return container.get(ItemRegistry.class);
     }
 
-    /**
-     * Gets the handler registry
-     *
-     * @return The handler registry
-     */
     @Override
     public @NotNull HandlerRegistry handlers() {
-        return handlerRegistry;
+        return container.get(HandlerRegistry.class);
     }
 
-    /**
-     * Gets the reforge registry
-     *
-     * @return The reforge registry
-     */
     @Override
     public @NotNull ReforgeRegistry reforges() {
-        return reforgeRegistry;
+        return container.get(ReforgeRegistry.class);
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 }

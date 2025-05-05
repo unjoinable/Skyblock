@@ -6,16 +6,16 @@ import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ModifierComponent;
-import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.item.component.definition.StatsComponent;
+import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.stats.calculator.StatProfile;
 import net.skyblock.stats.definition.StatValueType;
 import net.skyblock.stats.definition.Statistic;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
@@ -94,18 +94,22 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      * @return The created component instance
      */
     @Override
-    public StatsComponent fromJson(@NotNull JsonElement json) {
+    public @NotNull StatsComponent fromJson(@NotNull JsonElement json) {
         StatProfile profile = new StatProfile(false);
 
-        for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
-            String name = entry.getKey();
-            try {
-                Statistic stat = Statistic.valueOf(name);
-                double value = entry.getValue().getAsDouble();
-                profile.addStat(stat, StatValueType.BASE, value);
-            } catch (IllegalArgumentException e) {
-                // Silently ignore invalid statistics
-            }
+        if (json.isJsonObject()) {
+            json.getAsJsonObject().entrySet().forEach(entry -> {
+                String name = entry.getKey();
+                try {
+                    profile.addStat(
+                            Statistic.valueOf(name),
+                            StatValueType.BASE,
+                            entry.getValue().getAsDouble()
+                    );
+                } catch (IllegalArgumentException _) {
+                    Logger.warn("Invalid stat: {}", name);
+                }
+            });
         }
 
         return new StatsComponent(profile);

@@ -15,14 +15,17 @@ import net.skyblock.event.listeners.inventory.InventoryCloseListener;
 import net.skyblock.event.listeners.inventory.InventoryPreClickListener;
 import net.skyblock.event.listeners.item.ComponentAddListener;
 import net.skyblock.event.listeners.item.ComponentRemoveListener;
-import net.skyblock.event.listeners.item.ItemLoadListenerImpl;
 import net.skyblock.event.listeners.player.*;
-import net.skyblock.item.io.SkyblockItemLoader;
 import net.skyblock.item.io.SkyblockItemProcessor;
 import net.skyblock.player.SkyblockPlayer;
 import net.skyblock.registry.base.Registries;
+import net.skyblock.registry.impl.HandlerRegistry;
+import net.skyblock.registry.impl.ItemRegistry;
+import net.skyblock.registry.impl.ReforgeRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Server bootstrap class that handles initialization and startup of the Skyblock server
@@ -32,165 +35,131 @@ public class ServerBootstrap {
     private final MinecraftServer server;
     private final InstanceContainer hubInstance;
     private final SkyblockItemProcessor processor;
-    private final Registries registries;
     private final Pos spawnPosition;
+    private final Skyblock skyblock;
+    private final AtomicBoolean isInitialized = new AtomicBoolean(false);
 
     /**
-     * Creates a new server bootstrap with the given registries
-     *
-     * @param registries The registries to use for this server
+     * Creates a new server bootstrap with the given Skyblock instance
      */
-    public ServerBootstrap(Registries registries) {
-        this(registries, new Pos(-2, 71, -68).withYaw(-180F), "hub");
+    public ServerBootstrap(Skyblock skyblock) {
+        this(skyblock, new Pos(-2, 71, -68).withYaw(-180F), "hub");
     }
 
     /**
      * Creates a new server bootstrap with custom configuration
-     *
-     * @param registries The registries to use
-     * @param spawnPosition The spawn position for players
-     * @param worldPath The path to the world files for the hub
      */
-    public ServerBootstrap(Registries registries, Pos spawnPosition, String worldPath) {
+    public ServerBootstrap(Skyblock skyblock, Pos spawnPosition, String worldPath) {
+        Logger.info("Initializing server bootstrap");
         this.server = MinecraftServer.init();
-        this.registries = registries;
+        this.skyblock = skyblock;
         this.spawnPosition = spawnPosition;
 
-        // Set up Mojang authentication and player provider
-        MojangAuth.init();
-        MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
+        setupRegistries(skyblock.getContainer());
+        initializeDependencyContainer(skyblock.getContainer());
+        setupMojangAuth();
+        this.hubInstance = loadWorld(MinecraftServer.getInstanceManager(), worldPath);
+        registerEventListeners(MinecraftServer.getGlobalEventHandler());
+        this.processor = new SkyblockItemProcessor(skyblock.handlers(), skyblock.items());
+        registerCommands(MinecraftServer.getCommandManager());
 
-        // Load the hub world
-        InstanceManager instanceManager = MinecraftServer.getInstanceManager();
-        this.hubInstance = loadWorld(instanceManager, worldPath);
-
-        // Register all event listeners
-        registerEventListeners();
-
-        // Initialize registries in the correct order
-        initRegistries();
-
-        // Set up item processor
-        this.processor = new SkyblockItemProcessor(registries.handlers(), registries.items());
-
-        // Register commands
-        registerCommands();
-
+        isInitialized.set(true);
         Logger.info("Server bootstrap complete");
     }
 
     /**
-     * Initializes all registries in the correct order
+     * Sets up all registries in the dependency container with proper dependency order.
      */
-    private void initRegistries() {
-        Logger.info("Initializing registries...");
+    private void setupRegistries(DependencyContainer container) {
+        Logger.info("Setting up registries");
+        container.register(ReforgeRegistry.class, ReforgeRegistry::new);
+        container.register(HandlerRegistry.class, HandlerRegistry::new);
+        container.register(ItemRegistry.class, () -> new ItemRegistry(container.get(HandlerRegistry.class)), HandlerRegistry.class);
 
-        registries.reforges().init();
-        registries.handlers().init();
-        registries.items().init();
-
-        Logger.info("Registries initialized successfully");
+        // Register Skyblock and Registries instances for dependency injection
+        container.registerInstance(Skyblock.class, skyblock);
+        container.registerInstance(Registries.class, skyblock);
     }
 
-    /**
-     * Registers all event listeners needed for the server
-     */
-    private void registerEventListeners() {
-        GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
+    private void initializeDependencyContainer(DependencyContainer container) {
+        Logger.info("Initializing dependency container");
+        container.initialize();
+    }
 
-        // Register player-related listeners
+    private void setupMojangAuth() {
+        Logger.info("Initializing Mojang authentication and player provider");
+        MojangAuth.init();
+        MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
+    }
+
+    private void registerEventListeners(GlobalEventHandler eventHandler) {
+        Logger.info("Registering event listeners");
+
+        // Player listeners
         eventHandler.addListener(new AsyncPlayerConfigurationListener(hubInstance, spawnPosition));
         eventHandler.addListener(new PlayerSwapItemListener());
         eventHandler.addListener(new PlayerChangeHeldSlotListener());
         eventHandler.addListener(new PlayerUseItemListener());
         eventHandler.addListener(new PlayerSpawnListener());
 
-        // Register inventory listeners
+        // Inventory listeners
         eventHandler.addListener(new InventoryPreClickListener());
         eventHandler.addListener(new InventoryCloseListener());
 
-        // Register entity listeners
+        // Entity listeners
         eventHandler.addListener(new EntityAttackListener());
 
-        // Register component listeners
+        // Component listeners
         eventHandler.addListener(new ComponentAddListener());
         eventHandler.addListener(new ComponentRemoveListener());
-
-        // Register item load listener
-        SkyblockItemLoader.addListener(new ItemLoadListenerImpl());
 
         Logger.info("Event listeners registered");
     }
 
-    /**
-     * Registers all commands for the server
-     */
-    private void registerCommands() {
-        CommandManager cmdManager = MinecraftServer.getCommandManager();
-        cmdManager.register(new ItemCommand(registries.items(), processor));
+    private void registerCommands(@NotNull CommandManager cmdManager) {
+        Logger.info("Registering commands");
+        cmdManager.register(new ItemCommand(skyblock.items(), processor));
         cmdManager.register(new TestCommand());
-
         Logger.info("Commands registered");
     }
 
-    /**
-     * Loads a world from the specified path
-     *
-     * @param instanceManager The instance manager
-     * @param worldPath The path to the world files
-     * @return The loaded instance container
-     */
     private @NotNull InstanceContainer loadWorld(InstanceManager instanceManager, String worldPath) {
         Logger.info("Loading world from '{}'", worldPath);
         InstanceContainer container = instanceManager.createInstanceContainer();
         container.setChunkLoader(new AnvilLoader(worldPath));
+        Logger.info("World loaded successfully");
         return container;
     }
 
-    /**
-     * Starts the server on the specified address and port
-     *
-     * @param address The address to bind to
-     * @param port The port to listen on
-     */
     public void start(String address, int port) {
+        if (!isInitialized.get()) {
+            throw new IllegalStateException("Server bootstrap is not properly initialized");
+        }
+
+        if (skyblock.isRunning()) {
+            Logger.warn("Server is already running");
+            return;
+        }
+
         Logger.info("Starting server on {}:{}", address, port);
         server.start(address, port);
+        skyblock.setRunning(true);
+        Logger.info("Skyblock server started successfully on {}:{}", address, port);
     }
 
-    /**
-     * Gets the hub instance
-     *
-     * @return The hub instance
-     */
-    public @NotNull InstanceContainer getHubInstance() {
-        return hubInstance;
-    }
-
-    /**
-     * Gets the item processor
-     *
-     * @return The item processor
-     */
     public @NotNull SkyblockItemProcessor getProcessor() {
         return processor;
     }
 
-    /**
-     * Gets the registries used by this server
-     *
-     * @return The registries
-     */
-    public @NotNull Registries getRegistries() {
-        return registries;
-    }
-
-    /**
-     * Gets the MinecraftServer instance
-     *
-     * @return The server instance
-     */
     public @NotNull MinecraftServer getServer() {
         return server;
+    }
+
+    public @NotNull Skyblock getSkyblock() {
+        return skyblock;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized.get();
     }
 }

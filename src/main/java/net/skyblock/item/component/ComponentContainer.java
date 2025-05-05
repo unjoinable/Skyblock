@@ -21,7 +21,6 @@ import java.util.Optional;
  */
 @SuppressWarnings("unchecked")
 public final class ComponentContainer {
-
     private static final Object2ObjectMap<Class<? extends ItemComponent>, ItemComponent> EMPTY =
             Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>());
 
@@ -57,6 +56,14 @@ public final class ComponentContainer {
      */
     public Builder toBuilder() {
         return new Builder(this);
+    }
+
+    /**
+     * Checks whether this container has any components.
+     * @return true if this container has no components, false otherwise
+     */
+    public boolean isEmpty() {
+        return components.isEmpty();
     }
 
     /**
