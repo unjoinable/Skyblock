@@ -41,6 +41,7 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
                 long endTime = System.nanoTime();
                 long durationMs = (endTime - startTime) / 1_000_000;
                 Logger.info("ItemRegistry initialization completed in {} ms", durationMs);
+                lock();
             }).schedule();
         }).exceptionally(ex -> {
             Logger.error("Critical error during item registration", ex);

@@ -7,6 +7,9 @@ import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.definition.MaterialComponent;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
+
+import java.util.Objects;
 
 public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
     private static final String ID = "material";
@@ -49,9 +52,15 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
      * @return The created component instance
      */
     @Override
-    public MaterialComponent fromJson(@NotNull JsonElement json) {
-        String value = json.getAsString();
-        Material material = Material.fromKey(value.toLowerCase());
+    public @NotNull MaterialComponent fromJson(@NotNull JsonElement json) {
+        String materialKey = json.getAsString().toLowerCase();
+        Material material = Material.fromKey(materialKey);
+        
+        if (material == null) {
+            Logger.warn("Invalid material: {}, defaulting to AIR", materialKey);
+            material = Material.AIR;
+        }
+
         return new MaterialComponent(material);
     }
 }

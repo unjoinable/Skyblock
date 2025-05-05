@@ -46,6 +46,7 @@ public class ReforgeRegistry extends Registry<String, Reforge> {
                 long endTime = System.nanoTime();
                 long durationMs = (endTime - startTime) / 1_000_000;
                 Logger.info("ReforgeRegistry initialization completed in {} ms", durationMs);
+                lock();
             }).schedule();
         });
     }

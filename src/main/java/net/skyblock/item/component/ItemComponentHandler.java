@@ -27,7 +27,7 @@ public interface ItemComponentHandler<C extends ItemComponent> {
      * @return The created component instance
      * @throws UnsupportedOperationException by default unless overridden
      */
-    default C fromJson(@NotNull JsonElement json) {
+    default @NotNull C fromJson(@NotNull JsonElement json) {
         throw new UnsupportedOperationException("fromJson not implemented for component: " + componentId());
     }
 }

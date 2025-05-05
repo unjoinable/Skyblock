@@ -5,6 +5,7 @@ import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.definition.ItemCategoryComponent;
 import net.skyblock.item.enums.ItemCategory;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 public class ItemCategoryHandler implements ItemComponentHandler<ItemCategoryComponent> {
     private static final String ID = "category";
@@ -33,9 +34,14 @@ public class ItemCategoryHandler implements ItemComponentHandler<ItemCategoryCom
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public ItemCategoryComponent fromJson(@NotNull JsonElement json) {
-        String value = json.getAsString();
-        ItemCategory category = ItemCategory.valueOf(value);
-        return new ItemCategoryComponent(category);
+    public @NotNull ItemCategoryComponent fromJson(@NotNull JsonElement json) {
+        String categoryName = json.getAsString();
+
+        try {
+            return new ItemCategoryComponent(ItemCategory.valueOf(categoryName));
+        } catch (IllegalArgumentException _) {
+            Logger.warn("Invalid item category: {}, defaulting to NONE", categoryName);
+            return new ItemCategoryComponent(ItemCategory.NONE);
+        }
     }
 }

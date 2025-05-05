@@ -42,7 +42,7 @@ public class SkyblockItemProcessor {
         skyblockItem.components().asMap()
                 .values().forEach(component -> processComponent(builder, component, skyblockItem.components()));
 
-        builder.lore(new LoreGenerator(skyblockItem).generate());
+        builder.lore(new LoreGenerator(skyblockItem, handlers).generate());
         builder.setTag(ID_TAG, skyblockItem.itemId());
         builder.set(DataComponents.ATTRIBUTE_MODIFIERS, new AttributeList(Collections.emptyList()));
 

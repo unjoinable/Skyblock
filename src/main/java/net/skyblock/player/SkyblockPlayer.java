@@ -1,6 +1,11 @@
 package net.skyblock.player;
 
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.Player;
+import net.minestom.server.network.player.GameProfile;
+import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
 import net.skyblock.item.definition.SkyblockItem;
 import net.skyblock.item.inventory.ItemSlot;
@@ -8,17 +13,12 @@ import net.skyblock.player.manager.PlayerStatsManager;
 import net.skyblock.player.rank.PlayerRank;
 import net.skyblock.player.ui.SkyblockPlayerActionBar;
 import net.skyblock.stats.calculator.DamageCalculator;
-import net.skyblock.stats.holder.StatHolder;
 import net.skyblock.stats.calculator.StatProfile;
-import net.skyblock.stats.definition.Statistic;
-import net.skyblock.stats.holder.CombatEntity;
 import net.skyblock.stats.definition.DamageType;
 import net.skyblock.stats.definition.SkyblockDamage;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.Player;
-import net.minestom.server.network.player.GameProfile;
-import net.minestom.server.network.player.PlayerConnection;
+import net.skyblock.stats.definition.Statistic;
+import net.skyblock.stats.holder.CombatEntity;
+import net.skyblock.stats.holder.StatHolder;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -62,9 +62,8 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     }
 
     public void initTaskLoop() {
-        MinecraftServer.getSchedulerManager().scheduleTask(() -> {
-            taskLoop();
-        }, TaskSchedule.tick(4), TaskSchedule.tick(2*20));
+        MinecraftServer.getSchedulerManager()
+                .scheduleTask(this::taskLoop, TaskSchedule.tick(4), TaskSchedule.tick(2*20));
     }
 
     private void taskLoop() {
@@ -325,6 +324,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      *
      * @param target the entity to attack
      */
+    @Override
     public void meleeDamage(CombatEntity target) {
         attack(target, DamageType.MELEE);
     }

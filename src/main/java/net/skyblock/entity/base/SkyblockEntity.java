@@ -1,28 +1,27 @@
 package net.skyblock.entity.base;
 
-import net.minestom.server.entity.*;
-import net.minestom.server.entity.attribute.Attribute;
-import net.skyblock.entity.display.DamageIndicator;
-import net.skyblock.stats.calculator.StatProfile;
-import net.skyblock.stats.definition.Statistic;
-import net.skyblock.stats.holder.CombatEntity;
-import net.skyblock.stats.definition.DamageType;
-import net.skyblock.stats.definition.SkyblockDamage;
-import net.skyblock.utils.MiniString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityCreature;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
+import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Instance;
+import net.skyblock.entity.display.DamageIndicator;
+import net.skyblock.stats.calculator.StatProfile;
+import net.skyblock.stats.definition.DamageType;
+import net.skyblock.stats.definition.SkyblockDamage;
+import net.skyblock.stats.definition.Statistic;
+import net.skyblock.stats.holder.CombatEntity;
+import net.skyblock.utils.MiniString;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Abstract base class for all Skyblock entities.
@@ -30,7 +29,6 @@ import java.util.UUID;
  * Uses Minestom's health system internally while exposing CombatEntity interface methods.
  */
 public abstract class SkyblockEntity extends EntityCreature implements CombatEntity {
-    private static final List<SkyblockEntity> activeMobs = new ArrayList<>();
     private int level = 0;
     private final StatProfile statProfile;
     private boolean isInvulnerable = false;
@@ -106,8 +104,6 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         // Set AI behavior
         addAIGroup(getGoalSelectors(lvl), getTargetSelectors(lvl));
 
-        // Add to active mobs and spawn
-        activeMobs.add(this);
         setInstance(instance, spawnPos);
     }
 
@@ -151,7 +147,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
             setHealth((float)Math.min(health, maxHealth)); // Cap at max health
 
             // Update display name to show new health
-            setCustomName(displayName());
+            set(DataComponents.CUSTOM_NAME, displayName());
         }
     }
 
@@ -173,7 +169,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
         }
 
         // Update display name to reflect new health
-        setCustomName(displayName());
+        set(DataComponents.CUSTOM_NAME, displayName());
     }
 
     @Override
@@ -342,7 +338,6 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
 
     @Override
     public void kill() {
-        activeMobs.remove(this);
         remove();
     }
 
@@ -353,42 +348,5 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
      */
     public int getLevel() {
         return level;
-    }
-
-    /**
-     * Checks if an entity with the specified UUID is alive
-     *
-     * @param uuid the entity UUID
-     * @return true if the entity is alive, false otherwise
-     */
-    public static boolean isAlive(UUID uuid) {
-        for (SkyblockEntity activeMob : activeMobs) {
-            if (activeMob.getUuid().equals(uuid)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets the SkyblockEntity instance with the specified UUID
-     *
-     * @param uuid the entity UUID
-     * @return the SkyblockEntity instance, or null if not found
-     */
-    public static @Nullable SkyblockEntity getSkyblockInstance(UUID uuid) {
-        for (SkyblockEntity activeMob : activeMobs) {
-            if (activeMob.getUuid().equals(uuid)) {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void setCustomName(@Nullable Component customName) {
-        if (customName != null) {
-            set(DataComponents.CUSTOM_NAME, customName);
-        }
     }
 }

@@ -114,7 +114,7 @@ public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<R
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public RarityComponent fromJson(@NotNull JsonElement json) {
+    public @NotNull RarityComponent fromJson(@NotNull JsonElement json) {
         String value = json.getAsString();
         Rarity rarity = Rarity.getRarity(value);
         return new RarityComponent(rarity, false);

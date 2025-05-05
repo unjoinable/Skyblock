@@ -11,5 +11,5 @@ import net.skyblock.item.component.ItemComponent;
  * @param components A thread-safe container holding various {@link ItemComponent} instances that define the item's properties.
  */
 public record SkyblockItem(String itemId, ComponentContainer components) {
-    public static final SkyblockItem AIR = new SkyblockItem("AIR", null);
+    public static final SkyblockItem AIR = new SkyblockItem("AIR", new ComponentContainer());
 }

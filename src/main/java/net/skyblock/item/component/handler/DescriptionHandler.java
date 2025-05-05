@@ -64,7 +64,7 @@ public class DescriptionHandler implements LoreHandler<DescriptionComponent> {
      * @throws UnsupportedOperationException by default unless overridden
      */
     @Override
-    public DescriptionComponent fromJson(@NotNull JsonElement json) {
+    public @NotNull DescriptionComponent fromJson(@NotNull JsonElement json) {
         List<Component> description = new ArrayList<>();
 
         if (json.isJsonArray()) {

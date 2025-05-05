@@ -55,7 +55,7 @@ public class HeadTextureHandler implements StackWriterHandler<HeadTextureCompone
      * @return The created component instance
      */
     @Override
-    public HeadTextureComponent fromJson(@NotNull JsonElement json) {
+    public @NotNull HeadTextureComponent fromJson(@NotNull JsonElement json) {
         String textureValue = json.getAsString();
         return new HeadTextureComponent(textureValue);
     }
