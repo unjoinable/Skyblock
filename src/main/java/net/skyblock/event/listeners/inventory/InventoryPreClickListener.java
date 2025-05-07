@@ -3,7 +3,7 @@ package net.skyblock.event.listeners.inventory;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
-import net.skyblock.item.inventory.ItemSlot;
+import net.skyblock.item.inventory.VanillaItemSlot;
 import net.skyblock.player.SkyblockPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,27 +38,25 @@ public class InventoryPreClickListener implements EventListener<InventoryPreClic
     public @NotNull Result run(@NotNull InventoryPreClickEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
 
-        //SkyblockInventory.handleInventoryClick(event);
-
         // Player Stats
 
         int clickedSlot = event.getSlot();
-        ItemSlot itemSlot = null;
+        VanillaItemSlot itemSlot = null;
 
         switch (clickedSlot) {
-            case 41 -> itemSlot = ItemSlot.HELMET;
-            case 42 -> itemSlot = ItemSlot.CHESTPLATE;
-            case 43 -> itemSlot = ItemSlot.LEGGINGS;
-            case 44 -> itemSlot = ItemSlot.BOOTS;
+            case 41 -> itemSlot = VanillaItemSlot.HELMET;
+            case 42 -> itemSlot = VanillaItemSlot.CHESTPLATE;
+            case 43 -> itemSlot = VanillaItemSlot.LEGGINGS;
+            case 44 -> itemSlot = VanillaItemSlot.BOOTS;
             default -> {
                 if (clickedSlot == player.getHeldSlot()) {
-                    itemSlot = ItemSlot.MAIN_HAND;
+                    itemSlot = VanillaItemSlot.MAIN_HAND;
                 }
             }
         }
 
         if (itemSlot != null) {
-            ItemSlot finalItemSlot = itemSlot;
+            VanillaItemSlot finalItemSlot = itemSlot;
             MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatsManager().update(finalItemSlot));
         }
 

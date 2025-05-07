@@ -1,14 +1,16 @@
 package net.skyblock.player.manager;
 
-import net.skyblock.item.definition.SkyblockItem;
 import net.skyblock.item.component.definition.StatsComponent;
+import net.skyblock.item.definition.SkyblockItem;
 import net.skyblock.item.inventory.ItemSlot;
+import net.skyblock.item.inventory.PlayerItemProvider;
+import net.skyblock.item.inventory.VanillaItemSlot;
 import net.skyblock.player.SkyblockPlayer;
 import net.skyblock.stats.calculator.StatProfile;
 import net.skyblock.stats.definition.Statistic;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ import java.util.Optional;
  */
 public class PlayerStatsManager {
     private final SkyblockPlayer player;
+    private final PlayerItemProvider itemProvider;
     private final StatProfile baseStats; // Base stats (from player level, skills, etc.)
     private final Map<ItemSlot, StatProfile> itemStats; // All equipment stats
     private StatProfile cachedCombinedProfile; // Combined cached profile (all sources)
@@ -33,14 +36,15 @@ public class PlayerStatsManager {
      * Creates a new stats manager for the specified player.
      *
      * @param player The player whose stats are being managed
+     * @param itemProvider the provider for player items
      */
-    public PlayerStatsManager(@NotNull SkyblockPlayer player) {
+    public PlayerStatsManager(@NotNull SkyblockPlayer player, @NotNull PlayerItemProvider itemProvider) {
         this.player = player;
+        this.itemProvider = itemProvider;
         this.baseStats = new StatProfile(true);
+        this.itemStats = new HashMap<>();
 
-        // Initialize all slot stats with capacity to avoid resizing
-        this.itemStats = new EnumMap<>(ItemSlot.class);
-        for (ItemSlot slot : ItemSlot.values()) {
+        for (VanillaItemSlot slot: VanillaItemSlot.values()) {
             itemStats.put(slot, new StatProfile());
         }
 
@@ -71,13 +75,13 @@ public class PlayerStatsManager {
      * @param slot The item slot that changed
      */
     public void update(@NotNull ItemSlot slot) {
-        SkyblockItem item = slot.getItem(player);
+        SkyblockItem item = itemProvider.getItem(slot);
         StatProfile profile = new StatProfile();
 
         if (item != null && item.components() != null) {
             Optional<StatsComponent> statsComponent = item.components().get(StatsComponent.class);
             if (statsComponent.isPresent()) {
-                profile = statsComponent.get().getFinalStats(item.components());
+                profile = null;// TODO: statsComponent.get().getFinalStats(item.components());
             }
         }
 
@@ -91,7 +95,7 @@ public class PlayerStatsManager {
      * or when multiple pieces of equipment change at once.
      */
     public void recalculateAll() {
-        for (ItemSlot slot : ItemSlot.values()) {
+        for (VanillaItemSlot slot : VanillaItemSlot.values()) {
             update(slot);
         }
 

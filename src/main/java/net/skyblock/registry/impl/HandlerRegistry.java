@@ -3,9 +3,11 @@ package net.skyblock.registry.impl;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.handler.*;
+import net.skyblock.item.provider.HandlerProvider;
 import net.skyblock.registry.base.Registry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 /**
  * A registry for {@link ItemComponentHandler} instances.
@@ -13,7 +15,9 @@ import org.jetbrains.annotations.Nullable;
  * - Component classes and their handlers
  * - Component IDs and their handlers
  */
-public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
+public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> implements HandlerProvider {
+    private final Map<Class<? extends ItemComponent>, ItemComponentHandler<?>> handlersByType = new HashMap<>();
+
     /**
      * Register a component handler.
      * Uses the handler's componentId() as the key.
@@ -23,46 +27,7 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
      */
     public void register(@NotNull ItemComponentHandler<?> handler) {
         register(handler.componentId(), handler);
-    }
-
-    /**
-     * Get a component handler by component class.
-     *
-     * @param componentClass The component class to look up
-     * @return The handler for the given component type, or null if not found
-     */
-    public @Nullable ItemComponentHandler<?> getHandler(@NotNull Class<? extends ItemComponent> componentClass) {
-        return find(handler -> handler.componentType().equals(componentClass)).orElse(null);
-    }
-
-    /**
-     * Get a component handler by component ID.
-     *
-     * @param componentId The component ID to look up
-     * @return The handler for the given component ID, or null if not found
-     */
-    public @Nullable ItemComponentHandler<?> getHandler(@NotNull String componentId) {
-        return get(componentId);
-    }
-
-    /**
-     * Check if a handler exists for the given component class.
-     *
-     * @param componentClass The component class to check
-     * @return true if a handler is registered for this component class
-     */
-    public boolean hasHandler(@NotNull Class<? extends ItemComponent> componentClass) {
-        return find(handler -> handler.componentType().equals(componentClass)).isPresent();
-    }
-
-    /**
-     * Check if a handler exists for the given component ID.
-     *
-     * @param componentId The component ID to check
-     * @return true if a handler is registered with this ID
-     */
-    public boolean hasHandler(@NotNull String componentId) {
-        return containsKey(componentId);
+        handlersByType.put(handler.componentType(), handler);
     }
 
     /**
@@ -79,7 +44,55 @@ public class HandlerRegistry extends Registry<String, ItemComponentHandler<?>> {
         register(new NameHandler());
         register(new RarityHandler());
         register(new ReforgeHandler());
-        register(new StatsHandler());
+        register(new StatsHandler(this));
         lock();
+    }
+
+    /**
+     * Gets the handler for the given component type.
+     *
+     * @param componentType The class of the component for which to get a handler
+     * @param <T> The type of the component handler
+     * @return An Optional containing the handler if found, or empty if no matching handler exists
+     */
+    @Override @SuppressWarnings("unchecked")
+    public <T extends ItemComponentHandler<?>> Optional<T> getHandler(Class<? extends ItemComponent> componentType) {
+        return Optional.ofNullable((T) handlersByType.get(componentType));
+    }
+
+    /**
+     * Gets the handler for the given component ID.
+     * <p>
+     * This method retrieves a handler based on the component ID string.
+     *
+     * @param componentId The string identifier of the component
+     * @return An Optional containing the handler if found, or empty if no matching handler exists
+     */
+    @Override @SuppressWarnings("unchecked")
+    public <T extends ItemComponentHandler<?>> Optional<T> getHandler(String componentId) {
+        return Optional.ofNullable((T) get(componentId));
+    }
+
+    /**
+     * Retrieves all registered component handlers.
+     * <p>
+     * This method provides access to the complete collection of all available handlers.
+     *
+     * @return A collection containing all registered handlers
+     */
+    @Override
+    public Collection<ItemComponentHandler<?>> getAllHandlers() {
+        return handlersByType.values();
+    }
+
+    /**
+     * Called when registry is locked to prevent further modifications.
+     * Ensures the type map is consistent with the registry.
+     */
+    @Override
+    public void lock() {
+        super.lock();
+        handlersByType.clear();
+        values().forEach(handler -> handlersByType.put(handler.componentType(), handler));
     }
 }

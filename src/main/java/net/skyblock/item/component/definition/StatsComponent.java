@@ -1,10 +1,8 @@
 package net.skyblock.item.component.definition;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.skyblock.item.component.ComponentContainer;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ModifierComponent;
-import net.skyblock.item.component.handler.StatsHandler;
 import net.skyblock.stats.calculator.StatProfile;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,11 +60,5 @@ public record StatsComponent(
         ObjectArrayList<ModifierComponent> newModifiers = new ObjectArrayList<>(this.modifiers);
         newModifiers.remove(modifier);
         return new StatsComponent(this.baseStats, newModifiers);
-    }
-
-    public @NotNull StatProfile getFinalStats(@NotNull ComponentContainer container) {
-        StatsHandler handler = (StatsHandler) getHandler();
-        assert handler != null;
-        return handler.getFinalStats(this, container);
     }
 }

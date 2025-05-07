@@ -1,10 +1,9 @@
 package net.skyblock.command.base;
 
-import net.skyblock.player.rank.PlayerRank;
-import net.skyblock.player.SkyblockPlayer;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.condition.CommandCondition;
+import net.skyblock.player.rank.PlayerRank;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +45,10 @@ public abstract class SkyblockCommand extends Command {
 
         @Override
         public boolean canUse(@NotNull CommandSender sender, @Nullable String commandString) {
-            return sender instanceof SkyblockPlayer player && player.getPlayerRank().isAtLeast(requiredRank);
+            if (sender instanceof RankableSender rankableSender) {
+                return rankableSender.getRank().isAtLeast(requiredRank);
+            }
+            return false;
         }
     }
 }

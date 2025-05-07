@@ -138,7 +138,7 @@ public class SkyblockItemLoader {
      * @return The parsed ItemComponent or null if no handler exists
      */
     private ItemComponent parseComponent(String componentId, JsonElement jsonElement) {
-        ItemComponentHandler<?> handler = handlers.getHandler(componentId);
+        ItemComponentHandler<?> handler = handlers.getHandler(componentId).get();
         if (handler == null) {
             Logger.debug("No handler found for component '{}'", componentId);
             return null;

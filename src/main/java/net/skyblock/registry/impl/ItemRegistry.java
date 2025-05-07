@@ -2,6 +2,7 @@ package net.skyblock.registry.impl;
 
 import net.minestom.server.MinecraftServer;
 import net.skyblock.item.definition.SkyblockItem;
+import net.skyblock.item.provider.ItemProvider;
 import net.skyblock.item.io.SkyblockItemLoader;
 import net.skyblock.registry.base.Registry;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
  * This registry follows the Single Responsibility Principle by focusing only
  * on registration and lookup functionality.
  */
-public class ItemRegistry extends Registry<String, SkyblockItem> {
+public class ItemRegistry extends Registry<String, SkyblockItem> implements ItemProvider {
     private final HandlerRegistry handlers;
 
     public ItemRegistry(@NotNull HandlerRegistry handlers) {
@@ -71,5 +72,22 @@ public class ItemRegistry extends Registry<String, SkyblockItem> {
         }
 
         Logger.info("Item registration complete — Success: {}, Failed: {}", successCount, failureCount);
+    }
+
+    /**
+     * Returns the {@link SkyblockItem} associated with the given item ID.
+     * If the item ID is unknown or not registered, this method returns a fallback item representing AIR.
+     *
+     * @param itemId the ID of the item to retrieve
+     * @return the {@link SkyblockItem} associated with the ID, or AIR if not found
+     */
+    @Override
+    public @NotNull SkyblockItem getItem(@NotNull String itemId) {
+        SkyblockItem item = get(itemId);
+        if (item == null) {
+            return SkyblockItem.AIR;
+        }
+
+        return item;
     }
 }

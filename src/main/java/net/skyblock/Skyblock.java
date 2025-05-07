@@ -1,6 +1,5 @@
 package net.skyblock;
 
-import net.skyblock.registry.base.Registries;
 import net.skyblock.registry.impl.HandlerRegistry;
 import net.skyblock.registry.impl.ItemRegistry;
 import net.skyblock.registry.impl.ReforgeRegistry;
@@ -9,23 +8,30 @@ import org.tinylog.Logger;
 
 /**
  * Main class for the Skyblock server implementation.
- * This class holds the registry access points and core components while delegating
- * initialization and server operation to ServerBootstrap.
+ * This class acts as the central access point to all core systems and registries.
  */
-public class Skyblock implements Registries {
-    private static Skyblock instance;
-    private final DependencyContainer container;
+public class Skyblock {
+
+    // Core registries
+    private final HandlerRegistry handlerRegistry;
+    private final ItemRegistry itemRegistry;
+    private final ReforgeRegistry reforgeRegistry;
+
+    // Server components
     private final ServerBootstrap serverBootstrap;
     private boolean isRunning = false;
 
     /**
      * Main entry point for the Skyblock server.
+     *
+     * @param args Command line arguments
      */
     public static void main(String[] args) {
-        Logger.info("Starting Skyblock application");
+        Skyblock instance;
+        Logger.info("Starting Skyblock server");
         try {
             instance = new Skyblock();
-            instance.getServerBootstrap().start("0.0.0.0", 25565);
+            instance.start("0.0.0.0", 25565);
         } catch (Exception e) {
             Logger.error(e, "Failed to start Skyblock server");
             System.exit(1);
@@ -33,51 +39,80 @@ public class Skyblock implements Registries {
     }
 
     /**
-     * Constructs a new Skyblock server instance.
+     * Constructs a new Skyblock server instance and initializes all registries.
      */
     public Skyblock() {
-        Logger.info("Creating Skyblock instance");
-        this.container = new DependencyContainer();
+        Logger.info("Initializing Skyblock instance");
+
+        // Initialize registries in correct order
+        this.reforgeRegistry = new ReforgeRegistry();
+        this.handlerRegistry = new HandlerRegistry();
+        this.itemRegistry = new ItemRegistry(handlerRegistry);
+
+        // Initialize registries
+        initializeRegistries();
+
+        // Create bootstrap with this instance
         this.serverBootstrap = new ServerBootstrap(this);
     }
 
     /**
-     * Returns the skyblock instance
+     * Initializes all registries in the correct order
      */
-    public static @NotNull Skyblock getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("Skyblock instance has not been initialized");
-        }
-        return instance;
+    private void initializeRegistries() {
+        Logger.info("Initializing registries...");
+
+        reforgeRegistry.init();
+        handlerRegistry.init();
+        itemRegistry.init();
+
+        Logger.info("Registries initialized successfully");
     }
 
-    public @NotNull ServerBootstrap getServerBootstrap() {
-        return serverBootstrap;
+    /**
+     * Starts the server on the specified address and port.
+     *
+     * @param address The address to bind to
+     * @param port The port to listen on
+     */
+    public void start(String address, int port) {
+        Logger.info("Starting server on {}:{}", address, port);
+        serverBootstrap.start(address, port);
+        this.isRunning = true;
     }
 
-    public @NotNull DependencyContainer getContainer() {
-        return container;
+    /**
+     * Gets the item registry.
+     *
+     * @return The item registry
+     */
+    public @NotNull ItemRegistry getItemRegistry() {
+        return itemRegistry;
     }
 
-    @Override
-    public @NotNull ItemRegistry items() {
-        return container.get(ItemRegistry.class);
+    /**
+     * Gets the handler registry.
+     *
+     * @return The handler registry
+     */
+    public @NotNull HandlerRegistry getHandlerRegistry() {
+        return handlerRegistry;
     }
 
-    @Override
-    public @NotNull HandlerRegistry handlers() {
-        return container.get(HandlerRegistry.class);
+    /**
+     * Gets the reforge registry.
+     *
+     * @return The reforge registry
+     */
+    public @NotNull ReforgeRegistry getReforgeRegistry() {
+        return reforgeRegistry;
     }
 
-    @Override
-    public @NotNull ReforgeRegistry reforges() {
-        return container.get(ReforgeRegistry.class);
-    }
-
-    public void setRunning(boolean running) {
-        this.isRunning = running;
-    }
-
+    /**
+     * Checks if the server is currently running.
+     *
+     * @return true if the server is running, false otherwise
+     */
     public boolean isRunning() {
         return isRunning;
     }

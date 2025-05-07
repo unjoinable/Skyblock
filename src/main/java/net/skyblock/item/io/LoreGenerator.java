@@ -6,6 +6,7 @@ import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.item.definition.SkyblockItem;
+import net.skyblock.item.provider.HandlerProvider;
 import net.skyblock.registry.impl.HandlerRegistry;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +19,7 @@ import java.util.List;
  * This instance can be reused and optionally cached per item.
  */
 public final class LoreGenerator {
-    private final HandlerRegistry handlers;
+    private final HandlerProvider handlerProvider;
     private final ComponentContainer container;
 
     /**
@@ -29,11 +30,11 @@ public final class LoreGenerator {
      * </p>
      *
      * @param container The {@link ComponentContainer} that holds the components used to generate lore.
-     * @param handlers  The {@link HandlerRegistry} that has all default handlers registered
+     * @param handlerProvider  The {@link HandlerRegistry} that has all default handlers registered
      */
-    public LoreGenerator(@NotNull ComponentContainer container, @NotNull HandlerRegistry handlers) {
+    public LoreGenerator(@NotNull ComponentContainer container, @NotNull HandlerProvider handlerProvider) {
         this.container = container;
-        this.handlers = handlers;
+        this.handlerProvider = handlerProvider;
     }
 
     /**
@@ -45,10 +46,10 @@ public final class LoreGenerator {
      * </p>
      *
      * @param item The {@link SkyblockItem} from which the components are extracted for lore generation.
-     * @param handlers  The {@link HandlerRegistry} that has all default handlers registered
+     * @param handlerProvider  The {@link HandlerRegistry} that has all default handlers registered
      */
-    public LoreGenerator(@NotNull SkyblockItem item, @NotNull HandlerRegistry handlers) {
-        this(item.components(), handlers);
+    public LoreGenerator(@NotNull SkyblockItem item, @NotNull HandlerProvider handlerProvider) {
+        this(item.components(), handlerProvider);
     }
 
     /**
@@ -143,7 +144,7 @@ public final class LoreGenerator {
      */
     private ItemComponentHandler<?> getHandler(@NotNull ItemComponent component) {
         Class<? extends ItemComponent> componentClass = component.getType();
-        return handlers.getHandler(componentClass);
+        return handlerProvider.getHandler(componentClass).get();
     }
 
 

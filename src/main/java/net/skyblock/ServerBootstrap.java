@@ -15,63 +15,60 @@ import net.skyblock.event.listeners.inventory.InventoryCloseListener;
 import net.skyblock.event.listeners.inventory.InventoryPreClickListener;
 import net.skyblock.event.listeners.item.ComponentAddListener;
 import net.skyblock.event.listeners.item.ComponentRemoveListener;
-import net.skyblock.event.listeners.item.ItemLoadListenerImpl;
 import net.skyblock.event.listeners.player.*;
-import net.skyblock.item.io.SkyblockItemLoader;
+import net.skyblock.item.inventory.ItemProviderFactory;
 import net.skyblock.item.io.SkyblockItemProcessor;
-import net.skyblock.player.SkyblockPlayer;
-import net.skyblock.registry.base.Registries;
+import net.skyblock.player.SkyblockPlayerProvider;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
 /**
- * Server bootstrap class that handles initialization and startup of the Skyblock server
- * using dependency injection for registries.
+ * Server bootstrap class that handles initialization and startup of the Skyblock server.
  */
 public class ServerBootstrap {
     private final MinecraftServer server;
     private final InstanceContainer hubInstance;
     private final SkyblockItemProcessor processor;
-    private final Registries registries;
+    private final Skyblock skyblock;
     private final Pos spawnPosition;
 
+    // Providers
+    private final ItemProviderFactory itemProviderFactory;
+
     /**
-     * Creates a new server bootstrap with the given registries
+     * Creates a new server bootstrap with the given Skyblock instance
      *
-     * @param registries The registries to use for this server
+     * @param skyblock The Skyblock instance
      */
-    public ServerBootstrap(Registries registries) {
-        this(registries, new Pos(-2, 71, -68).withYaw(-180F), "hub");
+    public ServerBootstrap(Skyblock skyblock) {
+        this(skyblock, new Pos(-2, 71, -68).withYaw(-180F), "hub");
     }
 
     /**
      * Creates a new server bootstrap with custom configuration
      *
-     * @param registries The registries to use
+     * @param skyblock The Skyblock instance
      * @param spawnPosition The spawn position for players
      * @param worldPath The path to the world files for the hub
      */
-    public ServerBootstrap(Registries registries, Pos spawnPosition, String worldPath) {
+    public ServerBootstrap(Skyblock skyblock, Pos spawnPosition, String worldPath) {
+        Logger.info("Bootstrapping server...");
         this.server = MinecraftServer.init();
-        this.registries = registries;
+        this.skyblock = skyblock;
         this.spawnPosition = spawnPosition;
 
-        // Set up Mojang authentication and player provider
-        MojangAuth.init();
-        MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
-
         // Load the hub world
-        InstanceManager instanceManager = MinecraftServer.getInstanceManager();
-        this.hubInstance = loadWorld(instanceManager, worldPath);
+        this.hubInstance = loadWorld(worldPath);
 
         // Register all event listeners
         registerEventListeners();
 
-        // Initialize registries in the correct order
-        initRegistries();
+        // Setup
+        this.processor = new SkyblockItemProcessor(skyblock.getHandlerRegistry(), skyblock.getItemRegistry());
+        this.itemProviderFactory = new ItemProviderFactory(this.processor);
 
-        // Set up item processor
-        this.processor = new SkyblockItemProcessor(registries.handlers(), registries.items());
+        // Set up Mojang authentication and player provider
+        configureAuthentication();
 
         // Register commands
         registerCommands();
@@ -80,22 +77,20 @@ public class ServerBootstrap {
     }
 
     /**
-     * Initializes all registries in the correct order
+     * Configures authentication and player provider
      */
-    private void initRegistries() {
-        Logger.info("Initializing registries...");
+    private void configureAuthentication() {
+        Logger.info("Setting up authentication");
+        MojangAuth.init();
+        MinecraftServer.getConnectionManager().setPlayerProvider(new SkyblockPlayerProvider(itemProviderFactory));
 
-        registries.reforges().init();
-        registries.handlers().init();
-        registries.items().init();
-
-        Logger.info("Registries initialized successfully");
     }
 
     /**
      * Registers all event listeners needed for the server
      */
     private void registerEventListeners() {
+        Logger.info("Registering event listeners");
         GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
 
         // Register player-related listeners
@@ -116,9 +111,6 @@ public class ServerBootstrap {
         eventHandler.addListener(new ComponentAddListener());
         eventHandler.addListener(new ComponentRemoveListener());
 
-        // Register item load listener
-        SkyblockItemLoader.addListener(new ItemLoadListenerImpl());
-
         Logger.info("Event listeners registered");
     }
 
@@ -126,8 +118,9 @@ public class ServerBootstrap {
      * Registers all commands for the server
      */
     private void registerCommands() {
+        Logger.info("Registering commands");
         CommandManager cmdManager = MinecraftServer.getCommandManager();
-        cmdManager.register(new ItemCommand(registries.items(), processor));
+        cmdManager.register(new ItemCommand(skyblock.getItemRegistry(), processor));
         cmdManager.register(new TestCommand());
 
         Logger.info("Commands registered");
@@ -136,12 +129,12 @@ public class ServerBootstrap {
     /**
      * Loads a world from the specified path
      *
-     * @param instanceManager The instance manager
      * @param worldPath The path to the world files
      * @return The loaded instance container
      */
-    private @NotNull InstanceContainer loadWorld(InstanceManager instanceManager, String worldPath) {
+    private @NotNull InstanceContainer loadWorld(String worldPath) {
         Logger.info("Loading world from '{}'", worldPath);
+        InstanceManager instanceManager = MinecraftServer.getInstanceManager();
         InstanceContainer container = instanceManager.createInstanceContainer();
         container.setChunkLoader(new AnvilLoader(worldPath));
         return container;
@@ -159,30 +152,12 @@ public class ServerBootstrap {
     }
 
     /**
-     * Gets the hub instance
-     *
-     * @return The hub instance
-     */
-    public @NotNull InstanceContainer getHubInstance() {
-        return hubInstance;
-    }
-
-    /**
      * Gets the item processor
      *
      * @return The item processor
      */
     public @NotNull SkyblockItemProcessor getProcessor() {
         return processor;
-    }
-
-    /**
-     * Gets the registries used by this server
-     *
-     * @return The registries
-     */
-    public @NotNull Registries getRegistries() {
-        return registries;
     }
 
     /**

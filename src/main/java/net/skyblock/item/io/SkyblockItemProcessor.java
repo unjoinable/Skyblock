@@ -12,8 +12,8 @@ import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.trait.NBTHandler;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.registry.impl.HandlerRegistry;
-import net.skyblock.registry.impl.ItemRegistry;
+import net.skyblock.item.provider.HandlerProvider;
+import net.skyblock.item.provider.ItemProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -22,14 +22,14 @@ import java.util.Optional;
 /**
  * Processor for converting between Skyblock items and Minestom ItemStacks
  */
-public class SkyblockItemProcessor {
-    private static final Tag<String> ID_TAG = Tag.String("skyblock_id").defaultValue("AIR");
-    private final HandlerRegistry handlers;
-    private final ItemRegistry items;
+public class SkyblockItemProcessor implements ItemProcessor {
+    private static final Tag<String> ID_TAG = Tag.String("skyblock_id");
+    private final HandlerProvider handlerProvider;
+    private final ItemProvider itemProvider;
 
-    public SkyblockItemProcessor(@NotNull HandlerRegistry handlers, @NotNull ItemRegistry items) {
-        this.handlers = handlers;
-        this.items = items;
+    public SkyblockItemProcessor(@NotNull HandlerProvider handlerProvider, @NotNull ItemProvider itemProvider) {
+        this.handlerProvider = handlerProvider;
+        this.itemProvider = itemProvider;
     }
 
     /**
@@ -42,7 +42,7 @@ public class SkyblockItemProcessor {
         skyblockItem.components().asMap()
                 .values().forEach(component -> processComponent(builder, component, skyblockItem.components()));
 
-        builder.lore(new LoreGenerator(skyblockItem, handlers).generate());
+        builder.lore(new LoreGenerator(skyblockItem, handlerProvider).generate());
         builder.setTag(ID_TAG, skyblockItem.itemId());
         builder.set(DataComponents.ATTRIBUTE_MODIFIERS, new AttributeList(Collections.emptyList()));
 
@@ -54,7 +54,7 @@ public class SkyblockItemProcessor {
         if (component == null) return;
 
         try {
-            ItemComponentHandler<T> handler = (ItemComponentHandler<T>) handlers.getHandler(component.getClass());
+            ItemComponentHandler<T> handler = (ItemComponentHandler<T>) handlerProvider.getHandler(component.getClass()).get();
 
             // Handle NBT data
             if (handler instanceof NBTHandler<T> nbtHandler) {
@@ -81,16 +81,13 @@ public class SkyblockItemProcessor {
 
         // Get the base item from registry
         String itemId = itemStack.getTag(ID_TAG);
-        SkyblockItem baseItem = items.get(itemId);
-        if (baseItem == null) {
-            return SkyblockItem.AIR;
-        }
+        SkyblockItem baseItem = itemProvider.getItem(itemId);
 
         // Deserialize components from NBT
         ComponentContainer container = baseItem.components();
 
         // Process each NBT handler
-        for (ItemComponentHandler<?> handler : handlers.values()) {
+        for (ItemComponentHandler<?> handler : handlerProvider.getAllHandlers()) {
             if (handler instanceof NBTHandler<?> nbtHandler) {
                 try {
                     CompoundBinaryTag nbtData = (CompoundBinaryTag) itemStack.getTag(Tag.NBT(handler.componentId()));

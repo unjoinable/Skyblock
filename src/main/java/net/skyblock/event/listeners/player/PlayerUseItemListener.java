@@ -4,7 +4,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.item.Material;
-import net.skyblock.item.inventory.ItemSlot;
+import net.skyblock.item.inventory.VanillaItemSlot;
 import net.skyblock.player.SkyblockPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> {
 
     // Direct material-to-slot mapping for O(1) lookups instead of iterating through sets
-    private static final Map<Material, ItemSlot> ARMOR_SLOT_MAP = new ConcurrentHashMap<>();
+    private static final Map<Material, VanillaItemSlot> ARMOR_SLOT_MAP = new ConcurrentHashMap<>();
 
     static {
         // Helmet mappings
-        mapArmorToSlot(ItemSlot.HELMET,
+        mapArmorToSlot(VanillaItemSlot.HELMET,
                 Material.LEATHER_HELMET,
                 Material.CHAINMAIL_HELMET,
                 Material.IRON_HELMET,
@@ -31,7 +31,7 @@ public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> 
                 Material.TURTLE_HELMET);
 
         // Chestplate mappings
-        mapArmorToSlot(ItemSlot.CHESTPLATE,
+        mapArmorToSlot(VanillaItemSlot.CHESTPLATE,
                 Material.LEATHER_CHESTPLATE,
                 Material.CHAINMAIL_CHESTPLATE,
                 Material.IRON_CHESTPLATE,
@@ -40,7 +40,7 @@ public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> 
                 Material.NETHERITE_CHESTPLATE);
 
         // Leggings mappings
-        mapArmorToSlot(ItemSlot.LEGGINGS,
+        mapArmorToSlot(VanillaItemSlot.LEGGINGS,
                 Material.LEATHER_LEGGINGS,
                 Material.CHAINMAIL_LEGGINGS,
                 Material.IRON_LEGGINGS,
@@ -49,7 +49,7 @@ public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> 
                 Material.NETHERITE_LEGGINGS);
 
         // Boots mappings
-        mapArmorToSlot(ItemSlot.BOOTS,
+        mapArmorToSlot(VanillaItemSlot.BOOTS,
                 Material.LEATHER_BOOTS,
                 Material.CHAINMAIL_BOOTS,
                 Material.IRON_BOOTS,
@@ -61,7 +61,7 @@ public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> 
     /**
      * Helper method to map multiple armor materials to a slot
      */
-    private static void mapArmorToSlot(ItemSlot slot, Material... materials) {
+    private static void mapArmorToSlot(VanillaItemSlot slot, Material... materials) {
         for (Material material : materials) {
             ARMOR_SLOT_MAP.put(material, slot);
         }
@@ -75,7 +75,7 @@ public class PlayerUseItemListener implements EventListener<PlayerUseItemEvent> 
     @Override
     public @NotNull Result run(@NotNull PlayerUseItemEvent event) {
         Material material = event.getItemStack().material();
-        ItemSlot slot = ARMOR_SLOT_MAP.get(material);
+        VanillaItemSlot slot = ARMOR_SLOT_MAP.get(material);
 
         if (slot != null) {
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();

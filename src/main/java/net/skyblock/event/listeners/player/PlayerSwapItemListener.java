@@ -3,7 +3,7 @@ package net.skyblock.event.listeners.player;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerSwapItemEvent;
-import net.skyblock.item.inventory.ItemSlot;
+import net.skyblock.item.inventory.VanillaItemSlot;
 import net.skyblock.player.SkyblockPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ public class PlayerSwapItemListener implements EventListener<PlayerSwapItemEvent
     public @NotNull Result run(@NotNull PlayerSwapItemEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
 
-        MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatsManager().update(ItemSlot.MAIN_HAND));
+        MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatsManager().update(VanillaItemSlot.MAIN_HAND));
 
         return Result.SUCCESS;
     }

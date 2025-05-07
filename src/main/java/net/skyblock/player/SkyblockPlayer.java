@@ -8,9 +8,11 @@ import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
 import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.item.inventory.ItemSlot;
+import net.skyblock.item.inventory.VanillaItemSlot;
+import net.skyblock.item.inventory.PlayerItemProvider;
 import net.skyblock.player.manager.PlayerStatsManager;
 import net.skyblock.player.rank.PlayerRank;
+import net.skyblock.command.base.RankableSender;
 import net.skyblock.player.ui.SkyblockPlayerActionBar;
 import net.skyblock.stats.calculator.DamageCalculator;
 import net.skyblock.stats.calculator.StatProfile;
@@ -28,8 +30,9 @@ import org.jetbrains.annotations.NotNull;
  * This class implements the {@link CombatEntity} interface to handle combat interactions
  * and integrates with the stat system to calculate health, mana, and other combat attributes.
  */
-public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
-    private final PlayerStatsManager statsManager;
+public class SkyblockPlayer extends Player implements StatHolder, CombatEntity, RankableSender {
+    private PlayerItemProvider itemProvider;
+    private PlayerStatsManager statsManager;
     private PlayerRank playerRank;
 
     // Combat-related fields
@@ -42,7 +45,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
 
     /**
      * Constructs a {@link SkyblockPlayer} instance, initializing the player's connection,
-     * game profile, and stats manager.
+     * game profile, stats manager, and item provider.
      * <p>
      * The player is assigned a default rank of {@link PlayerRank#DEFAULT}.
      *
@@ -51,7 +54,6 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      */
     public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
         super(playerConnection, gameProfile);
-        this.statsManager = new PlayerStatsManager(this);
         this.playerRank = PlayerRank.DEFAULT;
 
         // Initialize health and mana to maximum values
@@ -95,15 +97,6 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
      */
     public void setPlayerRank(PlayerRank playerRank) {
         this.playerRank = playerRank;
-    }
-
-    /**
-     * Gets the current rank of the player.
-     *
-     * @return the player's current {@link PlayerRank}
-     */
-    public PlayerRank getPlayerRank() {
-        return playerRank;
     }
 
     /**
@@ -239,7 +232,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
             return;
         }
 
-        SkyblockItem weapon = ItemSlot.MAIN_HAND.getItem(this);
+        SkyblockItem weapon = itemProvider.getItem(VanillaItemSlot.MAIN_HAND);
         SkyblockDamage damage = DamageCalculator.calculateDamage(this, target, weapon, damageType);
 
         target.damage(damage);
@@ -327,5 +320,24 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity {
     @Override
     public void meleeDamage(CombatEntity target) {
         attack(target, DamageType.MELEE);
+    }
+
+    /**
+     * Sets the item provider
+     *
+     * @param itemProvider the provider for player items
+     */
+    public void setItemProvider(PlayerItemProvider itemProvider) {
+        this.itemProvider = itemProvider;
+    }
+
+    /**
+     * Gets the {@link PlayerRank} associated with this sender.
+     *
+     * @return the rank of the sender
+     */
+    @Override
+    public @NotNull PlayerRank getRank() {
+        return playerRank;
     }
 }

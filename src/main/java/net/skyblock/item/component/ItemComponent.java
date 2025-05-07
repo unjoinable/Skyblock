@@ -1,25 +1,10 @@
 package net.skyblock.item.component;
 
-import net.skyblock.Skyblock;
-import net.skyblock.registry.impl.HandlerRegistry;
-
 /**
  * Base marker interface for all components.
  * Implementations must be immutable and thread-safe.
  */
 public interface ItemComponent {
-
-    /**
-     * Returns the handler for the current component class.
-     * This method uses reflection to determine the component type.
-     *
-     * @return The handler for this component type
-     */
-    default ItemComponentHandler<?> getHandler() {
-        Class<? extends ItemComponent> componentClass = this.getType();
-        HandlerRegistry registry = Skyblock.getInstance().handlers();
-        return registry.getHandler(componentClass);
-    }
 
     /**
      * Returns the component type used for storage and retrieval.

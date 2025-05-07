@@ -8,6 +8,8 @@ import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ModifierComponent;
 import net.skyblock.item.component.definition.StatsComponent;
 import net.skyblock.item.component.trait.LoreHandler;
+import net.skyblock.item.component.trait.ModifierHandler;
+import net.skyblock.registry.impl.HandlerRegistry;
 import net.skyblock.stats.calculator.StatProfile;
 import net.skyblock.stats.definition.StatValueType;
 import net.skyblock.stats.definition.Statistic;
@@ -25,12 +27,24 @@ import static net.skyblock.utils.Utils.formatStatValue;
 
 /**
  * Handles the stats component for items.
- * This handler is responsible for:
- * - Calculating final stats by combining base stats with modifiers
- * - Generating appropriate lore for displaying item stats
+ * <p>
+ * This handler calculates final statistics by combining base stats with modifiers
+ * and generates appropriate lore for displaying item statistics in the UI.
  */
 public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreHandler<StatsComponent> {
+
     private static final String COMPONENT_ID = "statistics";
+    private final HandlerRegistry handlers;
+
+    /**
+     * Constructs a new StatsHandler with the specified handler registry.
+     *
+     * @param handlers the registry containing available component handlers
+     * @throws NullPointerException if handlers is null
+     */
+    public StatsHandler(@NotNull HandlerRegistry handlers) {
+        this.handlers = handlers;
+    }
 
     @Override
     public @NotNull Class<StatsComponent> componentType() {
@@ -50,15 +64,16 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
     /**
      * Calculates the final stats for an item by combining base stats with all modifiers.
      *
-     * @param component The stats component containing base stats and modifiers
-     * @param container The full component container, which may be needed by modifiers
-     * @return A new StatProfile containing the combined stats
+     * @param component the stats component containing base stats
+     * @param container the component container which may be needed by modifiers
+     * @return a new StatProfile containing the combined stats
      */
     public @NotNull StatProfile getFinalStats(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
         StatProfile result = component.baseStats().copy();
 
         for (ModifierComponent modifier : component.modifiers()) {
-            result.combineWith(modifier.getModifierHandler().getStatProfile(modifier, container));
+            ModifierHandler<?> handler = (ModifierHandler<?>) handlers.getHandler(modifier.getType()).get();
+            result.combineWith(handler.getStatProfile(modifier, container));
         }
 
         return result;
@@ -67,13 +82,13 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
     /**
      * Generates lore lines for this component to be displayed on the item.
      *
-     * @param component The stats component to generate lore for
-     * @param container The full component container, in case lore depends on other components
-     * @return List of Components representing lore lines
+     * @param component the stats component to generate lore for
+     * @param container the component container, in case lore depends on other components
+     * @return list of Components representing lore lines
      */
     @Override
     public @NotNull List<Component> generateLore(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
-        StatProfile profile = component.getFinalStats(container);
+        StatProfile profile = getFinalStats(component, container);
         ObjectArrayList<ModifierComponent> modifiers = component.modifiers();
         List<Component> lore = new ArrayList<>();
 
@@ -88,10 +103,10 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
     }
 
     /**
-     * Creates a component instance from JSON data
+     * Creates a component instance from JSON data.
      *
-     * @param json The JSON data to parse
-     * @return The created component instance
+     * @param json the JSON data to parse
+     * @return the created StatsComponent instance
      */
     @Override
     public @NotNull StatsComponent fromJson(@NotNull JsonElement json) {
@@ -99,15 +114,13 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
 
         if (json.isJsonObject()) {
             json.getAsJsonObject().entrySet().forEach(entry -> {
-                String name = entry.getKey();
+                String statName = entry.getKey();
                 try {
-                    profile.addStat(
-                            Statistic.valueOf(name),
-                            StatValueType.BASE,
-                            entry.getValue().getAsDouble()
-                    );
+                    Statistic stat = Statistic.valueOf(statName);
+                    double value = entry.getValue().getAsDouble();
+                    profile.addStat(stat, StatValueType.BASE, value);
                 } catch (IllegalArgumentException _) {
-                    Logger.warn("Invalid stat: {}", name);
+                    Logger.warn("Invalid stat: {}", statName);
                 }
             });
         }
@@ -116,15 +129,20 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
     }
 
     /**
-     * Creates a formatted text component for a stat line with modifiers
+     * Creates a formatted text component for a stat line with modifiers.
      *
-     * @param stat The statistic being formatted
-     * @param finalValue The final calculated value of the stat
-     * @param modifiers List of modifiers affecting the stat
-     * @param container The full component container
-     * @return A formatted Component for display in lore
+     * @param stat the statistic being formatted
+     * @param finalValue the final calculated value of the stat
+     * @param modifiers list of modifiers affecting the stat
+     * @param container the full component container
+     * @return a formatted Component for display in lore
      */
-    private Component formatStatLine(@NotNull Statistic stat, double finalValue, @NotNull ObjectArrayList<ModifierComponent> modifiers, @NotNull ComponentContainer container) {
+    private Component formatStatLine(
+            @NotNull Statistic stat,
+            double finalValue,
+            @NotNull ObjectArrayList<ModifierComponent> modifiers,
+            @NotNull ComponentContainer container) {
+
         String formattedValue = formatStatValue(finalValue, stat);
 
         Component line = textOfChildren(
@@ -132,10 +150,12 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
                 text(formattedValue, stat.getLoreColor()));
 
         for (ModifierComponent modifier : modifiers) {
-            var handler = modifier.getModifierHandler();
+            ModifierHandler<?> handler = (ModifierHandler<?>) handlers.getHandler(modifier.getType()).get();
             double modifierValue = handler.getStatProfile(modifier, container).get(stat);
 
-            if (modifierValue == 0) continue;
+            if (modifierValue == 0) {
+                continue;
+            }
 
             Component modifierText = handler.formatStatDisplay(stat, modifierValue);
             line = line.append(text(" ")).append(modifierText);
