@@ -47,9 +47,9 @@ public class ServerBootstrap {
     /**
      * Creates a new server bootstrap with custom configuration
      *
-     * @param skyblock The Skyblock instance
+     * @param skyblock      The Skyblock instance
      * @param spawnPosition The spawn position for players
-     * @param worldPath The path to the world files for the hub
+     * @param worldPath     The path to the world files for the hub
      */
     public ServerBootstrap(Skyblock skyblock, Pos spawnPosition, String worldPath) {
         Logger.info("Bootstrapping server...");
@@ -160,28 +160,10 @@ public class ServerBootstrap {
      * Starts the server on the specified address and port
      *
      * @param address The address to bind to
-     * @param port The port to listen on
+     * @param port    The port to listen on
      */
     public void start(String address, int port) {
         Logger.info("Starting server on {}:{}", address, port);
         server.start(address, port);
-    }
-
-    /**
-     * Gets the item processor
-     *
-     * @return The item processor
-     */
-    public @NotNull SkyblockItemProcessor getProcessor() {
-        return processor;
-    }
-
-    /**
-     * Gets the MinecraftServer instance
-     *
-     * @return The server instance
-     */
-    public @NotNull MinecraftServer getServer() {
-        return server;
     }
 }
