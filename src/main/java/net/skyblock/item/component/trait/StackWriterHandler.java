@@ -1,7 +1,7 @@
 package net.skyblock.item.component.trait;
 
 import net.minestom.server.item.ItemStack;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ItemComponent;
 import org.jetbrains.annotations.NotNull;
@@ -27,5 +27,5 @@ public interface StackWriterHandler<C extends ItemComponent> extends ItemCompone
      * @param builder   the ItemStack builder to write component data to
      * @param container the container containing all components
      */
-    void write(@NotNull C component, @NotNull ItemStack.Builder builder, @NotNull ComponentContainer container);
+    void write(@NotNull C component, @NotNull ItemStack.Builder builder, @NotNull ItemComponents container);
 }

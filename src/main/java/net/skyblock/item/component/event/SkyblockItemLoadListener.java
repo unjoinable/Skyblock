@@ -1,6 +1,6 @@
 package net.skyblock.item.component.event;
 
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,5 +18,5 @@ public interface SkyblockItemLoadListener  {
      * @param container The component container associated with the item
      * @return The possibly modified container
      */
-    @NotNull ComponentContainer onItemLoad(ComponentContainer container);
+    @NotNull ItemComponents onItemLoad(ItemComponents container);
 }

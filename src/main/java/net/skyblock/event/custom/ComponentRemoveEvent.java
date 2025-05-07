@@ -2,18 +2,18 @@ package net.skyblock.event.custom;
 
 import net.minestom.server.event.Event;
 import net.minestom.server.event.trait.CancellableEvent;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Event fired when a component is removed from a {@link ComponentContainer.Builder}.
+ * Event fired when a component is removed from a {@link ItemComponents.Builder}.
  * <p>
  * This event is fired before the component is actually removed, allowing listeners
  * to modify or reject the component removal.
  */
 public class ComponentRemoveEvent implements CancellableEvent {
-    private final ComponentContainer.Builder builder;
+    private final ItemComponents.Builder builder;
     private final ItemComponent component;
     private boolean cancelled;
 
@@ -23,7 +23,7 @@ public class ComponentRemoveEvent implements CancellableEvent {
      * @param builder       the builder from which the component is being removed
      * @param component     the component being removed, or null if not present
      */
-    public ComponentRemoveEvent(@NotNull ComponentContainer.Builder builder, @NotNull ItemComponent component) {
+    public ComponentRemoveEvent(@NotNull ItemComponents.Builder builder, @NotNull ItemComponent component) {
         this.builder = builder;
         this.component = component;
     }
@@ -33,7 +33,7 @@ public class ComponentRemoveEvent implements CancellableEvent {
      *
      * @return the component container builder
      */
-    public @NotNull ComponentContainer.Builder getContainer() {
+    public @NotNull ItemComponents.Builder getContainer() {
         return this.builder;
     }
 

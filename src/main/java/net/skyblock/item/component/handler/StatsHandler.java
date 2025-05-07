@@ -3,7 +3,7 @@ package net.skyblock.item.component.handler;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.ModifierComponent;
 import net.skyblock.item.component.definition.StatsComponent;
@@ -68,7 +68,7 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      * @param container the component container which may be needed by modifiers
      * @return a new StatProfile containing the combined stats
      */
-    public @NotNull StatProfile getFinalStats(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
+    public @NotNull StatProfile getFinalStats(@NotNull StatsComponent component, @NotNull ItemComponents container) {
         StatProfile result = component.baseStats().copy();
 
         for (ModifierComponent modifier : component.modifiers()) {
@@ -87,7 +87,7 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
      * @return list of Components representing lore lines
      */
     @Override
-    public @NotNull List<Component> generateLore(@NotNull StatsComponent component, @NotNull ComponentContainer container) {
+    public @NotNull List<Component> generateLore(@NotNull StatsComponent component, @NotNull ItemComponents container) {
         StatProfile profile = getFinalStats(component, container);
         ObjectArrayList<ModifierComponent> modifiers = component.modifiers();
         List<Component> lore = new ArrayList<>();
@@ -141,7 +141,7 @@ public class StatsHandler implements ItemComponentHandler<StatsComponent>, LoreH
             @NotNull Statistic stat,
             double finalValue,
             @NotNull ObjectArrayList<ModifierComponent> modifiers,
-            @NotNull ComponentContainer container) {
+            @NotNull ItemComponents container) {
 
         String formattedValue = formatStatValue(finalValue, stat);
 

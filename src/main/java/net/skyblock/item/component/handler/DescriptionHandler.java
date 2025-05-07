@@ -3,7 +3,7 @@ package net.skyblock.item.component.handler;
 import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.trait.LoreHandler;
 import net.skyblock.item.component.definition.DescriptionComponent;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +36,7 @@ public class DescriptionHandler implements LoreHandler<DescriptionComponent> {
      * @return list of components representing lore lines
      */
     @Override
-    public @NotNull List<Component> generateLore(@NotNull DescriptionComponent component, @NotNull ComponentContainer container) {
+    public @NotNull List<Component> generateLore(@NotNull DescriptionComponent component, @NotNull ItemComponents container) {
         return component.description();
     }
 

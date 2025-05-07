@@ -1,7 +1,7 @@
 package net.skyblock.item.component.service;
 
 import net.skyblock.item.definition.Reforge;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.definition.ItemCategoryComponent;
 import net.skyblock.item.component.definition.RarityComponent;
 import net.skyblock.item.component.definition.ReforgeComponent;
@@ -19,7 +19,7 @@ public class ComponentResolver {
      * @param container The component container to check
      * @return The item's category, or ItemCategory.NONE if not found
      */
-    public @NotNull ItemCategory resolveCategory(@NotNull ComponentContainer container) {
+    public @NotNull ItemCategory resolveCategory(@NotNull ItemComponents container) {
         return container.get(ItemCategoryComponent.class)
                 .map(ItemCategoryComponent::itemCategory)
                 .orElse(ItemCategory.NONE);
@@ -31,7 +31,7 @@ public class ComponentResolver {
      * @param container The component container to check
      * @return The item's rarity, UNOBTAINABLE if not found
      */
-    public @NotNull Rarity resolveRarity(@NotNull ComponentContainer container) {
+    public @NotNull Rarity resolveRarity(@NotNull ItemComponents container) {
         return container.get(RarityComponent.class)
                 .map(component -> component.isUpgraded()
                         ? component.rarity().upgrade()
@@ -44,7 +44,7 @@ public class ComponentResolver {
      * @param container The component container to check
      * @return The item's rarity, null if not found
      */
-    public @Nullable Reforge resolveReforge(@NotNull ComponentContainer container) {
+    public @Nullable Reforge resolveReforge(@NotNull ItemComponents container) {
         return container.get(ReforgeComponent.class)
                 .map(ReforgeComponent::reforge).orElse(null);
     }

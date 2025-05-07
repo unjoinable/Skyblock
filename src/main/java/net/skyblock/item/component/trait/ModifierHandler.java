@@ -2,7 +2,7 @@ package net.skyblock.item.component.trait;
 
 import net.kyori.adventure.text.Component;
 import net.skyblock.item.component.ItemComponentHandler;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ModifierComponent;
 import net.skyblock.stats.calculator.StatProfile;
@@ -25,7 +25,7 @@ public interface ModifierHandler<C extends ItemComponent> extends ItemComponentH
      * @return A stat profile with all applicable statistic modifications
      */
     @SuppressWarnings("unchecked")
-    default @NotNull StatProfile getStatProfile(@NotNull ModifierComponent component, @NotNull ComponentContainer container) {
+    default @NotNull StatProfile getStatProfile(@NotNull ModifierComponent component, @NotNull ItemComponents container) {
         return this.getStatProfile(((C) component), container);
     }
 
@@ -36,7 +36,7 @@ public interface ModifierHandler<C extends ItemComponent> extends ItemComponentH
      * @param container The container holding the item component
      * @return A stat profile with all applicable statistic modifications
      */
-    @NotNull StatProfile getStatProfile(@NotNull C component, @NotNull ComponentContainer container);
+    @NotNull StatProfile getStatProfile(@NotNull C component, @NotNull ItemComponents container);
 
     /**
      * Formats a statistic and its value into a displayable text component.

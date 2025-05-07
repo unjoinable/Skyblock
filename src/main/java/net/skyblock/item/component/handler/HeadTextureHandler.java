@@ -5,7 +5,7 @@ import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.HeadProfile;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.definition.HeadTextureComponent;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class HeadTextureHandler implements StackWriterHandler<HeadTextureCompone
      * @param container the container containing all components
      */
     @Override
-    public void write(@NotNull HeadTextureComponent component, ItemStack.@NotNull Builder builder, @NotNull ComponentContainer container) {
+    public void write(@NotNull HeadTextureComponent component, ItemStack.@NotNull Builder builder, @NotNull ItemComponents container) {
         PlayerSkin skin = new PlayerSkin(component.texture(), UUID.randomUUID().toString());
         HeadProfile profile = new HeadProfile(skin);
         builder.set(DataComponents.PROFILE, profile);

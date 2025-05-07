@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import net.skyblock.item.definition.Reforge;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.item.component.definition.NameComponent;
 import net.skyblock.item.component.service.ComponentResolver;
@@ -27,7 +27,7 @@ public class NameHandler implements StackWriterHandler<NameComponent> {
      * @param container the container containing all components
      */
     @Override
-    public void write(@NotNull NameComponent component, ItemStack.@NotNull Builder builder, @NotNull ComponentContainer container) {
+    public void write(@NotNull NameComponent component, ItemStack.@NotNull Builder builder, @NotNull ItemComponents container) {
         ComponentResolver resolver = new ComponentResolver();
         Rarity rarity = resolver.resolveRarity(container);
         Reforge reforge = resolver.resolveReforge(container);

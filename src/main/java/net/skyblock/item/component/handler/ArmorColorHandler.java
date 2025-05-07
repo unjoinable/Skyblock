@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import net.skyblock.item.component.definition.ArmorColorComponent;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +24,7 @@ public class ArmorColorHandler implements StackWriterHandler<ArmorColorComponent
      * @param container the container containing all components
      */
     @Override
-    public void write(@NotNull ArmorColorComponent component, ItemStack.@NotNull Builder builder, @NotNull ComponentContainer container) {
+    public void write(@NotNull ArmorColorComponent component, ItemStack.@NotNull Builder builder, @NotNull ItemComponents container) {
         int[] color = component.color();
         builder.set(DataComponents.DYED_COLOR, new Color(color[0], color[1], color[2]));
     }

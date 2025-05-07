@@ -2,7 +2,7 @@ package net.skyblock.item.component.handler;
 
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.definition.HotPotatoBookComponent;
 import net.skyblock.item.enums.ItemCategory;
 import net.skyblock.item.component.trait.NBTHandler;
@@ -76,7 +76,7 @@ public class HotPotatoBookHandler implements NBTHandler<HotPotatoBookComponent>,
      * @return A stat profile with all applicable statistic modifications
      */
     @Override
-    public @NotNull StatProfile getStatProfile(@NotNull HotPotatoBookComponent component, @NotNull ComponentContainer container) {
+    public @NotNull StatProfile getStatProfile(@NotNull HotPotatoBookComponent component, @NotNull ItemComponents container) {
         StatProfile statProfile = new StatProfile();
         ComponentResolver resolver = new ComponentResolver();
         ItemCategory itemCategory = resolver.resolveCategory(container);

@@ -6,7 +6,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.AttributeList;
 import net.minestom.server.tag.Tag;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.trait.NBTHandler;
@@ -50,7 +50,7 @@ public class SkyblockItemProcessor implements ItemProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends ItemComponent> void processComponent(ItemStack.Builder builder, T component, ComponentContainer container) {
+    private <T extends ItemComponent> void processComponent(ItemStack.Builder builder, T component, ItemComponents container) {
         if (component == null) return;
 
         try {
@@ -84,7 +84,7 @@ public class SkyblockItemProcessor implements ItemProcessor {
         SkyblockItem baseItem = itemProvider.getItem(itemId);
 
         // Deserialize components from NBT
-        ComponentContainer container = baseItem.components();
+        ItemComponents.Builder builder = baseItem.components().toBuilder();
 
         // Process each NBT handler
         for (ItemComponentHandler<?> handler : handlerProvider.getAllHandlers()) {
@@ -93,13 +93,11 @@ public class SkyblockItemProcessor implements ItemProcessor {
                     CompoundBinaryTag nbtData = (CompoundBinaryTag) itemStack.getTag(Tag.NBT(handler.componentId()));
                     Optional<?> componentOpt = nbtHandler.fromNbt(nbtData);
 
-                    if (componentOpt.isPresent()) {
-                        container = container.with((ItemComponent) componentOpt.get());
-                    }
+                    componentOpt.ifPresent(o -> builder.with((ItemComponent) o));
                 } catch (Exception _) {} //ignored
             }
         }
 
-        return new SkyblockItem(itemId, container);
+        return new SkyblockItem(itemId, builder.build());
     }
 }

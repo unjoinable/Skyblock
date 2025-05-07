@@ -3,13 +3,11 @@ package net.skyblock.item.component.handler;
 import com.google.gson.JsonElement;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.definition.MaterialComponent;
 import net.skyblock.item.component.trait.StackWriterHandler;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
-
-import java.util.Objects;
 
 public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
     private static final String ID = "material";
@@ -25,7 +23,7 @@ public class MaterialHandler implements StackWriterHandler<MaterialComponent> {
      * @param container the container containing all components
      */
     @Override
-    public void write(@NotNull MaterialComponent component, ItemStack.@NotNull Builder builder, @NotNull ComponentContainer container) {
+    public void write(@NotNull MaterialComponent component, ItemStack.@NotNull Builder builder, @NotNull ItemComponents container) {
         builder.material(component.material());
     }
 

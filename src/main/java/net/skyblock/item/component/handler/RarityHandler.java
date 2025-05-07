@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.definition.RarityComponent;
 import net.skyblock.item.enums.Rarity;
 import net.skyblock.item.component.trait.LoreHandler;
@@ -42,7 +42,7 @@ public class RarityHandler implements LoreHandler<RarityComponent>, NBTHandler<R
      * @return list of components representing lore lines
      */
     @Override
-    public @NotNull List<Component> generateLore(@NotNull RarityComponent component, @NotNull ComponentContainer container) {
+    public @NotNull List<Component> generateLore(@NotNull RarityComponent component, @NotNull ItemComponents container) {
         final Rarity itemRarity = component.isUpgraded() ? component.rarity().upgrade() : component.rarity();
         final TextColor color = itemRarity.getColor();
         final String categoryName = new ComponentResolver().resolveCategory(container).getName();

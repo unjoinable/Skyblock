@@ -1,7 +1,7 @@
 package net.skyblock.item.component.trait;
 
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public interface LoreHandler<C extends ItemComponent> extends ItemComponentHandl
      * @param container the full component container, in case this lore depends on other components
      * @return list of components representing lore lines
      */
-    @NotNull List<Component> generateLore(@NotNull C component, @NotNull ComponentContainer container);
+    @NotNull List<Component> generateLore(@NotNull C component, @NotNull ItemComponents container);
 
     /**
      * Compares this handler with another based on their lore priorities.

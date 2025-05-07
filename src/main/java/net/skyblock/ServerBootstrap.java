@@ -57,6 +57,9 @@ public class ServerBootstrap {
         this.skyblock = skyblock;
         this.spawnPosition = spawnPosition;
 
+        // Initialize registries first
+        initializeRegistries();
+
         // Load the hub world
         this.hubInstance = loadWorld(worldPath);
 
@@ -74,6 +77,19 @@ public class ServerBootstrap {
         registerCommands();
 
         Logger.info("Server bootstrap complete");
+    }
+
+    /**
+     * Initializes all registries in the correct order
+     */
+    private void initializeRegistries() {
+        Logger.info("Initializing registries...");
+
+        skyblock.getReforgeRegistry().init();
+        skyblock.getHandlerRegistry().init();
+        skyblock.getItemRegistry().init();
+
+        Logger.info("Registries initialized successfully");
     }
 
     /**

@@ -44,29 +44,13 @@ public class Skyblock {
     public Skyblock() {
         Logger.info("Initializing Skyblock instance");
 
-        // Initialize registries in correct order
+        // Create registry instances but don't initialize them yet
         this.reforgeRegistry = new ReforgeRegistry();
         this.handlerRegistry = new HandlerRegistry();
         this.itemRegistry = new ItemRegistry(handlerRegistry);
 
-        // Initialize registries
-        initializeRegistries();
-
-        // Create bootstrap with this instance
+        // Create bootstrap with this instance - registration will happen there
         this.serverBootstrap = new ServerBootstrap(this);
-    }
-
-    /**
-     * Initializes all registries in the correct order
-     */
-    private void initializeRegistries() {
-        Logger.info("Initializing registries...");
-
-        reforgeRegistry.init();
-        handlerRegistry.init();
-        itemRegistry.init();
-
-        Logger.info("Registries initialized successfully");
     }
 
     /**

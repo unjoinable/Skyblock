@@ -2,7 +2,7 @@ package net.skyblock.event.listeners.item;
 
 import net.minestom.server.event.EventListener;
 import net.skyblock.event.custom.ComponentRemoveEvent;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ModifierComponent;
 import net.skyblock.item.component.definition.StatsComponent;
@@ -16,7 +16,7 @@ public class ComponentRemoveListener implements EventListener<ComponentRemoveEve
 
     @Override
     public @NotNull Result run(@NotNull ComponentRemoveEvent event) {
-        ComponentContainer.Builder container = event.getContainer();
+        ItemComponents.Builder container = event.getContainer();
         ItemComponent component = event.getComponent();
 
         if (component instanceof ModifierComponent modifier) {

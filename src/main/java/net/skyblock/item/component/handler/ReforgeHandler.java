@@ -2,7 +2,7 @@ package net.skyblock.item.component.handler;
 
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.definition.ReforgeComponent;
 import net.skyblock.item.component.service.ComponentResolver;
 import net.skyblock.item.component.trait.LoreHandler;
@@ -34,7 +34,7 @@ public class ReforgeHandler implements ModifierHandler<ReforgeComponent>, LoreHa
      * @return A stat profile with all applicable statistic modifications
      */
     @Override
-    public @NotNull StatProfile getStatProfile(@NotNull ReforgeComponent component, @NotNull ComponentContainer container) {
+    public @NotNull StatProfile getStatProfile(@NotNull ReforgeComponent component, @NotNull ItemComponents container) {
         ComponentResolver resolver = new ComponentResolver();
         Rarity rarity = resolver.resolveRarity(container);
 
@@ -92,7 +92,7 @@ public class ReforgeHandler implements ModifierHandler<ReforgeComponent>, LoreHa
      * @return list of components representing lore lines
      */
     @Override
-    public @NotNull List<Component> generateLore(@NotNull ReforgeComponent component, @NotNull ComponentContainer container) {
+    public @NotNull List<Component> generateLore(@NotNull ReforgeComponent component, @NotNull ItemComponents container) {
         if (component.hasReforge()) {
             return Collections.emptyList();
         }

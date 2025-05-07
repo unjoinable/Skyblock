@@ -1,7 +1,7 @@
 package net.skyblock.item.io;
 
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.component.trait.LoreHandler;
@@ -15,24 +15,24 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Generates lore from LoreComponents inside a {@link ComponentContainer}.
+ * Generates lore from LoreComponents inside a {@link ItemComponents}.
  * This instance can be reused and optionally cached per item.
  */
 public final class LoreGenerator {
     private final HandlerProvider handlerProvider;
-    private final ComponentContainer container;
+    private final ItemComponents container;
 
     /**
-     * Constructor to create a LoreGenerator with a specific {@link ComponentContainer}.
+     * Constructor to create a LoreGenerator with a specific {@link ItemComponents}.
      * <p>
      * This constructor allows you to create a LoreGenerator instance that can generate lore based on
      * the provided container, which holds various components that might contribute lore.
      * </p>
      *
-     * @param container The {@link ComponentContainer} that holds the components used to generate lore.
+     * @param container The {@link ItemComponents} that holds the components used to generate lore.
      * @param handlerProvider  The {@link HandlerRegistry} that has all default handlers registered
      */
-    public LoreGenerator(@NotNull ComponentContainer container, @NotNull HandlerProvider handlerProvider) {
+    public LoreGenerator(@NotNull ItemComponents container, @NotNull HandlerProvider handlerProvider) {
         this.container = container;
         this.handlerProvider = handlerProvider;
     }
@@ -77,7 +77,7 @@ public final class LoreGenerator {
         List<ComponentWithHandler> result = new ArrayList<>();
 
         for (ItemComponent component : container.asMap().values()) {
-            if (getHandler(component) instanceof LoreHandler loreHandler) {
+            if (getHandler(component) instanceof LoreHandler<?> loreHandler) {
                 result.add(new ComponentWithHandler(component, loreHandler));
             }
         }
@@ -124,7 +124,7 @@ public final class LoreGenerator {
     private static <C extends ItemComponent> @NotNull List<Component> generateLoreFromHandler(
             @NotNull ItemComponent component,
             @NotNull LoreHandler<C> handler,
-            @NotNull ComponentContainer container) {
+            @NotNull ItemComponents container) {
 
         // Verify the component type is compatible with the handler
         Class<C> componentClass = handler.componentType();

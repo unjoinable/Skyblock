@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.skyblock.item.component.ComponentContainer;
+import net.skyblock.item.component.ItemComponents;
 import net.skyblock.item.component.ItemComponent;
 import net.skyblock.item.component.ItemComponentHandler;
 import net.skyblock.item.definition.SkyblockItem;
@@ -88,7 +88,7 @@ public class SkyblockItemLoader {
      */
     private SkyblockItem parseItem(JsonObject itemObject, int index) {
         String id = extractItemId(itemObject);
-        ComponentContainer components = parseComponents(itemObject, id);
+        ItemComponents components = parseComponents(itemObject, id);
 
         if (components.isEmpty()) {
             Logger.warn("Item '{}' at index {} has no valid components", id, index);
@@ -110,8 +110,8 @@ public class SkyblockItemLoader {
      * @param itemId The ID of the item (for logging)
      * @return ComponentContainer with all successfully parsed components
      */
-    private ComponentContainer parseComponents(JsonObject itemObject, String itemId) {
-        ComponentContainer components = new ComponentContainer();
+    private ItemComponents parseComponents(JsonObject itemObject, String itemId) {
+        ItemComponents.Builder builder = new ItemComponents.Builder();
 
         for (Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
             String componentId = entry.getKey();
@@ -120,7 +120,7 @@ public class SkyblockItemLoader {
             try {
                 ItemComponent component = parseComponent(componentId, entry.getValue());
                 if (component != null) {
-                    components = components.with(component);
+                    builder.with(component);
                 }
             } catch (Exception e) {
                 Logger.warn(e, "Failed to parse component '{}' for item '{}', skipping component",
@@ -128,7 +128,7 @@ public class SkyblockItemLoader {
             }
         }
 
-        return components;
+        return builder.build();
     }
 
     /**
