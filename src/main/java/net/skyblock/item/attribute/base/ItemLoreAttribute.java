@@ -13,17 +13,19 @@ import java.util.List;
 public interface ItemLoreAttribute extends ItemAttribute {
 
     /**
-     * Generates the list of lore lines for this attribute as Adventure text components.
+     * Returns the lore lines for this attribute as Adventure text components.
      *
-     * @return A non-null list of {@link Component}s, representing lore lines. Return an empty list if no lines are provided.
+     * @param container the attribute container providing context for generating lore lines
+     * @return a non-null list of {@link Component} representing the lore lines; returns an empty list if no lore is present
      */
     @NotNull List<Component> loreLines(@NotNull AttributeContainer container);
 
     /**
-     * Returns the priority for sorting this attribute's lore lines among other lore attributes.
-     * Lower values typically mean higher priority and the lore will appear earlier in the tooltip.
+     * Returns the sorting priority of this attribute's lore lines relative to other lore attributes.
+     * <p>
+     * Lore lines with lower priority values appear earlier in the item's tooltip.
      *
-     * @return The sorting priority.
+     * @return the priority value for sorting lore lines
      */
     int priority();
 }

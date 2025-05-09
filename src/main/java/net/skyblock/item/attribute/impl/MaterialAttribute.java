@@ -24,7 +24,10 @@ public record MaterialAttribute(@NotNull Material material) implements StackAttr
     );
 
     /**
-     * {@inheritDoc}
+     * Sets the material of the given item builder to this attribute's material value.
+     *
+     * @param builder the item builder to modify
+     * @param container the attribute container (unused)
      */
     @Override
     public void applyToBuilder(ItemStack.@NotNull Builder builder, @NotNull AttributeContainer container) {
@@ -32,7 +35,9 @@ public record MaterialAttribute(@NotNull Material material) implements StackAttr
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the identifier for this attribute type.
+     *
+     * @return the string "material"
      */
     @Override
     public @NotNull String id() {
@@ -40,7 +45,9 @@ public record MaterialAttribute(@NotNull Material material) implements StackAttr
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used for serializing and deserializing this material attribute.
+     *
+     * @return the codec for this attribute type
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {

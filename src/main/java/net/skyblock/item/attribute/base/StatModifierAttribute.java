@@ -16,22 +16,19 @@ import org.jetbrains.annotations.NotNull;
 public interface StatModifierAttribute extends ItemAttribute {
 
     /**
-     * Gets the stat profile containing all statistic modifications provided by this attribute.
-     * The container parameter provides context about other attributes present on the item,
-     * allowing for interdependent calculations.
+     * Returns a profile of all statistic modifications contributed by this attribute, using the provided attribute container for contextual calculations.
      *
-     * @param container The container holding all attributes for the current item
-     * @return A stat profile with all applicable statistic modifications
+     * @param container the attribute container for the current item, used to resolve dependencies or context among attributes
+     * @return a StatProfile representing all stat modifications from this attribute
      */
     @NotNull StatProfile getStats(@NotNull AttributeContainer container);
 
     /**
-     * Formats a statistic and its value into a displayable text component.
-     * Used for rendering the stat in tooltips, GUIs, or other displays.
+     * Returns a formatted text component representing the specified statistic and its value for display purposes.
      *
-     * @param stat The statistic to format
-     * @param value The value of the statistic
-     * @return A formatted text component for display
+     * @param stat the statistic to display
+     * @param value the numeric value of the statistic
+     * @return a formatted Component suitable for tooltips or GUIs
      */
     @NotNull Component getFormattedDisplay(@NotNull Statistic stat, double value);
 }

@@ -15,17 +15,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ItemAttribute {
     /**
-     * Returns the unique identifier for this attribute type.
+     * Retrieves the unique string identifier for this item attribute type.
      *
-     * @return A string ID that uniquely identifies this attribute type
+     * @return the non-null unique ID representing this attribute type
      */
     @NotNull String id();
 
     /**
-     * Returns the codec used to serialize and deserialize this attribute's data.
-     * The codec defines how the attribute's value is converted to and from NBT or JSON format.
+     * Retrieves the codec responsible for serializing and deserializing this attribute's data.
      *
-     * @return The codec for this attribute's data type
+     * @return a non-null codec for converting the attribute to and from formats such as NBT or JSON
      */
     @NotNull Codec<? extends ItemAttribute> getCodec();
 }

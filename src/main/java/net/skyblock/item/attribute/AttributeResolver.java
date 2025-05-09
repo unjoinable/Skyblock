@@ -21,22 +21,19 @@ import org.jetbrains.annotations.Nullable;
 public final class AttributeResolver {
 
     /**
-     * Private constructor to prevent instantiation of this utility class.
+     * Prevents instantiation of the {@code AttributeResolver} utility class.
      *
-     * @throws IllegalAccessError if attempted to be instantiated
+     * @throws IllegalAccessError always thrown to enforce non-instantiability
      */
     private AttributeResolver() {
         throw new IllegalAccessError("Service Class");
     }
 
     /**
-     * Resolves the category of an item from its attribute container.
+     * Returns the item category from the given attribute container, or {@link ItemCategory#NONE} if not present.
      *
-     * <p>This method safely extracts the item category from the provided container.
-     * If no category attribute is present, it defaults to {@link ItemCategory#NONE}.</p>
-     *
-     * @param container The attribute container to extract the category from
-     * @return The item's category, or ItemCategory.NONE if not found
+     * @param container the attribute container to query
+     * @return the resolved item category, or {@code ItemCategory.NONE} if absent
      */
     public static @NotNull ItemCategory resolveCategory(@NotNull AttributeContainer container) {
         return container.get(ItemCategoryAttribute.class)
@@ -45,14 +42,13 @@ public final class AttributeResolver {
     }
 
     /**
-     * Resolves the rarity of an item from its attribute container.
+     * Returns the item's rarity from the given attribute container, applying an upgrade if specified.
      *
-     * <p>This method safely extracts the item rarity from the provided container,
-     * accounting for potential upgrades to the rarity. If the rarity is marked as
-     * upgraded, the next higher rarity tier will be returned.</p>
+     * If the container has a rarity attribute and it is marked as upgraded, the next higher rarity tier is returned.
+     * If no rarity attribute is present, {@code Rarity.UNOBTAINABLE} is returned.
      *
-     * @param container The attribute container to extract the rarity from
-     * @return The item's rarity (upgraded if applicable), or Rarity.UNOBTAINABLE if not found
+     * @param container the attribute container to query
+     * @return the item's rarity, upgraded if applicable, or {@code Rarity.UNOBTAINABLE} if not found
      */
     public static @NotNull Rarity resolveRarity(@NotNull AttributeContainer container) {
         return container.get(RarityAttribute.class)
@@ -63,13 +59,10 @@ public final class AttributeResolver {
     }
 
     /**
-     * Resolves the reforge of an item from its attribute container.
+     * Retrieves the item's reforge from the given attribute container.
      *
-     * <p>This method safely extracts the item reforge from the provided container.
-     * Unlike other resolver methods, this one may return null if no reforge is present.</p>
-     *
-     * @param container The attribute container to extract the reforge from
-     * @return The item's reforge, or {@code null} if not found
+     * @param container the attribute container to query
+     * @return the item's reforge, or {@code null} if no reforge attribute is present
      */
     public static @Nullable Reforge resolveReforge(@NotNull AttributeContainer container) {
         return container.get(ReforgeAttribute.class)

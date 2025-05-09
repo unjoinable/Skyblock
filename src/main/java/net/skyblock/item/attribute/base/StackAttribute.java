@@ -28,12 +28,13 @@ import org.jetbrains.annotations.NotNull;
 public interface StackAttribute extends ItemAttribute {
 
     /**
-     * Applies this attribute's modifications directly to the given item builder.
-     * This method is called during item construction to allow attributes to
-     * make direct modifications to the builder before the final item is created.
+     * Applies this attribute's effects directly to the provided {@link ItemStack.Builder} during item construction.
      *
-     * @param builder   The item builder to modify
-     * @param container The container containing all attributes, which might be used to get other attributes
+     * This method enables advanced or non-standard modifications to the item builder, bypassing normal attribute serialization.
+     * It is intended for internal use cases where attributes must alter the builder in ways not possible through standard NBT or serialization mechanisms.
+     *
+     * @param builder   the {@link ItemStack.Builder} instance to modify
+     * @param container the {@link AttributeContainer} holding all attributes for potential cross-attribute access
      */
     void applyToBuilder(@NotNull ItemStack.Builder builder, @NotNull AttributeContainer container);
 }

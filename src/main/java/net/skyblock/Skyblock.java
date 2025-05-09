@@ -39,7 +39,7 @@ public class Skyblock {
     }
 
     /**
-     * Constructs a new Skyblock server instance and initializes all registries.
+     * Initializes a new Skyblock server instance and sets up core registries and server bootstrap.
      */
     public Skyblock() {
         Logger.info("Initializing Skyblock instance");
@@ -54,10 +54,10 @@ public class Skyblock {
     }
 
     /**
-     * Starts the server on the specified address and port.
+     * Starts the Skyblock server on the given address and port.
      *
-     * @param address The address to bind to
-     * @param port The port to listen on
+     * @param address the network address to bind the server to
+     * @param port the port number for the server to listen on
      */
     public void start(String address, int port) {
         Logger.info("Starting server on {}:{}", address, port);
@@ -65,18 +65,38 @@ public class Skyblock {
         this.isRunning = true;
     }
 
+    /**
+     * Returns the item registry used by the server.
+     *
+     * @return the current {@link ItemRegistry} instance
+     */
     public @NotNull ItemRegistry getItemRegistry() {
         return itemRegistry;
     }
 
+    /**
+     * Returns the registry containing all reforges available on the server.
+     *
+     * @return the ReforgeRegistry instance
+     */
     public @NotNull ReforgeRegistry getReforgeRegistry() {
         return reforgeRegistry;
     }
 
+    /**
+     * Returns the attribute codec registry used by the server.
+     *
+     * @return the current AttributeCodecRegistry instance
+     */
     public AttributeCodecRegistry getCodecRegistry() {
         return codecRegistry;
     }
 
+    /**
+     * Returns whether the Skyblock server is currently running.
+     *
+     * @return {@code true} if the server is running; {@code false} otherwise
+     */
     public boolean isRunning() {
         return isRunning;
     }

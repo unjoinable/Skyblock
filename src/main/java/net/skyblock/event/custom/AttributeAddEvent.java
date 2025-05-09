@@ -1,6 +1,5 @@
 package net.skyblock.event.custom;
 
-import net.minestom.server.event.Event;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.skyblock.item.attribute.AttributeContainer;
 import net.skyblock.item.attribute.base.ItemAttribute;
@@ -18,10 +17,10 @@ public class AttributeAddEvent implements CancellableEvent {
     private boolean cancelled;
 
     /**
-     * Creates a new AttributeAddEvent.
+     * Constructs an event representing the pending addition of an attribute to an attribute container builder.
      *
-     * @param builder   the builder to which the attribute is being added
-     * @param attribute the attribute being added
+     * @param builder the attribute container builder involved in the event
+     * @param attribute the item attribute that is about to be added
      */
     public AttributeAddEvent(@NotNull AttributeContainer.Builder builder, @NotNull ItemAttribute attribute) {
         this.builder = builder;
@@ -29,27 +28,27 @@ public class AttributeAddEvent implements CancellableEvent {
     }
 
     /**
-     * Gets the builder to which the attribute is being added.
+     * Returns the attribute container builder involved in this event.
      *
-     * @return the attribute container builder
+     * @return the builder to which the attribute is being added
      */
     public @NotNull AttributeContainer.Builder getContainer() {
         return this.builder;
     }
 
     /**
-     * Gets the attribute being added.
+     * Returns the attribute that is being added to the container during this event.
      *
-     * @return the attribute
+     * @return the attribute involved in the addition event
      */
     public @NotNull ItemAttribute getAttribute() {
         return this.attribute;
     }
 
     /**
-     * Gets if the {@link Event} should be cancelled or not.
+     * Returns whether the event has been marked as cancelled.
      *
-     * @return true if the event should be cancelled
+     * @return true if the event is cancelled; false otherwise
      */
     @Override
     public boolean isCancelled() {
@@ -57,9 +56,9 @@ public class AttributeAddEvent implements CancellableEvent {
     }
 
     /**
-     * Marks the {@link Event} as cancelled or not.
+     * Sets the cancellation state of this event.
      *
-     * @param cancel true if the event should be cancelled, false otherwise
+     * @param cancel true to cancel the event and prevent the attribute from being added; false to allow the addition
      */
     @Override
     public void setCancelled(boolean cancel) {

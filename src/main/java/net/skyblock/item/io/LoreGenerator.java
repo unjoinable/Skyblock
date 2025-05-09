@@ -17,23 +17,27 @@ public final class LoreGenerator {
     private final AttributeContainer container;
 
     /**
-     * Creates a LoreGenerator with the specified container.
+     * Initializes a LoreGenerator using the provided attribute container.
+     *
+     * @param container the attribute container from which lore attributes will be sourced
      */
     public LoreGenerator(@NotNull AttributeContainer container) {
         this.container = container;
     }
 
     /**
-     * Creates a LoreGenerator using a SkyblockItem's attributes.
+     * Constructs a LoreGenerator using the attributes from the specified SkyblockItem.
+     *
+     * @param item the SkyblockItem whose attributes will be used for lore generation
      */
     public LoreGenerator(@NotNull SkyblockItem item) {
         this(item.attributes());
     }
 
     /**
-     * Generates sorted, combined lore from all applicable attributes.
+     * Generates a combined list of lore components from all `ItemLoreAttribute` instances in the container, sorted by priority.
      *
-     * @return Combined lore lines as Components
+     * @return a list of lore lines as Components, ordered by attribute priority
      */
     public @NotNull List<Component> generate() {
         List<ItemLoreAttribute> attributes = container.stream()
@@ -46,7 +50,10 @@ public final class LoreGenerator {
     }
 
     /**
-     * Combines lore from the sorted attributes with spacing between sections.
+     * Merges lore lines from each attribute into a single list, inserting an empty line between non-empty sections.
+     *
+     * @param attributes the sorted list of lore attributes to combine
+     * @return a list of lore components with spacing between attribute sections
      */
     private @NotNull List<Component> generateCombinedLore(@NotNull List<ItemLoreAttribute> attributes) {
         List<Component> result = new ArrayList<>();

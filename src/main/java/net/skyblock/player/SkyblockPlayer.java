@@ -76,12 +76,9 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity, 
     }
 
     /**
-     * Gets the stat profile associated with this player.
-     * <p>
-     * This method delegates the request to the player's {@link PlayerStatsManager} to retrieve the
-     * player's statistics.
+     * Returns a new, empty stat profile for this player.
      *
-     * @return the {@link StatProfile} of the player
+     * @return a new {@link StatProfile} instance with no player statistics
      */
     @Override
     public @NotNull StatProfile getStatProfile() {

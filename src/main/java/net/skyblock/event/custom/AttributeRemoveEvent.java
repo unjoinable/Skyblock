@@ -18,10 +18,10 @@ public class AttributeRemoveEvent implements CancellableEvent {
     private boolean cancelled;
 
     /**
-     * Creates a new AttributeRemoveEvent.
+     * Constructs an event representing the impending removal of an attribute from an attribute container builder.
      *
-     * @param builder       the builder from which the attribute is being removed
-     * @param attribute     the attribute being removed, or null if not present
+     * @param builder the attribute container builder involved in the removal
+     * @param attribute the attribute intended for removal; may be null if not present in the builder
      */
     public AttributeRemoveEvent(@NotNull AttributeContainer.Builder builder, @NotNull ItemAttribute attribute) {
         this.builder = builder;

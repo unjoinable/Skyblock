@@ -30,7 +30,7 @@ public final class StatProfile {
     private final BooleanArrayList isDirty;
 
     /**
-     * Creates a new StatProfile instance with empty stats (all base values set to 0).
+     * Constructs a StatProfile with all statistics initialized to zero (or one for multiplicative modifiers) and marks all cached values as dirty.
      */
     public StatProfile() {
         this.base = new DoubleArrayList(STAT_COUNT);
@@ -52,9 +52,9 @@ public final class StatProfile {
     }
 
     /**
-     * Creates a new StatProfile instance with base stats initialized from the Statistic enum.
+     * Creates a StatProfile with base values set to each statistic's default.
      *
-     * @return a new StatProfile with default base stats
+     * @return a StatProfile initialized with default base stats for all statistics
      */
     public static StatProfile fromBase() {
         StatProfile profile = new StatProfile();
@@ -66,11 +66,11 @@ public final class StatProfile {
     }
 
     /**
-     * Creates a new StatProfile from a Map of Statistics and their values for a specific StatValueType.
+     * Creates a new StatProfile with values from the provided map applied as the specified modifier type.
      *
-     * @param statMap Map containing the statistics and their values
-     * @param type The StatValueType to apply these values to
-     * @return a new StatProfile with the given values
+     * @param statMap a map of statistics and their corresponding values to apply
+     * @param type the modifier type to use when applying each value
+     * @return a new StatProfile with the mapped values applied as the given type
      */
     public static StatProfile fromMap(Map<Statistic, Double> statMap, StatValueType type) {
         StatProfile profile = new StatProfile();
@@ -83,10 +83,12 @@ public final class StatProfile {
     }
 
     /**
-     * Adds all values from a Map of Statistics to this profile with the specified StatValueType.
+     * Applies a set of statistic values to this profile using the specified modifier type.
      *
-     * @param statMap Map containing the statistics and their values
-     * @param type The StatValueType to apply these values to
+     * Each entry in the provided map is added to the corresponding statistic in this profile according to the given StatValueType.
+     *
+     * @param statMap map of statistics and their values to apply
+     * @param type the modifier type to use when applying each value
      */
     public void applyFromMap(Map<Statistic, Double> statMap, StatValueType type) {
         for (Map.Entry<Statistic, Double> entry : statMap.entrySet()) {
@@ -163,8 +165,9 @@ public final class StatProfile {
     }
 
     /**
-     * Creates an exact independent copy of this profile.
-     * Uses Statistic.values() to ensure all stats are copied properly.
+     * Returns a deep copy of this StatProfile, duplicating all modifier values and marking all statistics as needing recalculation.
+     *
+     * @return a new StatProfile instance with identical modifier values, independent from the original
      */
     public StatProfile copy() {
         StatProfile copy = new StatProfile();

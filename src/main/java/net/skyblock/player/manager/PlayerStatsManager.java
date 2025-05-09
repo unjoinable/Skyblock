@@ -32,10 +32,10 @@ public class PlayerStatsManager {
     private static final double BASE_MANA_REGEN_CONST = 0.02;
 
     /**
-     * Creates a new stats manager for the specified player.
+     * Initializes a PlayerStatsManager to manage and calculate stats for the given player based on their equipped items and base attributes.
      *
-     * @param player The player whose stats are being managed
-     * @param itemProvider the provider for player items
+     * @param player the player whose stats are managed
+     * @param itemProvider supplies the player's equipped items
      */
     public PlayerStatsManager(@NotNull SkyblockPlayer player, @NotNull PlayerItemProvider itemProvider) {
         this.player = player;
@@ -69,9 +69,11 @@ public class PlayerStatsManager {
     }
 
     /**
-     * Updates stats for a specific item slot (unified system).
+     * Updates the stat profile for the specified equipment slot based on the currently equipped item.
      *
-     * @param slot The item slot that changed
+     * Marks the combined stats cache as dirty to trigger recalculation on next access.
+     *
+     * @param slot the equipment slot to update
      */
     public void update(@NotNull ItemSlot slot) {
         SkyblockItem item = itemProvider.getItem(slot);

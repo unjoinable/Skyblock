@@ -26,6 +26,11 @@ public class SkyblockItemLoader {
     private static final String DEFAULT_ITEM_ID = "AIR";
     private final CodecProvider codecProvider;
 
+    /**
+     * Constructs a SkyblockItemLoader with the specified codec provider for attribute decoding.
+     *
+     * @param codecProvider the provider used to obtain codecs for decoding item attributes
+     */
     public SkyblockItemLoader(@NotNull CodecProvider codecProvider) {
         this.codecProvider = codecProvider;
     }
@@ -60,7 +65,10 @@ public class SkyblockItemLoader {
     }
 
     /**
-     * Parses items from JSON
+     * Parses a JSON array of item definitions into a list of {@link SkyblockItem} objects.
+     *
+     * @param reader an InputStreamReader for the JSON resource containing item definitions
+     * @return a list of successfully parsed SkyblockItem instances; items that fail to parse are skipped
      */
     private List<SkyblockItem> parseItemsFromJson(InputStreamReader reader) {
         JsonArray itemsArray = JsonParser.parseReader(reader).getAsJsonArray();
@@ -81,9 +89,10 @@ public class SkyblockItemLoader {
     }
 
     /**
-     * Parses a single item from its JSON object
-     * @param itemObject The JSON object representing the item
-     * @return The parsed SkyblockItem or null if parsing failed
+     * Parses a JSON object into a {@code SkyblockItem} with decoded attributes.
+     *
+     * @param itemObject the JSON object representing the item
+     * @return a {@code SkyblockItem} with attributes decoded from the JSON, or {@code null} if parsing fails
      */
     private SkyblockItem parseItem(JsonObject itemObject) {
         String id = extractItemId(itemObject);
@@ -104,7 +113,10 @@ public class SkyblockItemLoader {
         return new SkyblockItem(id, builder.build());
     }
     /**
-     * Extracts the item ID from the JSON object or returns the default ID
+     * Returns the item ID from the given JSON object, or the default ID if the "id" field is missing.
+     *
+     * @param itemObject the JSON object representing an item
+     * @return the extracted item ID, or the default ID if not present
      */
     private String extractItemId(JsonObject itemObject) {
         return itemObject.has("id") ? itemObject.get("id").getAsString() : DEFAULT_ITEM_ID;

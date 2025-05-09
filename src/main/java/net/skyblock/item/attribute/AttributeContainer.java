@@ -26,9 +26,11 @@ public final class AttributeContainer {
     private final Object2ObjectMap<Class<? extends ItemAttribute>, ItemAttribute> attributeByClassMap;
 
     /**
-     * Private constructor used by the Builder.
+     * Constructs an immutable AttributeContainer from the provided Builder.
      *
-     * @param builder the builder containing attributes to initialize with
+     * Copies the builder's attribute maps and wraps them in unmodifiable views to ensure immutability.
+     *
+     * @param builder the Builder containing the attributes to initialize this container with
      */
     private AttributeContainer(@NotNull Builder builder) {
         this.attributeMap = Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>(builder.attributeMap));
@@ -36,39 +38,39 @@ public final class AttributeContainer {
     }
 
     /**
-     * Returns the shared empty attribute container instance.
+     * Retrieves the shared immutable instance of an empty attribute container.
      *
-     * @return a shared empty attribute container
+     * @return the shared empty AttributeContainer
      */
     public static @NotNull AttributeContainer empty() {
         return EMPTY;
     }
 
     /**
-     * Checks if this container has any attributes.
+     * Returns whether the container has no attributes.
      *
-     * @return true if no attributes are present, false otherwise
+     * @return true if the container contains no attributes; false otherwise
      */
     public boolean isEmpty() {
         return attributeMap.isEmpty();
     }
 
     /**
-     * Gets an attribute by its ID.
+     * Returns the attribute associated with the specified ID, if present.
      *
      * @param id the unique identifier of the attribute
-     * @return an Optional containing the attribute if present
+     * @return an {@code Optional} containing the attribute if found, or an empty {@code Optional} if not present
      */
     public @NotNull Optional<ItemAttribute> get(@NotNull String id) {
         return Optional.ofNullable(attributeMap.get(id));
     }
 
     /**
-     * Gets an attribute by its class type.
+     * Returns an attribute of the specified class type, if present.
      *
      * @param type the class of the attribute to retrieve
-     * @param <T> the type of attribute
-     * @return an Optional containing the attribute if present
+     * @param <T> the type of the attribute
+     * @return an Optional containing the attribute instance if found, or an empty Optional if not present
      */
     public <T extends ItemAttribute> @NotNull Optional<T> get(@NotNull Class<T> type) {
         ItemAttribute attribute = attributeByClassMap.get(type);
@@ -82,59 +84,56 @@ public final class AttributeContainer {
     }
 
     /**
-     * Checks if an attribute with the given ID exists.
+     * Determines whether an attribute with the specified ID is present in the container.
      *
-     * @param id the attribute ID to check
-     * @return true if an attribute with the ID exists, false otherwise
+     * @param id the attribute ID to check for presence
+     * @return true if an attribute with the given ID exists; false otherwise
      */
     public boolean contains(@NotNull String id) {
         return attributeMap.containsKey(id);
     }
 
     /**
-     * Checks if an attribute of the given type exists.
+     * Determines whether an attribute of the specified class type is present in the container.
      *
-     * @param type the attribute class to check
-     * @return true if an attribute of that type exists, false otherwise
+     * @param type the class of the attribute to check for
+     * @return true if an attribute of the given class type exists; false otherwise
      */
     public boolean contains(@NotNull Class<? extends ItemAttribute> type) {
         return attributeByClassMap.containsKey(type);
     }
 
     /**
-     * Returns a safe copy of the internal attribute map (id to attribute).
-     * The returned map is unmodifiable to ensure immutability.
+     * Returns an unmodifiable view of the attribute map keyed by attribute ID.
      *
-     * @return unmodifiable copy of the attribute map
+     * @return an unmodifiable map of attribute IDs to their corresponding attributes
      */
     public @NotNull Map<String, ItemAttribute> asMap() {
         return Map.copyOf(attributeMap);
     }
 
     /**
-     * Returns a safe copy of the internal attribute map (class to attribute).
-     * The returned map is unmodifiable to ensure immutability.
+     * Returns an unmodifiable view of the attribute map keyed by attribute class type.
      *
-     * @return unmodifiable copy of the attribute type map
+     * @return an unmodifiable map from attribute class to attribute instance
      */
     public @NotNull Map<Class<? extends ItemAttribute>, ItemAttribute> asTypeMap() {
         return Map.copyOf(attributeByClassMap);
     }
 
     /**
-     * Returns a stream of all attributes in this container.
-     * This allows for easy iteration.
+     * Returns a stream of all attributes contained in this container.
      *
-     * @return a stream of all attributes
+     * @return a stream of all item attributes
      */
     public @NotNull Stream<ItemAttribute> stream() {
         return attributeMap.values().stream();
     }
 
     /**
-     * Creates a new builder initialized with the current attributes.
+     * Creates a new builder pre-populated with the attributes from this container.
      *
-     * @return a builder instance with current attributes
+     * @return a builder containing copies of the current attributes
      */
     public @NotNull Builder toBuilder() {
         Builder builder = new Builder();
@@ -145,9 +144,9 @@ public final class AttributeContainer {
     }
 
     /**
-     * Creates a builder for constructing a new AttributeContainer.
+     * Returns a new builder for creating an {@code AttributeContainer}.
      *
-     * @return a new builder instance
+     * @return a new {@code AttributeContainer.Builder} instance
      */
     public static @NotNull Builder builder() {
         return new Builder();
@@ -161,11 +160,11 @@ public final class AttributeContainer {
         final Object2ObjectMap<Class<? extends ItemAttribute>, ItemAttribute> attributeByClassMap = new Object2ObjectOpenHashMap<>();
 
         /**
-         * Adds or replaces an attribute in the builder.
+         * Adds or replaces an attribute in the builder by both its ID and class type.
          *
-         * @param attribute the attribute to add
-         * @return this builder for method chaining
-         * @throws NullPointerException if attribute is null
+         * @param attribute the attribute to add or replace; must not be null
+         * @return this builder instance for chaining
+         * @throws NullPointerException if the attribute is null
          */
         public @NotNull Builder with(@NotNull ItemAttribute attribute) {
             Objects.requireNonNull(attribute, "Attribute cannot be null");
@@ -176,10 +175,10 @@ public final class AttributeContainer {
         }
 
         /**
-         * Removes an attribute with the given ID from the builder.
+         * Removes the attribute with the specified ID from the builder, also removing its class mapping if present.
          *
-         * @param id the ID of the attribute to remove
-         * @return this builder for method chaining
+         * @param id the attribute ID to remove
+         * @return this builder instance for chaining
          */
         public @NotNull Builder without(@NotNull String id) {
             ItemAttribute removed = attributeMap.remove(id);
@@ -190,10 +189,10 @@ public final class AttributeContainer {
         }
 
         /**
-         * Removes an attribute of the given type from the builder.
+         * Removes the attribute of the specified class type from the builder, if present.
          *
-         * @param type the class of the attribute to remove
-         * @return this builder for method chaining
+         * @param type the attribute class to remove
+         * @return this builder instance for chaining
          */
         public @NotNull Builder without(@NotNull Class<? extends ItemAttribute> type) {
             ItemAttribute removed = attributeByClassMap.remove(type);
@@ -204,21 +203,21 @@ public final class AttributeContainer {
         }
 
         /**
-         * Gets an attribute by its ID.
+         * Retrieves the attribute associated with the specified ID.
          *
-         * @param id the ID of the attribute to retrieve
-         * @return the attribute or null if not found
+         * @param id the unique identifier of the attribute
+         * @return the corresponding attribute, or null if no attribute with the given ID exists
          */
         public @Nullable ItemAttribute get(@NotNull String id) {
             return attributeMap.get(id);
         }
 
         /**
-         * Gets an attribute by its class type.
+         * Retrieves an attribute by its class type.
          *
          * @param type the class of the attribute to retrieve
-         * @param <T> the type of attribute
-         * @return an Optional containing the attribute if present
+         * @param <T> the type of the attribute
+         * @return an Optional containing the attribute instance if present, or an empty Optional if not found
          */
         public <T extends ItemAttribute> @NotNull Optional<T> get(@NotNull Class<T> type) {
             ItemAttribute attribute = attributeByClassMap.get(type);
@@ -232,29 +231,29 @@ public final class AttributeContainer {
         }
 
         /**
-         * Checks if an attribute with the given ID exists.
+         * Determines whether an attribute with the specified ID is present in the container.
          *
-         * @param id the attribute ID to check
-         * @return true if an attribute with the ID exists, false otherwise
+         * @param id the attribute ID to check for presence
+         * @return true if an attribute with the given ID exists; false otherwise
          */
         public boolean contains(@NotNull String id) {
             return attributeMap.containsKey(id);
         }
 
         /**
-         * Checks if an attribute of the given type exists.
+         * Determines whether an attribute of the specified class type is present in the container.
          *
-         * @param type the attribute class to check
-         * @return true if an attribute of that type exists, false otherwise
+         * @param type the class of the attribute to check for
+         * @return true if an attribute of the given class type exists; false otherwise
          */
         public boolean contains(@NotNull Class<? extends ItemAttribute> type) {
             return attributeByClassMap.containsKey(type);
         }
 
         /**
-         * Builds an immutable AttributeContainer with the current attributes.
+         * Creates an immutable AttributeContainer containing the current set of attributes in the builder.
          *
-         * @return a new immutable AttributeContainer
+         * @return a new immutable AttributeContainer with the builder's attributes
          */
         public @NotNull AttributeContainer build() {
             return new AttributeContainer(this);

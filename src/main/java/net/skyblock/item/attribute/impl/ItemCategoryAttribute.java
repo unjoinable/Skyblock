@@ -15,7 +15,9 @@ public record ItemCategoryAttribute(@NotNull ItemCategory category) implements J
     );
 
     /**
-     * {@inheritDoc}
+     * Returns the unique identifier for this attribute type.
+     *
+     * @return the string "item_category"
      */
     @Override
     public @NotNull String id() {
@@ -23,7 +25,9 @@ public record ItemCategoryAttribute(@NotNull ItemCategory category) implements J
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used for serializing and deserializing this item attribute.
+     *
+     * @return the codec for this attribute type
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {
