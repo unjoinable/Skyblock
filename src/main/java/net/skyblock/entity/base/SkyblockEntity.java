@@ -40,7 +40,7 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
      */
     protected SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType);
-        this.statProfile = new StatProfile(false); // Initialize empty profile
+        this.statProfile = new StatProfile(); // Initialize empty profile
     }
 
     /**

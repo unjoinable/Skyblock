@@ -13,11 +13,12 @@ import net.skyblock.command.impl.TestCommand;
 import net.skyblock.event.listeners.entity.EntityAttackListener;
 import net.skyblock.event.listeners.inventory.InventoryCloseListener;
 import net.skyblock.event.listeners.inventory.InventoryPreClickListener;
-import net.skyblock.event.listeners.item.ComponentAddListener;
-import net.skyblock.event.listeners.item.ComponentRemoveListener;
+import net.skyblock.event.listeners.item.AttributeAddListener;
+import net.skyblock.event.listeners.item.AttributeRemoveListener;
 import net.skyblock.event.listeners.player.*;
 import net.skyblock.item.inventory.ItemProviderFactory;
-import net.skyblock.item.io.SkyblockItemProcessor;
+import net.skyblock.item.io.ItemProcessor;
+import net.skyblock.item.io.ItemProcessorImpl;
 import net.skyblock.player.SkyblockPlayerProvider;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -28,7 +29,7 @@ import org.tinylog.Logger;
 public class ServerBootstrap {
     private final MinecraftServer server;
     private final InstanceContainer hubInstance;
-    private final SkyblockItemProcessor processor;
+    private final ItemProcessor processor;
     private final Skyblock skyblock;
     private final Pos spawnPosition;
 
@@ -67,7 +68,7 @@ public class ServerBootstrap {
         registerEventListeners();
 
         // Setup
-        this.processor = new SkyblockItemProcessor(skyblock.getHandlerRegistry(), skyblock.getItemRegistry());
+        this.processor = new ItemProcessorImpl(skyblock.getCodecRegistry(), skyblock.getItemRegistry());
         this.itemProviderFactory = new ItemProviderFactory(this.processor);
 
         // Set up Mojang authentication and player provider
@@ -86,7 +87,7 @@ public class ServerBootstrap {
         Logger.info("Initializing registries...");
 
         skyblock.getReforgeRegistry().init();
-        skyblock.getHandlerRegistry().init();
+        skyblock.getCodecRegistry().init();
         skyblock.getItemRegistry().init();
 
         Logger.info("Registries initialized successfully");
@@ -124,8 +125,8 @@ public class ServerBootstrap {
         eventHandler.addListener(new EntityAttackListener());
 
         // Register component listeners
-        eventHandler.addListener(new ComponentAddListener());
-        eventHandler.addListener(new ComponentRemoveListener());
+        eventHandler.addListener(new AttributeAddListener());
+        eventHandler.addListener(new AttributeRemoveListener());
 
         Logger.info("Event listeners registered");
     }

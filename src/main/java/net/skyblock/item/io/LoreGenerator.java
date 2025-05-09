@@ -1,13 +1,9 @@
 package net.skyblock.item.io;
 
 import net.kyori.adventure.text.Component;
-import net.skyblock.item.component.ItemComponents;
-import net.skyblock.item.component.ItemComponent;
-import net.skyblock.item.component.ItemComponentHandler;
-import net.skyblock.item.component.trait.LoreHandler;
+import net.skyblock.item.attribute.AttributeContainer;
+import net.skyblock.item.attribute.base.ItemLoreAttribute;
 import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.item.provider.HandlerProvider;
-import net.skyblock.registry.impl.HandlerRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,94 +11,54 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Generates lore from LoreComponents inside a {@link ItemComponents}.
- * This instance can be reused and optionally cached per item.
+ * Generates lore from ItemLoreAttributes in an AttributeContainer.
  */
 public final class LoreGenerator {
-    private final HandlerProvider handlerProvider;
-    private final ItemComponents container;
+    private final AttributeContainer container;
 
     /**
-     * Constructor to create a LoreGenerator with a specific {@link ItemComponents}.
-     * <p>
-     * This constructor allows you to create a LoreGenerator instance that can generate lore based on
-     * the provided container, which holds various components that might contribute lore.
-     * </p>
-     *
-     * @param container The {@link ItemComponents} that holds the components used to generate lore.
-     * @param handlerProvider  The {@link HandlerRegistry} that has all default handlers registered
+     * Creates a LoreGenerator with the specified container.
      */
-    public LoreGenerator(@NotNull ItemComponents container, @NotNull HandlerProvider handlerProvider) {
+    public LoreGenerator(@NotNull AttributeContainer container) {
         this.container = container;
-        this.handlerProvider = handlerProvider;
     }
 
     /**
-     * Constructor to create a LoreGenerator using a {@link SkyblockItem}.
-     * <p>
-     * This constructor creates a LoreGenerator instance based on the components of the provided
-     * {@link SkyblockItem}. The item's components are passed to the container, which is then used to
-     * generate the lore.
-     * </p>
-     *
-     * @param item The {@link SkyblockItem} from which the components are extracted for lore generation.
-     * @param handlerProvider  The {@link HandlerRegistry} that has all default handlers registered
+     * Creates a LoreGenerator using a SkyblockItem's attributes.
      */
-    public LoreGenerator(@NotNull SkyblockItem item, @NotNull HandlerProvider handlerProvider) {
-        this(item.components(), handlerProvider);
+    public LoreGenerator(@NotNull SkyblockItem item) {
+        this(item.attributes());
     }
 
     /**
-     * Generates sorted, combined lore from all applicable components.
+     * Generates sorted, combined lore from all applicable attributes.
      *
-     * @return combined lore lines
+     * @return Combined lore lines as Components
      */
     public @NotNull List<Component> generate() {
-        // Collect all components with LoreHandler
-        List<ComponentWithHandler> loreComponents = collectLoreComponents();
+        List<ItemLoreAttribute> attributes = container.stream()
+                .filter(ItemLoreAttribute.class::isInstance)
+                .map(ItemLoreAttribute.class::cast)
+                .sorted(Comparator.comparingInt(ItemLoreAttribute::priority))
+                .toList();
 
-        // Sort by priority
-        loreComponents.sort(Comparator.comparingInt(comp -> comp.handler.lorePriority()));
-
-        // Generate combined lore
-        return generateCombinedLore(loreComponents);
+        return generateCombinedLore(attributes);
     }
 
     /**
-     * Collects all components that have a LoreHandler from the container.
-     *
-     * @return list of components paired with their handlers
+     * Combines lore from the sorted attributes with spacing between sections.
      */
-    private @NotNull List<ComponentWithHandler> collectLoreComponents() {
-        List<ComponentWithHandler> result = new ArrayList<>();
-
-        for (ItemComponent component : container.asMap().values()) {
-            if (getHandler(component) instanceof LoreHandler<?> loreHandler) {
-                result.add(new ComponentWithHandler(component, loreHandler));
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Generates the combined lore from sorted components.
-     *
-     * @param components sorted list of components with handlers
-     * @return combined list of lore lines
-     */
-    private @NotNull List<Component> generateCombinedLore(@NotNull List<ComponentWithHandler> components) {
+    private @NotNull List<Component> generateCombinedLore(@NotNull List<ItemLoreAttribute> attributes) {
         List<Component> result = new ArrayList<>();
 
-        for (int i = 0; i < components.size(); i++) {
-            ComponentWithHandler pair = components.get(i);
-            List<Component> handlerlore = generateLoreFromHandler(pair.component, pair.handler, container);
+        for (int i = 0; i < attributes.size(); i++) {
+            List<Component> attrLore = attributes.get(i).loreLines(container);
 
-            if (!handlerlore.isEmpty()) {
-                result.addAll(handlerlore);
+            if (!attrLore.isEmpty()) {
+                result.addAll(attrLore);
 
-                // Add spacing between component lore sections
-                if (i != components.size() - 1) {
+                // Add spacing between sections except after the last one
+                if (i < attributes.size() - 1) {
                     result.add(Component.empty());
                 }
             }
@@ -110,46 +66,4 @@ public final class LoreGenerator {
 
         return result;
     }
-
-    /**
-     * Helper method to safely generate lore from a handler with proper type checking.
-     * This bridges the gap between the generic and non-generic types.
-     *
-     * @param component the component to generate lore for
-     * @param handler the handler that processes the component
-     * @param container the component container
-     * @return the generated lore lines
-     */
-    @SuppressWarnings("unchecked")
-    private static <C extends ItemComponent> @NotNull List<Component> generateLoreFromHandler(
-            @NotNull ItemComponent component,
-            @NotNull LoreHandler<C> handler,
-            @NotNull ItemComponents container) {
-
-        // Verify the component type is compatible with the handler
-        Class<C> componentClass = handler.componentType();
-        if (!componentClass.isInstance(component)) {
-            throw new IllegalArgumentException("Component type mismatch: expected " +
-                    componentClass.getName() + " but got " + component.getClass().getName());
-        }
-
-        // Safe cast because we checked the type
-        return handler.generateLore((C) component, container);
-    }
-
-    /**
-     * Returns the handler for the component class.
-     *
-     * @return The handler for this component type
-     */
-    private ItemComponentHandler<?> getHandler(@NotNull ItemComponent component) {
-        Class<? extends ItemComponent> componentClass = component.getType();
-        return handlerProvider.getHandler(componentClass).get();
-    }
-
-
-    /**
-     * Helper class to pair a component with its handler
-     */
-    private record ComponentWithHandler(ItemComponent component, LoreHandler<?> handler) {}
 }

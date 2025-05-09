@@ -85,7 +85,7 @@ public class SkyblockPlayer extends Player implements StatHolder, CombatEntity, 
      */
     @Override
     public @NotNull StatProfile getStatProfile() {
-        return this.statsManager.getStatProfile();
+        return new StatProfile();// this.statsManager.getStatProfile();
     }
 
     /**
