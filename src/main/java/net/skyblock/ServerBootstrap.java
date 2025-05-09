@@ -46,11 +46,11 @@ public class ServerBootstrap {
     }
 
     /**
-     * Creates a new server bootstrap with custom configuration
+     * Initializes and configures the Skyblock server with a custom spawn position and hub world.
      *
-     * @param skyblock      The Skyblock instance
-     * @param spawnPosition The spawn position for players
-     * @param worldPath     The path to the world files for the hub
+     * @param skyblock      the main Skyblock instance
+     * @param spawnPosition the position where players will spawn in the hub world
+     * @param worldPath     the file path to the hub world data
      */
     public ServerBootstrap(Skyblock skyblock, Pos spawnPosition, String worldPath) {
         Logger.info("Bootstrapping server...");
@@ -81,7 +81,9 @@ public class ServerBootstrap {
     }
 
     /**
-     * Initializes all registries in the correct order
+     * Initializes the reforge, codec, and item registries for the Skyblock server.
+     *
+     * Ensures all necessary registries are set up before server startup.
      */
     private void initializeRegistries() {
         Logger.info("Initializing registries...");
@@ -104,7 +106,7 @@ public class ServerBootstrap {
     }
 
     /**
-     * Registers all event listeners needed for the server
+     * Registers all required event listeners with the global event handler for player, inventory, entity, and item attribute events.
      */
     private void registerEventListeners() {
         Logger.info("Registering event listeners");

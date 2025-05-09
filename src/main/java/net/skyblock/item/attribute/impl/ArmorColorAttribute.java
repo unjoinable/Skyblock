@@ -25,15 +25,19 @@ public record ArmorColorAttribute(@NotNull RGBLike color) implements StackAttrib
     );
 
     /**
-     * {@inheritDoc}
+     * Applies the stored color to the item stack builder as the dyed color component.
+     *
+     * This sets the {@code DataComponents.DYED_COLOR} of the item being built, enabling dyeable armor to display the specified color.
      */
     @Override
     public void applyToBuilder(ItemStack.@NotNull Builder builder, @NotNull AttributeContainer container) {
         builder.set(DataComponents.DYED_COLOR, color);
     }
 
-    /**
-     * {@inheritDoc}
+    /****
+     * Returns the unique identifier for this attribute.
+     *
+     * @return the string "armor_color"
      */
     @Override
     public @NotNull String id() {
@@ -41,7 +45,9 @@ public record ArmorColorAttribute(@NotNull RGBLike color) implements StackAttrib
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used for serializing and deserializing this armor color attribute.
+     *
+     * @return the codec for this attribute
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {

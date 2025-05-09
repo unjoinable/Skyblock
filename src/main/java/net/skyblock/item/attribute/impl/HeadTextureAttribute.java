@@ -27,7 +27,10 @@ public record HeadTextureAttribute(@NotNull String texture) implements StackAttr
     );
 
     /**
-     * {@inheritDoc}
+     * Applies the custom head texture to the provided item stack builder by setting a player skin profile based on the stored texture string.
+     *
+     * @param builder the item stack builder to modify
+     * @param container the attribute container (unused in this method)
      */
     @Override
     public void applyToBuilder(ItemStack.@NotNull Builder builder, @NotNull AttributeContainer container) {
@@ -37,7 +40,9 @@ public record HeadTextureAttribute(@NotNull String texture) implements StackAttr
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the unique identifier for this attribute.
+     *
+     * @return the string "head_texture"
      */
     @Override
     public @NotNull String id() {
@@ -45,7 +50,9 @@ public record HeadTextureAttribute(@NotNull String texture) implements StackAttr
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used for serializing and deserializing this head texture attribute.
+     *
+     * @return the codec for this attribute
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {

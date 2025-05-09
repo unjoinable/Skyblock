@@ -17,90 +17,90 @@ import java.util.Set;
  */
 public interface CodecProvider {
     /**
-     * Gets the codec for the given string key and casts it to the expected type.
-     *
-     * @param key The key to look up
-     * @param <T> The expected codec type
-     * @return Optional containing the codec, or empty if not found
-     */
+ * Retrieves the codec associated with the specified key, cast to the expected type.
+ *
+ * @param key the string identifier for the codec
+ * @param <T> the type parameter for the codec
+ * @return an Optional containing the codec if found, or an empty Optional if not present
+ */
     <T> @NotNull Optional<Codec<T>> getCodec(@NotNull String key);
 
     /**
-     * Gets the codec for the given attribute class and casts it to the expected type.
-     *
-     * @param attributeClass The attribute class to look up
-     * @param <T> The expected codec type
-     * @param <A> The attribute type
-     * @return Optional containing the codec, or empty if not found
-     */
+ * Retrieves the codec associated with the specified attribute class, cast to the expected type.
+ *
+ * @param attributeClass the attribute class for which to retrieve the codec
+ * @param <T> the type produced by the codec
+ * @param <A> the attribute class type
+ * @return an Optional containing the codec if found, or empty if no codec is registered for the class
+ */
     <T, A extends ItemAttribute> @NotNull Optional<Codec<T>> getCodecForClass(@NotNull Class<A> attributeClass);
 
     /**
-     * Gets all registered codecs.
-     *
-     * @return An unmodifiable view of all registered codecs
-     */
+ * Returns an unmodifiable map of all registered codecs keyed by their string identifiers.
+ *
+ * @return an unmodifiable map containing all registered codecs
+ */
     @NotNull Map<String, Codec<?>> getCodecs();
 
     /**
-     * Gets all registered attribute classes.
-     *
-     * @return An unmodifiable set of all registered attribute classes
-     */
+ * Returns an unmodifiable set of all registered item attribute classes.
+ *
+ * @return an unmodifiable set containing all attribute classes managed by this provider
+ */
     @NotNull Set<Class<? extends ItemAttribute>> getAttributeClasses();
 
     /**
-     * Gets the cached NBT tag for the given key.
-     *
-     * @param key The key to look up
-     * @return Optional containing the NBT tag, or empty if not found
-     */
+ * Retrieves the cached NBT tag associated with the specified key.
+ *
+ * @param key the identifier for the desired NBT tag
+ * @return an Optional containing the corresponding NBT tag if present, or empty if not found
+ */
     @NotNull Optional<Tag<BinaryTag>> getTag(@NotNull String key);
 
     /**
-     * Gets the NBT tag for the given attribute class.
-     *
-     * @param attributeClass The attribute class to look up
-     * @return Optional containing the NBT tag, or empty if not found
-     */
+ * Retrieves the NBT tag associated with the specified attribute class, if available.
+ *
+ * @param attributeClass the attribute class whose NBT tag is to be retrieved
+ * @return an Optional containing the corresponding NBT tag, or empty if none exists
+ */
     @NotNull Optional<Tag<BinaryTag>> getTagForClass(@NotNull Class<? extends ItemAttribute> attributeClass);
 
     /**
-     * Gets all cached NBT tags.
-     *
-     * @return An unmodifiable view of all cached tags
-     */
+ * Returns an unmodifiable map of all cached NBT tags keyed by their string identifiers.
+ *
+ * @return an unmodifiable map containing all cached NBT tags
+ */
     @NotNull Map<String, Tag<BinaryTag>> getTags();
 
     /**
-     * Checks if a codec exists for the given string key.
-     *
-     * @param key The key to check
-     * @return true if a codec exists for the key, false otherwise
-     */
+ * Determines whether a codec is registered for the specified key.
+ *
+ * @param key the string identifier to check
+ * @return true if a codec is registered for the key; false otherwise
+ */
     boolean hasCodec(@NotNull String key);
 
     /**
-     * Checks if a codec exists for the given attribute class.
-     *
-     * @param attributeClass The attribute class to check
-     * @return true if a codec exists for the class, false otherwise
-     */
+ * Determines whether a codec is registered for the specified attribute class.
+ *
+ * @param attributeClass the attribute class to check for an associated codec
+ * @return true if a codec exists for the given class; false otherwise
+ */
     boolean hasCodecForClass(@NotNull Class<? extends ItemAttribute> attributeClass);
 
     /**
-     * Gets the attribute class associated with a tag key.
-     *
-     * @param key The tag key to look up
-     * @return The associated attribute class, if any
-     */
+ * Retrieves the attribute class linked to the specified tag key, if present.
+ *
+ * @param key the tag key to look up
+ * @return an Optional containing the associated attribute class, or empty if none exists
+ */
     @NotNull Optional<Class<? extends ItemAttribute>> getAttributeClass(@NotNull String key);
 
     /**
-     * Gets the tag key associated with an attribute class.
-     *
-     * @param attributeClass The attribute class to look up
-     * @return The associated tag key, if any
-     */
+ * Retrieves the tag key associated with the specified attribute class, if present.
+ *
+ * @param attributeClass the attribute class whose tag key is to be retrieved
+ * @return an Optional containing the tag key if it exists, or an empty Optional otherwise
+ */
     @NotNull Optional<String> getTagKey(@NotNull Class<? extends ItemAttribute> attributeClass);
 }

@@ -27,7 +27,13 @@ public record ReforgeAttribute(@NotNull Reforge reforge) implements StatModifier
     private static final String ID = "reforge";
 
     /**
-     * {@inheritDoc}
+     * Returns the statistical modifiers provided by the reforge for the item's rarity.
+     *
+     * If the container includes a rarity attribute, retrieves the corresponding stat profile from the reforge.
+     * Returns an empty stat profile if the rarity attribute is not present.
+     *
+     * @param container the attribute container holding item attributes
+     * @return the stat profile for the item's rarity, or an empty profile if rarity is absent
      */
     @Override
     public @NotNull StatProfile getStats(@NotNull AttributeContainer container) {
@@ -38,7 +44,11 @@ public record ReforgeAttribute(@NotNull Reforge reforge) implements StatModifier
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a formatted text component displaying the statistic value in parentheses and colored blue.
+     *
+     * @param stat the statistic to display
+     * @param value the value of the statistic
+     * @return a blue-colored component showing the formatted stat value in parentheses
      */
     @Override
     public @NotNull Component getFormattedDisplay(@NotNull Statistic stat, double value) {
@@ -46,13 +56,20 @@ public record ReforgeAttribute(@NotNull Reforge reforge) implements StatModifier
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the unique identifier for this attribute.
+     *
+     * @return the string "reforge"
      */
     @Override
     public @NotNull String id() {
         return ID;
     }
 
+    /**
+     * Returns {@code null} to indicate that this attribute does not support serialization or deserialization via a codec.
+     *
+     * @return {@code null}, as no codec is provided for this attribute
+     */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {
         return null;

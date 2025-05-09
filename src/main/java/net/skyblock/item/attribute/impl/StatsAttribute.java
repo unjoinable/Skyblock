@@ -41,34 +41,48 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
             StatsAttribute::new
     );
 
+    /**
+     * Creates a StatsAttribute with empty base statistics and no modifiers.
+     */
     public StatsAttribute() {
         this(new EnumMap<>(Statistic.class), Collections.emptyList());
     }
 
+    /**
+     * Creates a StatsAttribute with the specified base statistics and no modifiers.
+     *
+     * @param baseStats a map of base statistics to their values
+     */
     public StatsAttribute(Map<Statistic, Double> baseStats) {
         this(baseStats, Collections.emptyList());
     }
 
     /**
-     * Returns the unique identifier for this attribute type.
+     * Returns the unique identifier string for the statistics attribute type.
      *
-     * @return The string "stats" as the attribute identifier
+     * @return the attribute identifier "statistics"
      */
     @Override
     public @NotNull String id() {
         return ID;
     }
 
+    /**
+     * Returns the codec used for serializing and deserializing this attribute.
+     *
+     * @return the codec for this attribute type
+     */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {
         return CODEC;
     }
 
     /**
-     * Defines the display priority of this attribute in item lore.
-     * Lower values indicate higher priority for display ordering.
+     * Returns the display priority for this attribute in item lore.
+     * <p>
+     * A lower value means higher priority; this attribute always has the highest priority (0).
      *
-     * @return An integer value of 0, indicating high priority
+     * @return 0, indicating the highest display priority
      */
     @Override
     public int priority() {
@@ -76,11 +90,12 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
     }
 
     /**
-     * Generates formatted lore lines for displaying the item's statistics.
-     * Only statistics with non-zero values will be included in the result.
+     * Returns a list of formatted text components representing the item's non-zero statistics for display in item lore.
      *
-     * @param container The attribute container context
-     * @return A list of formatted text components representing stat lines for display in item lore
+     * Only statistics with values other than zero are included in the output. Each line is formatted for visual presentation, incorporating any relevant modifiers.
+     *
+     * @param container the attribute container providing context for stat calculation
+     * @return a list of formatted components for each non-zero statistic
      */
     @Override
     public @NotNull List<Component> loreLines(@NotNull AttributeContainer container) {
@@ -92,11 +107,10 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
     }
 
     /**
-     * Calculates the final statistics after applying all modifiers.
-     * Creates a copy of the base stats and applies each modifier sequentially.
+     * Returns a StatProfile representing the combined statistics from base values and all modifiers.
      *
-     * @param container The attribute container context
-     * @return A new StatProfile containing the combined stats from base values and all modifiers
+     * @param container the attribute container providing context for modifier calculation
+     * @return a StatProfile with all modifiers applied to the base stats
      */
     public @NotNull StatProfile getFinalStats(@NotNull AttributeContainer container) {
         var result = StatProfile.fromMap(baseStats, StatValueType.BASE);
@@ -105,12 +119,12 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
     }
 
     /**
-     * Formats a single statistic for display in item lore, including any modifier indicators.
+     * Returns a formatted text component representing a statistic and its value for item lore, including any non-zero modifier indicators.
      *
-     * @param stat The statistic to format
-     * @param value The value of the statistic
-     * @param container The attribute container context
-     * @return A formatted text component for the stat, including any modifier indicators
+     * @param stat the statistic to display
+     * @param value the base value of the statistic
+     * @param container the attribute container providing context for modifiers
+     * @return a non-italicized text component showing the stat name, value, and any applicable modifiers
      */
     private @NotNull Component formatStat(@NotNull Statistic stat, double value, @NotNull AttributeContainer container) {
         Component result = textOfChildren(
@@ -127,11 +141,10 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
     }
 
     /**
-     * Creates a new StatsAttribute with an additional modifier.
-     * This method maintains immutability by creating a new instance with the updated modifiers list.
+     * Returns a new StatsAttribute instance with the specified modifier added.
      *
-     * @param mod The modifier to add
-     * @return A new StatsAttribute instance with the additional modifier
+     * @param mod the stat modifier to include
+     * @return a new StatsAttribute containing all existing modifiers and the added one
      */
     public @NotNull StatsAttribute with(@NotNull StatModifierAttribute mod) {
         var newMods = new ArrayList<>(modifiers);
@@ -140,11 +153,10 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
     }
 
     /**
-     * Creates a new StatsAttribute with the specified modifier removed.
-     * This method maintains immutability by creating a new instance with the updated modifiers list.
+     * Returns a new StatsAttribute instance with the specified modifier removed from the modifiers list.
      *
-     * @param mod The modifier to remove
-     * @return A new StatsAttribute instance without the specified modifier
+     * @param mod the modifier to remove
+     * @return a new StatsAttribute without the given modifier
      */
     public @NotNull StatsAttribute without(@NotNull StatModifierAttribute mod) {
         return new StatsAttribute(baseStats, modifiers.stream().filter(m -> !m.equals(mod)).toList()
@@ -152,10 +164,9 @@ public record StatsAttribute(@NotNull Map<Statistic, Double> baseStats, @NotNull
     }
 
     /**
-     * Returns an unmodifiable view of the modifiers list.
-     * This method is auto-generated by the record but is redocumented here for clarity.
+     * Returns an unmodifiable list of stat modifiers applied to the base statistics.
      *
-     * @return An unmodifiable list of StatModifierAttribute instances
+     * @return an unmodifiable list of StatModifierAttribute instances
      */
     public @NotNull List<StatModifierAttribute> modifiers() {
         return Collections.unmodifiableList(modifiers);

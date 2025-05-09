@@ -43,10 +43,9 @@ public record DescriptionAttribute(@NotNull List<Component> description) impleme
     }
 
     /**
-     * Returns the description components stored in this attribute.
-     * A defensive copy is returned to prevent external modification.
+     * Retrieves the description components for this attribute as a new list.
      *
-     * @return A new list containing the description components
+     * @return a defensive copy of the description components
      */
     @Override
     public @NotNull List<Component> description() {
@@ -54,7 +53,9 @@ public record DescriptionAttribute(@NotNull List<Component> description) impleme
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used to serialize and deserialize this attribute.
+     *
+     * @return the codec for DescriptionAttribute instances
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {
@@ -62,7 +63,10 @@ public record DescriptionAttribute(@NotNull List<Component> description) impleme
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a defensive copy of the description components to be used as lore lines.
+     *
+     * @param container the attribute container (unused)
+     * @return a new list containing the description components
      */
     @Override
     public @NotNull List<Component> loreLines(@NotNull AttributeContainer container) {
@@ -70,7 +74,9 @@ public record DescriptionAttribute(@NotNull List<Component> description) impleme
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the priority value for this attribute.
+     *
+     * @return the integer priority, which is 10
      */
     @Override
     public int priority() {
@@ -78,7 +84,9 @@ public record DescriptionAttribute(@NotNull List<Component> description) impleme
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the unique identifier for this attribute.
+     *
+     * @return the string "description"
      */
     @Override
     public @NotNull String id() {

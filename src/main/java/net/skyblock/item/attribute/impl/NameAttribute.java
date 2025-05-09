@@ -27,7 +27,10 @@ public record NameAttribute(@NotNull String name) implements StackAttribute, Jso
     );
 
     /**
-     * {@inheritDoc}
+     * Sets the custom display name of the item in the builder, styled with the item's rarity color and without italic decoration.
+     *
+     * @param builder the item stack builder to apply the custom name to
+     * @param container the attribute container used to resolve the item's rarity
      */
     @Override
     public void applyToBuilder(ItemStack.@NotNull Builder builder, @NotNull AttributeContainer container) {
@@ -36,7 +39,9 @@ public record NameAttribute(@NotNull String name) implements StackAttribute, Jso
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the identifier string for this attribute.
+     *
+     * @return the attribute ID "name"
      */
     @Override
     public @NotNull String id() {
@@ -44,7 +49,9 @@ public record NameAttribute(@NotNull String name) implements StackAttribute, Jso
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used for serializing and deserializing this attribute.
+     *
+     * @return the codec for this attribute
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {

@@ -19,13 +19,21 @@ import java.util.concurrent.CompletableFuture;
 public class ItemRegistry extends Registry<String, SkyblockItem> implements ItemProvider {
     private final CodecProvider codecProvider;
 
+    /**
+     * Constructs an ItemRegistry with the specified CodecProvider for item loading.
+     *
+     * @param codecProvider the CodecProvider used to load SkyblockItem instances
+     */
     public ItemRegistry(@NotNull CodecProvider codecProvider) {
         this.codecProvider = codecProvider;
     }
 
     /**
-     * Initializes the item registry by loading items from the JSON file
-     * and registering them.
+     * Asynchronously loads Skyblock items and registers them in the registry.
+     *
+     * Initiates loading of items using the configured CodecProvider, then registers them on the main server thread.
+     * Logs the number of loaded items and the total initialization time. If an error occurs during loading or registration,
+     * logs a critical error and aborts the process.
      */
     @Override
     public void init() {

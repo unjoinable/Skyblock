@@ -34,9 +34,9 @@ public abstract class SkyblockEntity extends EntityCreature implements CombatEnt
     private boolean isInvulnerable = false;
 
     /**
-     * Creates a new SkyblockEntity with the specified entity type
+     * Constructs a SkyblockEntity with the given Minestom entity type and initializes an empty stat profile.
      *
-     * @param entityType the Minestom entity type
+     * @param entityType the type of entity to create
      */
     protected SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType);

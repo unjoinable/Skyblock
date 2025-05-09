@@ -10,11 +10,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class AttributeAddListener implements EventListener<AttributeAddEvent> {
 
+    /**
+     * Returns the event type handled by this listener.
+     *
+     * @return the {@code AttributeAddEvent} class
+     */
     @Override
     public @NotNull Class<AttributeAddEvent> eventType() {
         return AttributeAddEvent.class;
     }
 
+    /**
+     * Processes an AttributeAddEvent by applying a StatModifierAttribute to the container's StatsAttribute if present.
+     *
+     * If the event's attribute is a StatModifierAttribute, updates or creates the StatsAttribute in the container by applying the modifier.
+     *
+     * @param event the AttributeAddEvent to process
+     * @return Result.SUCCESS after processing the event
+     */
     @Override
     public @NotNull Result run(@NotNull AttributeAddEvent event) {
         AttributeContainer.Builder container = event.getContainer();

@@ -22,13 +22,15 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     private final Map<Class<? extends ItemAttribute>, String> classToString = new HashMap<>();
 
     /**
-     * Registers a new codec with its associated attribute class and tag key.
+     * Associates an attribute class with a codec and a string tag key for NBT serialization.
      *
-     * @param attributeClass The attribute class to use as a key
-     * @param tagKey         The string key to use for the NBT tag
-     * @param codec          The codec to associate with the attribute class
-     * @throws IllegalStateException    if registry is locked
-     * @throws IllegalArgumentException if the key is already registered
+     * Registers the provided codec for the specified attribute class and tag key, updating all internal mappings.
+     *
+     * @param attributeClass the attribute class to register
+     * @param tagKey the string key used for NBT serialization
+     * @param codec the codec to associate with the attribute class
+     * @throws IllegalStateException if the registry is locked
+     * @throws IllegalArgumentException if the attribute class or tag key is already registered
      */
     public void registerAttribute(@NotNull Class<? extends ItemAttribute> attributeClass, @NotNull String tagKey, @NotNull Codec<?> codec) {
         Tag<BinaryTag> tag = Tag.NBT(tagKey);
@@ -39,12 +41,12 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * Alternative register method that generates the tag key from the class name.
+     * Registers a codec for the given attribute class using an auto-generated tag key derived from the class name.
      *
-     * @param attributeClass The attribute class to use as a key
-     * @param codec          The codec to associate with the attribute class
-     * @throws IllegalStateException    if registry is locked
-     * @throws IllegalArgumentException if the key is already registered
+     * @param attributeClass the attribute class to register
+     * @param codec the codec to associate with the attribute class
+     * @throws IllegalStateException if the registry is locked
+     * @throws IllegalArgumentException if the attribute class is already registered
      */
     @Override
     public void register(@NotNull Class<? extends ItemAttribute> attributeClass, @NotNull Codec<?> codec) {
@@ -53,12 +55,12 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * Registers a codec with an attribute class and an optional custom tag key.
+     * Registers a codec for the specified attribute class using a custom tag key, or generates one from the class name if none is provided.
      *
-     * @param attributeClass The attribute class to register
-     * @param codec The codec to register
-     * @param customTagKey Optional custom tag key (if null, will be generated from class name)
-     * @param <A> The attribute type
+     * @param attributeClass the attribute class to associate with the codec
+     * @param codec the codec to register for the attribute class
+     * @param customTagKey the tag key to use for registration, or null to auto-generate from the class name
+     * @param <A> the type of the item attribute
      */
     public <A extends ItemAttribute> void registerCodec(@NotNull Class<A> attributeClass,
                                                         @NotNull Codec<?> codec,
@@ -68,11 +70,13 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * Registers a codec with an attribute class using an auto-generated tag key.
+     * Registers a codec for the specified attribute class using an automatically generated tag key.
      *
-     * @param attributeClass The attribute class to register
-     * @param codec The codec to register
-     * @param <A> The attribute type
+     * The tag key is derived from the attribute class name by converting it to lowercase and removing the "attribute" suffix.
+     *
+     * @param attributeClass the attribute class to associate with the codec
+     * @param codec the codec to register for the attribute class
+     * @param <A> the type of the attribute
      */
     public <A extends ItemAttribute> void registerCodec(@NotNull Class<A> attributeClass,
                                                         @NotNull Codec<?> codec) {
@@ -80,17 +84,20 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * Generates a tag key from a class by using its simple name and converting to lowercase.
+     * Generates a tag key string from the given class by converting its simple name to lowercase and removing the substring "attribute".
      *
-     * @param clazz The class to generate a tag key for
-     * @return The generated tag key
+     * @param clazz the class for which to generate a tag key
+     * @return the generated tag key string
      */
     private String generateTagKey(@NotNull Class<?> clazz) {
         return clazz.getSimpleName().toLowerCase().replace("attribute", "");
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the attribute class associated with the specified tag key.
+     *
+     * @param tagKey the string tag key used to identify the attribute class
+     * @return an {@code Optional} containing the attribute class if found, or empty if not registered
      */
     @Override
     public @NotNull Optional<Class<? extends ItemAttribute>> getAttributeClass(@NotNull String tagKey) {
@@ -98,7 +105,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the tag key string associated with the specified attribute class, if present.
+     *
+     * @param attributeClass the attribute class to look up
+     * @return an {@code Optional} containing the tag key if registered, or empty if not found
      */
     @Override
     public @NotNull Optional<String> getTagKey(@NotNull Class<? extends ItemAttribute> attributeClass) {
@@ -106,7 +116,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the NBT tag associated with the specified tag key, if present.
+     *
+     * @param key the string tag key for which to retrieve the NBT tag
+     * @return an {@code Optional} containing the corresponding {@code Tag<BinaryTag>}, or empty if not found
      */
     @Override
     public @NotNull Optional<Tag<BinaryTag>> getTag(@NotNull String key) {
@@ -114,7 +127,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the NBT tag associated with the specified attribute class, if present.
+     *
+     * @param attributeClass the attribute class to look up
+     * @return an {@code Optional} containing the corresponding {@code Tag<BinaryTag>} if found, or empty if not registered
      */
     @Override
     public @NotNull Optional<Tag<BinaryTag>> getTagForClass(@NotNull Class<? extends ItemAttribute> attributeClass) {
@@ -122,7 +138,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the codec associated with the specified tag key, if present.
+     *
+     * @param key the tag key identifying the attribute
+     * @return an {@code Optional} containing the codec for the tag key, or empty if not found
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -131,7 +150,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the codec associated with the specified attribute class, if present.
+     *
+     * @param attributeClass the attribute class for which to retrieve the codec
+     * @return an {@code Optional} containing the codec if registered, or empty if not found
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -140,7 +162,9 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Returns an unmodifiable map of all registered tag keys to their corresponding NBT tags.
+     *
+     * @return an unmodifiable map of tag keys to {@code Tag<BinaryTag>} instances
      */
     @Override
     public @NotNull Map<String, Tag<BinaryTag>> getTags() {
@@ -148,7 +172,9 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Returns an unmodifiable map of tag keys to their associated codecs for all registered item attributes.
+     *
+     * @return an unmodifiable map where each key is a tag string and each value is the corresponding attribute codec
      */
     @Override
     public @NotNull Map<String, Codec<?>> getCodecs() {
@@ -163,7 +189,9 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Returns an unmodifiable set of all registered attribute classes in the registry.
+     *
+     * @return a set containing all attribute classes currently registered
      */
     @Override
     public @NotNull Set<Class<? extends ItemAttribute>> getAttributeClasses() {
@@ -171,7 +199,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Checks if a codec is registered for the specified tag key.
+     *
+     * @param key the tag key to check
+     * @return true if a codec is registered for the given tag key, false otherwise
      */
     @Override
     public boolean hasCodec(@NotNull String key) {
@@ -179,7 +210,10 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * {@inheritDoc}
+     * Checks if a codec is registered for the specified attribute class.
+     *
+     * @param attributeClass the attribute class to check
+     * @return true if a codec is registered for the given attribute class, false otherwise
      */
     @Override
     public boolean hasCodecForClass(@NotNull Class<? extends ItemAttribute> attributeClass) {
@@ -187,7 +221,7 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
     }
 
     /**
-     * Initializes the registry with default attribute codecs.
+     * Registers the default set of item attribute codecs and locks the registry to prevent further modifications.
      */
     @Override
     public void init() {

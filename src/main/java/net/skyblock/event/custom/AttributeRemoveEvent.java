@@ -18,10 +18,10 @@ public class AttributeRemoveEvent implements CancellableEvent {
     private boolean cancelled;
 
     /**
-     * Creates a new AttributeRemoveEvent.
+     * Constructs an event representing the impending removal of an attribute from an attribute container builder.
      *
-     * @param builder       the builder from which the attribute is being removed
-     * @param attribute     the attribute being removed, or null if not present
+     * @param builder the attribute container builder involved in the removal
+     * @param attribute the attribute intended for removal; may be null if not present in the builder
      */
     public AttributeRemoveEvent(@NotNull AttributeContainer.Builder builder, @NotNull ItemAttribute attribute) {
         this.builder = builder;
@@ -29,28 +29,27 @@ public class AttributeRemoveEvent implements CancellableEvent {
     }
 
     /**
-     * Gets the builder from which the attribute is being removed.
+     * Returns the attribute container builder involved in the attribute removal event.
      *
-     * @return the attribute container builder
+     * @return the builder from which the attribute is being removed
      */
     public @NotNull AttributeContainer.Builder getContainer() {
         return this.builder;
     }
 
     /**
-     * Gets the attribute being removed, if it exists.
-     * This may be null if the attribute was not present.
+     * Returns the attribute intended for removal from the container.
      *
-     * @return the attribute being removed, or null
+     * @return the attribute being removed, or null if not present
      */
     public @NotNull ItemAttribute getAttribute() {
         return this.attribute;
     }
 
     /**
-     * Gets if the {@link Event} should be cancelled or not.
+     * Returns whether the attribute removal event has been cancelled.
      *
-     * @return true if the event should be cancelled
+     * @return true if the event is cancelled and the attribute removal should not proceed
      */
     @Override
     public boolean isCancelled() {
@@ -58,9 +57,9 @@ public class AttributeRemoveEvent implements CancellableEvent {
     }
 
     /**
-     * Marks the {@link Event} as cancelled or not.
+     * Sets the cancellation state of this event.
      *
-     * @param cancel true if the event should be cancelled, false otherwise
+     * @param cancel true to cancel the event and prevent the attribute removal, false to allow it
      */
     @Override
     public void setCancelled(boolean cancel) {

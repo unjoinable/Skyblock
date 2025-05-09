@@ -28,14 +28,12 @@ public class ItemCommand extends SkyblockCommand {
     private final ItemRegistry items;
 
     /**
-     * Constructs the "item" command.
-     * <p>
-     * This sets up two syntaxes for the command:
-     * 1. /item <itemId> - gives the item to the player issuing the command.
-     * 2. /item <itemId> <target> - gives the item to a specified target player.
+     * Initializes the "item" command, allowing players to receive items by item ID for themselves or another player.
      *
-     * @param items The item registry with default items registered
-     * @param processor The processor used to create items.
+     * Sets up command syntaxes for giving an item to the command sender or to a specified target player. Item suggestions are populated from the item registry.
+     *
+     * @param items the registry containing available items
+     * @param processor the processor used to convert items for player inventories
      */
     public ItemCommand(@NotNull ItemRegistry items, @NotNull ItemProcessor processor) {
         super("item");

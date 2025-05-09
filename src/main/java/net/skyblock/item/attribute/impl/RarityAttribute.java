@@ -1,4 +1,3 @@
-
 package net.skyblock.item.attribute.impl;
 
 import net.kyori.adventure.text.Component;
@@ -34,7 +33,10 @@ public record RarityAttribute(@NotNull Rarity rarity, boolean isUpgraded) implem
     );
 
     /**
-     * {@inheritDoc}
+     * Generates the lore line displaying the item's rarity and category, applying special formatting if the item is upgraded.
+     *
+     * @param container the attribute container used to resolve the item's category
+     * @return a list containing the formatted lore component for the item's rarity and category
      */
     @Override
     public @NotNull List<Component> loreLines(@NotNull AttributeContainer container) {
@@ -49,7 +51,9 @@ public record RarityAttribute(@NotNull Rarity rarity, boolean isUpgraded) implem
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the display priority for this attribute's lore line.
+     *
+     * @return 100, indicating this attribute's lore should appear last.
      */
     @Override
     public int priority() {
@@ -57,7 +61,9 @@ public record RarityAttribute(@NotNull Rarity rarity, boolean isUpgraded) implem
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the codec used for serializing and deserializing this attribute.
+     *
+     * @return the codec for this attribute type
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {
@@ -65,7 +71,9 @@ public record RarityAttribute(@NotNull Rarity rarity, boolean isUpgraded) implem
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the unique identifier for this attribute.
+     *
+     * @return the string "rarity"
      */
     @Override
     public @NotNull String id() {
