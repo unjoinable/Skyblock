@@ -1,6 +1,6 @@
 package net.skyblock.player.manager;
 
-import net.skyblock.item.component.definition.StatsComponent;
+import net.skyblock.item.attribute.impl.StatsAttribute;
 import net.skyblock.item.definition.SkyblockItem;
 import net.skyblock.item.inventory.ItemSlot;
 import net.skyblock.item.inventory.PlayerItemProvider;
@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Manages and calculates player stats from equipped items.
@@ -41,7 +40,7 @@ public class PlayerStatsManager {
     public PlayerStatsManager(@NotNull SkyblockPlayer player, @NotNull PlayerItemProvider itemProvider) {
         this.player = player;
         this.itemProvider = itemProvider;
-        this.baseStats = new StatProfile(true);
+        this.baseStats = StatProfile.fromBase();
         this.itemStats = new HashMap<>();
 
         for (VanillaItemSlot slot: VanillaItemSlot.values()) {
@@ -78,11 +77,10 @@ public class PlayerStatsManager {
         SkyblockItem item = itemProvider.getItem(slot);
         StatProfile profile = new StatProfile();
 
-        if (item != null && item.components() != null) {
-            Optional<StatsComponent> statsComponent = item.components().get(StatsComponent.class);
-            if (statsComponent.isPresent()) {
-                profile = null;// TODO: statsComponent.get().getFinalStats(item.components());
-            }
+        if (item != null) {
+            item.attributes().get(StatsAttribute.class).ifPresent(attribute -> {
+                attribute.getFinalStats(item.attributes());
+            });
         }
 
         itemStats.put(slot, profile);

@@ -1,6 +1,6 @@
 package net.skyblock;
 
-import net.skyblock.registry.impl.HandlerRegistry;
+import net.skyblock.registry.impl.AttributeCodecRegistry;
 import net.skyblock.registry.impl.ItemRegistry;
 import net.skyblock.registry.impl.ReforgeRegistry;
 import org.jetbrains.annotations.NotNull;
@@ -13,9 +13,9 @@ import org.tinylog.Logger;
 public class Skyblock {
 
     // Core registries
-    private final HandlerRegistry handlerRegistry;
     private final ItemRegistry itemRegistry;
     private final ReforgeRegistry reforgeRegistry;
+    private final AttributeCodecRegistry codecRegistry;
 
     // Server components
     private final ServerBootstrap serverBootstrap;
@@ -46,8 +46,8 @@ public class Skyblock {
 
         // Create registry instances but don't initialize them yet
         this.reforgeRegistry = new ReforgeRegistry();
-        this.handlerRegistry = new HandlerRegistry();
-        this.itemRegistry = new ItemRegistry(handlerRegistry);
+        this.codecRegistry = new AttributeCodecRegistry();
+        this.itemRegistry = new ItemRegistry(codecRegistry);
 
         // Create bootstrap with this instance - registration will happen there
         this.serverBootstrap = new ServerBootstrap(this);
@@ -65,38 +65,18 @@ public class Skyblock {
         this.isRunning = true;
     }
 
-    /**
-     * Gets the item registry.
-     *
-     * @return The item registry
-     */
     public @NotNull ItemRegistry getItemRegistry() {
         return itemRegistry;
     }
 
-    /**
-     * Gets the handler registry.
-     *
-     * @return The handler registry
-     */
-    public @NotNull HandlerRegistry getHandlerRegistry() {
-        return handlerRegistry;
-    }
-
-    /**
-     * Gets the reforge registry.
-     *
-     * @return The reforge registry
-     */
     public @NotNull ReforgeRegistry getReforgeRegistry() {
         return reforgeRegistry;
     }
 
-    /**
-     * Checks if the server is currently running.
-     *
-     * @return true if the server is running, false otherwise
-     */
+    public AttributeCodecRegistry getCodecRegistry() {
+        return codecRegistry;
+    }
+
     public boolean isRunning() {
         return isRunning;
     }

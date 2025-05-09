@@ -7,7 +7,7 @@ import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.Player;
 import net.skyblock.command.base.SkyblockCommand;
 import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.item.io.SkyblockItemProcessor;
+import net.skyblock.item.io.ItemProcessor;
 import net.skyblock.player.SkyblockPlayer;
 import net.skyblock.player.rank.PlayerRank;
 import net.skyblock.registry.impl.ItemRegistry;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * </ul>
  */
 public class ItemCommand extends SkyblockCommand {
-    private final SkyblockItemProcessor processor;
+    private final ItemProcessor processor;
     private final ItemRegistry items;
 
     /**
@@ -37,7 +37,7 @@ public class ItemCommand extends SkyblockCommand {
      * @param items The item registry with default items registered
      * @param processor The processor used to create items.
      */
-    public ItemCommand(@NotNull ItemRegistry items, @NotNull SkyblockItemProcessor processor) {
+    public ItemCommand(@NotNull ItemRegistry items, @NotNull ItemProcessor processor) {
         super("item");
         this.items = items;
         this.processor = processor;

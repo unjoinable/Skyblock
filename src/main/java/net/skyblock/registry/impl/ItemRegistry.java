@@ -2,8 +2,9 @@ package net.skyblock.registry.impl;
 
 import net.minestom.server.MinecraftServer;
 import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.item.provider.ItemProvider;
 import net.skyblock.item.io.SkyblockItemLoader;
+import net.skyblock.item.provider.CodecProvider;
+import net.skyblock.item.provider.ItemProvider;
 import net.skyblock.registry.base.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -16,10 +17,10 @@ import java.util.concurrent.CompletableFuture;
  * on registration and lookup functionality.
  */
 public class ItemRegistry extends Registry<String, SkyblockItem> implements ItemProvider {
-    private final HandlerRegistry handlers;
+    private final CodecProvider codecProvider;
 
-    public ItemRegistry(@NotNull HandlerRegistry handlers) {
-        this.handlers = handlers;
+    public ItemRegistry(@NotNull CodecProvider codecProvider) {
+        this.codecProvider = codecProvider;
     }
 
     /**
@@ -31,7 +32,7 @@ public class ItemRegistry extends Registry<String, SkyblockItem> implements Item
         final long startTime = System.nanoTime(); // Benchmark start
 
         CompletableFuture.supplyAsync(() -> {
-            SkyblockItemLoader loader = new SkyblockItemLoader(handlers);
+            SkyblockItemLoader loader = new SkyblockItemLoader(this.codecProvider);
             return loader.loadItems();
         }).thenAccept(items -> {
             Logger.info("Successfully loaded {} items", items.size());

@@ -1,14 +1,14 @@
 package net.skyblock.item.io;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.skyblock.item.component.ItemComponents;
-import net.skyblock.item.component.ItemComponent;
-import net.skyblock.item.component.ItemComponentHandler;
+import net.minestom.server.codec.Result;
+import net.minestom.server.codec.Transcoder;
+import net.skyblock.item.attribute.AttributeContainer;
+import net.skyblock.item.attribute.base.JsonAttribute;
 import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.registry.impl.HandlerRegistry;
+import net.skyblock.item.provider.CodecProvider;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Loads {@link SkyblockItem}s from JSON
@@ -24,10 +24,10 @@ import java.util.Map;
 public class SkyblockItemLoader {
     private static final String ITEM_FILE_PATH = "/skyblock_items.json";
     private static final String DEFAULT_ITEM_ID = "AIR";
-    private final HandlerRegistry handlers;
+    private final CodecProvider codecProvider;
 
-    public SkyblockItemLoader(@NotNull HandlerRegistry handlers) {
-        this.handlers = handlers;
+    public SkyblockItemLoader(@NotNull CodecProvider codecProvider) {
+        this.codecProvider = codecProvider;
     }
 
     /**
@@ -69,7 +69,7 @@ public class SkyblockItemLoader {
         for (int i = 0; i < itemsArray.size(); i++) {
             try {
                 JsonObject itemObject = itemsArray.get(i).getAsJsonObject();
-                SkyblockItem item = parseItem(itemObject, i);
+                SkyblockItem item = parseItem(itemObject);
                 items.add(item);
 
             } catch (Exception e) {
@@ -83,67 +83,30 @@ public class SkyblockItemLoader {
     /**
      * Parses a single item from its JSON object
      * @param itemObject The JSON object representing the item
-     * @param index The index of the item in the array (for logging)
      * @return The parsed SkyblockItem or null if parsing failed
      */
-    private SkyblockItem parseItem(JsonObject itemObject, int index) {
+    private SkyblockItem parseItem(JsonObject itemObject) {
         String id = extractItemId(itemObject);
-        ItemComponents components = parseComponents(itemObject, id);
+        AttributeContainer.Builder builder = AttributeContainer.builder();
 
-        if (components.isEmpty()) {
-            Logger.warn("Item '{}' at index {} has no valid components", id, index);
-        }
+        codecProvider.getAttributeClasses().stream()
+                .filter(JsonAttribute.class::isAssignableFrom)
+                .map(codecProvider::getCodecForClass)
+                .flatMap(Optional::stream)
+                .map(codec -> codec.decode(Transcoder.JSON, itemObject))
+                .forEach(result -> {
+                    System.out.println(result);
+                    if (result instanceof Result.Ok(JsonAttribute attribute)) {
+                        builder.with(attribute);
+                    }
+                });
 
-        return new SkyblockItem(id, components);
+        return new SkyblockItem(id, builder.build());
     }
-
     /**
      * Extracts the item ID from the JSON object or returns the default ID
      */
     private String extractItemId(JsonObject itemObject) {
         return itemObject.has("id") ? itemObject.get("id").getAsString() : DEFAULT_ITEM_ID;
-    }
-
-    /**
-     * Extracts components from item JSON
-     * @param itemObject The JSON object containing component data
-     * @param itemId The ID of the item (for logging)
-     * @return ComponentContainer with all successfully parsed components
-     */
-    private ItemComponents parseComponents(JsonObject itemObject, String itemId) {
-        ItemComponents.Builder builder = new ItemComponents.Builder();
-
-        for (Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
-            String componentId = entry.getKey();
-            if ("id".equals(componentId)) continue;
-
-            try {
-                ItemComponent component = parseComponent(componentId, entry.getValue());
-                if (component != null) {
-                    builder.with(component);
-                }
-            } catch (Exception e) {
-                Logger.warn(e, "Failed to parse component '{}' for item '{}', skipping component",
-                        componentId, itemId);
-            }
-        }
-
-        return builder.build();
-    }
-
-    /**
-     * Parses a single component using its handler
-     * @param componentId The ID of the component
-     * @param jsonElement The JSON element containing the component data
-     * @return The parsed ItemComponent or null if no handler exists
-     */
-    private ItemComponent parseComponent(String componentId, JsonElement jsonElement) {
-        ItemComponentHandler<?> handler = handlers.getHandler(componentId).get();
-        if (handler == null) {
-            Logger.debug("No handler found for component '{}'", componentId);
-            return null;
-        }
-
-        return handler.fromJson(jsonElement);
     }
 }

@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import net.skyblock.stats.definition.StatValueType;
 import net.skyblock.stats.definition.Statistic;
 
+import java.util.Map;
+
 /**
  * Ultimate optimized stat system
  */
@@ -28,17 +30,9 @@ public final class StatProfile {
     private final BooleanArrayList isDirty;
 
     /**
-     * Creates a new StatProfile instance with the option to initialize base stats.
-     * <p>
-     * This constructor initializes the various stat modifier arrays (base, additive, multiplicative, bonus)
-     * and sets up the dirty flags for all stats. If the {@code initBaseStats} parameter is {@code true},
-     * the base values for each stat will be set according to the values defined in the {@link Statistic} enum.
-     * Otherwise, the base values are initialized to 0, and the profile is empty.
-     *
-     * @param initBaseStats whether or not to initialize the base stats for each statistic from the {@link Statistic} enum.
-     *                      If {@code true}, base stats are set to their predefined values; otherwise, they are set to 0.
+     * Creates a new StatProfile instance with empty stats (all base values set to 0).
      */
-    public StatProfile(boolean initBaseStats) {
+    public StatProfile() {
         this.base = new DoubleArrayList(STAT_COUNT);
         this.additive = new DoubleArrayList(STAT_COUNT);
         this.multiplicative = new DoubleArrayList(STAT_COUNT);
@@ -55,24 +49,51 @@ public final class StatProfile {
             cachedValues.add(0.0);
             isDirty.add(true);
         }
-
-        if (initBaseStats) {
-            for (Statistic stat : Statistic.values()) {
-                base.set(stat.ordinal(), stat.getBaseValue());
-            }
-        }
     }
 
     /**
-     * Creates a new StatProfile instance without initializing base stats.
-     * <p>
-     * This constructor initializes the stat modifier arrays (base, additive, multiplicative, bonus)
-     * and dirty flags for each stat. The base stats are not initialized, meaning all base values are set to 0.
+     * Creates a new StatProfile instance with base stats initialized from the Statistic enum.
      *
-     * This constructor can be useful when you don't want to apply the predefined base values immediately.
+     * @return a new StatProfile with default base stats
      */
-    public StatProfile() {
-        this(false);
+    public static StatProfile fromBase() {
+        StatProfile profile = new StatProfile();
+        for (Statistic stat : Statistic.values()) {
+            profile.base.set(stat.ordinal(), stat.getBaseValue());
+        }
+        profile.invalidateAll();
+        return profile;
+    }
+
+    /**
+     * Creates a new StatProfile from a Map of Statistics and their values for a specific StatValueType.
+     *
+     * @param statMap Map containing the statistics and their values
+     * @param type The StatValueType to apply these values to
+     * @return a new StatProfile with the given values
+     */
+    public static StatProfile fromMap(Map<Statistic, Double> statMap, StatValueType type) {
+        StatProfile profile = new StatProfile();
+        for (Map.Entry<Statistic, Double> entry : statMap.entrySet()) {
+            Statistic stat = entry.getKey();
+            Double value = entry.getValue();
+            profile.addStat(stat, type, value);
+        }
+        return profile;
+    }
+
+    /**
+     * Adds all values from a Map of Statistics to this profile with the specified StatValueType.
+     *
+     * @param statMap Map containing the statistics and their values
+     * @param type The StatValueType to apply these values to
+     */
+    public void applyFromMap(Map<Statistic, Double> statMap, StatValueType type) {
+        for (Map.Entry<Statistic, Double> entry : statMap.entrySet()) {
+            Statistic stat = entry.getKey();
+            Double value = entry.getValue();
+            addStat(stat, type, value);
+        }
     }
 
     /**
@@ -146,7 +167,7 @@ public final class StatProfile {
      * Uses Statistic.values() to ensure all stats are copied properly.
      */
     public StatProfile copy() {
-        StatProfile copy = new StatProfile(false);
+        StatProfile copy = new StatProfile();
         for (Statistic stat : Statistic.values()) {
             int i = stat.ordinal();
             copy.base.set(i, base.getDouble(i));
