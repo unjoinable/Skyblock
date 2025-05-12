@@ -6,6 +6,7 @@ import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.skyblock.item.inventory.ItemProviderFactory;
 import net.skyblock.item.inventory.PlayerItemProvider;
+import net.skyblock.player.manager.PlayerAbilityManager;
 import net.skyblock.player.manager.PlayerStatsManager;
 import net.skyblock.player.ui.SkyblockPlayerActionBar;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,10 @@ public class SkyblockPlayerProvider implements PlayerProvider {
         // Stats
         PlayerStatsManager playerStatsManager = new PlayerStatsManager(player, itemProvider);
         player.setStatsManager(playerStatsManager);
+
+        // Ability
+        PlayerAbilityManager playerAbilityManager = new PlayerAbilityManager(player);
+        player.setAbilityManager(playerAbilityManager);
 
         // UI
         SkyblockPlayerActionBar actionBar = new SkyblockPlayerActionBar(player);

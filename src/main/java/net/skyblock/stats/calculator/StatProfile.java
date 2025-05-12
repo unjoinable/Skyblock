@@ -135,6 +135,29 @@ public class StatProfile {
     }
 
     /**
+     * Sets all statistic modifiers to their base values from the Statistic enum.
+     * <p>
+     * This method:
+     * <ul>
+     *   <li>sets base values to original Statistic base values</li>
+     *   <li>Clears additive, multiplicative, and bonus modifiers</li>
+     *   <li>Marks all statistics as dirty for recalculation</li>
+     * </ul>
+     */
+    public @NotNull StatProfile createDefaultProfile() {
+        for (int i = 0; i < STAT_COUNT; i++) {
+            base[i] = STATS[i].getBaseValue();
+            additive[i] = 0.0;
+            multiplicative[i] = 1.0;
+            bonus[i] = 0.0;
+        }
+
+        // Mark all flags dirty to force recalculation
+        dirtyFlags = ~0L;
+        return this;
+    }
+
+    /**
      * Recalculates a statistic value using precomputed metadata.
      *
      * @param id Statistic ID to recalculate

@@ -8,6 +8,7 @@ import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
 import net.skyblock.command.base.RankableSender;
+import net.skyblock.player.manager.PlayerAbilityManager;
 import net.skyblock.player.manager.PlayerStatsManager;
 import net.skyblock.player.rank.PlayerRank;
 import net.skyblock.player.ui.SkyblockPlayerActionBar;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SkyblockPlayer extends Player implements RankableSender {
     private PlayerStatsManager statsManager;
+    private PlayerAbilityManager abilityManager;
     private PlayerRank playerRank = PlayerRank.DEFAULT;
 
     // Core player attributes
@@ -162,6 +164,19 @@ public class SkyblockPlayer extends Player implements RankableSender {
     }
 
     /**
+     * Sets the player's ability manager (can only be set once).
+     *
+     * @param abilityManager The ability manager to assign to this player
+     * @throws IllegalStateException if an ability manager has already been set
+     */
+    public void setAbilityManager(@NotNull PlayerAbilityManager abilityManager) {
+        if (this.abilityManager != null) {
+            throw new IllegalStateException("AbilityManager has already been set");
+        }
+        this.abilityManager = abilityManager;
+    }
+
+    /**
      * Updates player attributes based on current stats
      * - Movement speed scaled down by 1000
      * - Entity interaction range based on swing range stat
@@ -179,6 +194,10 @@ public class SkyblockPlayer extends Player implements RankableSender {
 
     public PlayerStatsManager getStatsManager() {
         return statsManager;
+    }
+
+    public PlayerAbilityManager getAbilityManager() {
+        return abilityManager;
     }
 
     public void setPlayerRank(PlayerRank playerRank) {

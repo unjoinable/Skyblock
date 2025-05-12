@@ -44,12 +44,12 @@ public interface Ability {
     @NotNull AbilityType type();
 
     /**
-     * Gets the cooldown duration of this ability in ticks.
-     * A value of 0 indicates no cooldown.
+     * Gets the cooldown duration of this ability in milliseconds.
+     * A value of 0 indicates no cooldown. (Different Interface in future)
      *
-     * @return The cooldown period in ticks (20 ticks = 1 second)
+     * @return The cooldown period in millis (1 tick = 50millis)
      */
-    int cooldown();
+    long cooldown();
 
     /**
      * Executes this ability for the specified player using the given item.
@@ -59,5 +59,4 @@ public interface Ability {
      *
      */
     @NotNull BiConsumer<SkyblockPlayer, SkyblockItem> executeAbility();
-
 }

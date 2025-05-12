@@ -46,7 +46,7 @@ public class PlayerStatsManager {
     public PlayerStatsManager(@NotNull SkyblockPlayer player, @NotNull PlayerItemProvider itemProvider) {
         this.player = player;
         this.itemProvider = itemProvider;
-        this.baseStats = StatProfile.fromBase();
+        this.baseStats = new StatProfile().createDefaultProfile();
         this.itemStats = new HashMap<>();
         this.cachedProfile = new StatProfile();
         this.isDirty = true;
@@ -55,8 +55,6 @@ public class PlayerStatsManager {
         for (VanillaItemSlot slot : VanillaItemSlot.values()) {
             itemStats.put(slot, new StatProfile());
         }
-
-        // Important: Recalculation to be done by client on init
     }
 
     /**
