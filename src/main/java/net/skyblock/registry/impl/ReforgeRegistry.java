@@ -1,10 +1,9 @@
 package net.skyblock.registry.impl;
 
 import net.minestom.server.MinecraftServer;
-import net.skyblock.Skyblock;
 import net.skyblock.item.definition.Reforge;
 import net.skyblock.item.io.ReforgeLoader;
-import net.skyblock.registry.base.Registry;
+import net.skyblock.registry.Registry;
 import org.tinylog.Logger;
 
 import java.util.concurrent.CompletableFuture;

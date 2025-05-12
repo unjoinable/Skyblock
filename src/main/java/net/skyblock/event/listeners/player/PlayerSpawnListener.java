@@ -18,6 +18,7 @@ public class PlayerSpawnListener implements EventListener<PlayerSpawnEvent> {
 
         if (event.isFirstSpawn()) {
             player.initTaskLoop();
+            player.getStatsManager().recalculateAll();
         }
         return Result.SUCCESS;
     }

@@ -1,210 +1,183 @@
 package net.skyblock.stats.calculator;
 
-import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import net.skyblock.stats.definition.StatValueType;
 import net.skyblock.stats.definition.Statistic;
-
-import java.util.Map;
+import net.skyblock.stats.definition.StatValueType;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Ultimate optimized stat system
+ * Represents a profile of character statistics with optimized performance characteristics.
+ * <p>
+ * This implementation uses array-based storage and bitwise dirty flag tracking for efficient
+ * updates and calculations. Statistics are automatically recalculated only when needed.
+ * </p>
+ *
+ * <p>Key features:</p>
+ * <ul>
+ *   <li>O(1) stat access for clean values</li>
+ *   <li>Bitwise dirty flag tracking (supports up to 64 statistics)</li>
+ *   <li>Array-based storage for memory efficiency</li>
+ *   <li>Automatic cap enforcement during recalculation</li>
+ * </ul>
  */
-public final class StatProfile {
+public class StatProfile {
     private static final int STAT_COUNT = Statistic.values().length;
-    private static final double[] STAT_CAPS = new double[STAT_COUNT];
+    private static final int MAX_SUPPORTED_STATS = 64;
 
-    static {
-        for (Statistic stat : Statistic.values()) {
-            if (stat.isCapped()) {
-                STAT_CAPS[stat.ordinal()] = stat.getCapValue();
-            }
-        }
-    }
-
-    private final DoubleArrayList base;
-    private final DoubleArrayList additive;
-    private final DoubleArrayList multiplicative;
-    private final DoubleArrayList bonus;
-    private final DoubleArrayList cachedValues;
-    private final BooleanArrayList isDirty;
+    private final double[] base = new double[STAT_COUNT];
+    private final double[] additive = new double[STAT_COUNT];
+    private final double[] multiplicative = new double[STAT_COUNT];
+    private final double[] bonus = new double[STAT_COUNT];
+    private final double[] cached = new double[STAT_COUNT];
+    private long dirtyFlags = ~0L;
 
     /**
-     * Constructs a StatProfile with all statistics initialized to zero (or one for multiplicative modifiers) and marks all cached values as dirty.
+     * Constructs a new StatProfile with default values.
+     * <p>
+     * Initializes all statistics to their base values as defined in the {@link Statistic} enum
+     * and marks all values as needing recalculation.
+     * </p>
      */
     public StatProfile() {
-        this.base = new DoubleArrayList(STAT_COUNT);
-        this.additive = new DoubleArrayList(STAT_COUNT);
-        this.multiplicative = new DoubleArrayList(STAT_COUNT);
-        this.bonus = new DoubleArrayList(STAT_COUNT);
-        this.cachedValues = new DoubleArrayList(STAT_COUNT);
-        this.isDirty = new BooleanArrayList(STAT_COUNT);
-
-        // Initialize all arrays
-        for (int i = 0; i < STAT_COUNT; i++) {
-            base.add(0.0);
-            additive.add(0.0);
-            multiplicative.add(1.0); // Multiplicative identity
-            bonus.add(0.0);
-            cachedValues.add(0.0);
-            isDirty.add(true);
-        }
-    }
-
-    /**
-     * Creates a StatProfile with base values set to each statistic's default.
-     *
-     * @return a StatProfile initialized with default base stats for all statistics
-     */
-    public static StatProfile fromBase() {
-        StatProfile profile = new StatProfile();
         for (Statistic stat : Statistic.values()) {
-            profile.base.set(stat.ordinal(), stat.getBaseValue());
+            base[stat.ordinal()] = stat.getBaseValue();
         }
-        profile.invalidateAll();
-        return profile;
     }
 
     /**
-     * Creates a new StatProfile with values from the provided map applied as the specified modifier type.
+     * Retrieves the current value of a statistic, recalculating if necessary.
      *
-     * @param statMap a map of statistics and their corresponding values to apply
-     * @param type the modifier type to use when applying each value
-     * @return a new StatProfile with the mapped values applied as the given type
+     * @param stat The statistic to retrieve, must not be {@code null}
+     * @return The calculated value of the statistic, respecting defined caps
+     * @throws IllegalArgumentException If the statistic's ordinal exceeds 63
      */
-    public static StatProfile fromMap(Map<Statistic, Double> statMap, StatValueType type) {
-        StatProfile profile = new StatProfile();
-        for (Map.Entry<Statistic, Double> entry : statMap.entrySet()) {
-            Statistic stat = entry.getKey();
-            Double value = entry.getValue();
-            profile.addStat(stat, type, value);
+    public double get(@NotNull Statistic stat) {
+        final int id = stat.ordinal();
+        validateStatId(id);
+
+        if (isDirty(id)) {
+            recalculate(id);
         }
-        return profile;
+        return cached[id];
     }
 
     /**
-     * Applies a set of statistic values to this profile using the specified modifier type.
+     * Modifies a statistic value using the specified modifier type.
      *
-     * Each entry in the provided map is added to the corresponding statistic in this profile according to the given StatValueType.
-     *
-     * @param statMap map of statistics and their values to apply
-     * @param type the modifier type to use when applying each value
+     * @param stat   The statistic to modify, must not be {@code null}
+     * @param type   The type of modification to apply, must not be {@code null}
+     * @param amount The value to add to the modifier
+     * @throws IllegalArgumentException If the statistic's ordinal exceeds 63
      */
-    public void applyFromMap(Map<Statistic, Double> statMap, StatValueType type) {
-        for (Map.Entry<Statistic, Double> entry : statMap.entrySet()) {
-            Statistic stat = entry.getKey();
-            Double value = entry.getValue();
-            addStat(stat, type, value);
-        }
-    }
+    public void addStat(@NotNull Statistic stat, @NotNull StatValueType type, double amount) {
+        final int id = stat.ordinal();
+        validateStatId(id);
 
-    /**
-     * Gets the current value of a stat with all modifiers applied.
-     * Formula: (base * (1 + additive) * multiplicative) + bonus
-     */
-    public double get(Statistic stat) {
-        int id = stat.ordinal();
-        if (!isDirty.getBoolean(id)) {
-            return cachedValues.getDouble(id);
-        }
-
-        double value = calculateStatValue(id);
-        cachedValues.set(id, value);
-        isDirty.set(id, false);
-        return value;
-    }
-
-    /**
-     * Adds a stat modifier of specified type.
-     * @param type Stat modifier type (BASE/ADDITIVE/MULTIPLICATIVE/BONUS)
-     * @param amount Value to add (positive or negative)
-     */
-    public void addStat(Statistic stat, StatValueType type, double amount) {
-        int id = stat.ordinal();
         switch (type) {
-            case BASE -> base.set(id, base.getDouble(id) + amount);
-            case ADDITIVE -> additive.set(id, additive.getDouble(id) + amount);
-            case MULTIPLICATIVE -> multiplicative.set(id, multiplicative.getDouble(id) * (1 + amount));
-            case BONUS -> bonus.set(id, bonus.getDouble(id) + amount);
+            case BASE -> base[id] += amount;
+            case ADDITIVE -> additive[id] += amount;
+            case MULTIPLICATIVE -> multiplicative[id] *= (1 + amount);
+            case BONUS -> bonus[id] += amount;
         }
-        isDirty.set(id, true);
+        markDirty(id);
     }
 
     /**
-     * Removes a stat modifier of specified type.
-     * @param type Stat modifier type (BASE/ADDITIVE/MULTIPLICATIVE/BONUS)
-     * @param amount Value to remove (positive or negative)
-     */
-    public void removeStat(Statistic stat, StatValueType type, double amount) {
-        addStat(stat, type, -amount);
-    }
-
-    /**
-     * Combines another StatProfile into this one (additive stacking).
-     * Multiplicative values are multiplied together.
-     * Uses Statistic.values() to ensure all stats are processed properly.
-     */
-    public void combineWith(StatProfile other) {
-        for (Statistic stat : Statistic.values()) {
-            int i = stat.ordinal();
-            base.set(i, base.getDouble(i) + other.base.getDouble(i));
-            additive.set(i, additive.getDouble(i) + other.additive.getDouble(i));
-            multiplicative.set(i, multiplicative.getDouble(i) * other.multiplicative.getDouble(i));
-            bonus.set(i, bonus.getDouble(i) + other.bonus.getDouble(i));
-            isDirty.set(i, true);
-        }
-    }
-
-    /**
-     * Forces recalculation of all stats on next access.
-     */
-    public void invalidateAll() {
-        for (Statistic stat : Statistic.values()) {
-            isDirty.set(stat.ordinal(), true);
-        }
-    }
-
-    /**
-     * Returns a deep copy of this StatProfile, duplicating all modifier values and marking all statistics as needing recalculation.
+     * Combines another StatProfile into this one using additive stacking rules.
      *
-     * @return a new StatProfile instance with identical modifier values, independent from the original
+     * @param other The profile to combine with this one, must not be {@code null}
+     * @throws IllegalArgumentException If the other profile is {@code null}
      */
+    public void combineWith(@NotNull StatProfile other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Other profile cannot be null");
+        }
+
+        for (int i = 0; i < STAT_COUNT; i++) {
+            base[i] += other.base[i];
+            additive[i] += other.additive[i];
+            multiplicative[i] *= other.multiplicative[i];
+            bonus[i] += other.bonus[i];
+            markDirty(i);
+        }
+    }
+
+    /**
+     * Creates a deep copy of this StatProfile.
+     *
+     * @return A new StatProfile instance with identical values and dirty flags
+     */
+    @NotNull
     public StatProfile copy() {
         StatProfile copy = new StatProfile();
-        for (Statistic stat : Statistic.values()) {
-            int i = stat.ordinal();
-            copy.base.set(i, base.getDouble(i));
-            copy.additive.set(i, additive.getDouble(i));
-            copy.multiplicative.set(i, multiplicative.getDouble(i));
-            copy.bonus.set(i, bonus.getDouble(i));
-            copy.isDirty.set(i, true); // New copies should recalculate
-        }
+        System.arraycopy(base, 0, copy.base, 0, STAT_COUNT);
+        System.arraycopy(additive, 0, copy.additive, 0, STAT_COUNT);
+        System.arraycopy(multiplicative, 0, copy.multiplicative, 0, STAT_COUNT);
+        System.arraycopy(bonus, 0, copy.bonus, 0, STAT_COUNT);
+        System.arraycopy(cached, 0, copy.cached, 0, STAT_COUNT);
+        copy.dirtyFlags = this.dirtyFlags;
         return copy;
     }
 
-    private double calculateStatValue(int statId) {
-        double value = (base.getDouble(statId) * (1 + additive.getDouble(statId)))
-                * multiplicative.getDouble(statId)
-                + bonus.getDouble(statId);
+    /**
+     * Recalculates the final value for a specific statistic ID.
+     *
+     * @param id The ordinal ID of the statistic to recalculate
+     */
+    private void recalculate(int id) {
+        final Statistic stat = Statistic.values()[id];
+        final double calculated = (base[id] * (1 + additive[id]))
+                * multiplicative[id]
+                + bonus[id];
 
-        Statistic stat = Statistic.values()[statId];
-        return stat.isCapped() ? Math.min(value, STAT_CAPS[statId]) : value;
+        cached[id] = stat.isCapped()
+                ? Math.min(calculated, stat.getCapValue())
+                : calculated;
+
+        clearDirty(id);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("StatProfile {\n");
-        for (Statistic stat : Statistic.values()) {
-            int id = stat.ordinal();
-            double baseVal = base.getDouble(id);
-            double addVal = additive.getDouble(id);
-            double multiVal = multiplicative.getDouble(id);
-            double bonusVal = bonus.getDouble(id);
-            double finalVal = get(stat);
-            sb.append(String.format("  %s -> base=%.2f, additive=%.2f, multiplicative=%.2f, bonus=%.2f, final=%.2f%n",
-                    stat.name(), baseVal, addVal, multiVal, bonusVal, finalVal));
+    /* Bitwise Operations */
+
+    /**
+     * Marks a statistic as needing recalculation.
+     *
+     * @param statId The ordinal ID of the statistic
+     */
+    private void markDirty(int statId) {
+        dirtyFlags |= (1L << statId);
+    }
+
+    /**
+     * Clears the dirty flag for a statistic.
+     *
+     * @param statId The ordinal ID of the statistic
+     */
+    private void clearDirty(int statId) {
+        dirtyFlags &= ~(1L << statId);
+    }
+
+    /**
+     * Checks if a statistic needs recalculation.
+     *
+     * @param statId The ordinal ID of the statistic
+     * @return {@code true} if the statistic needs recalculation
+     */
+    private boolean isDirty(int statId) {
+        return (dirtyFlags & (1L << statId)) != 0;
+    }
+
+    /**
+     * Validates that a statistic ID is within supported range.
+     *
+     * @param statId The ordinal ID to validate
+     * @throws IllegalArgumentException If ID exceeds supported maximum
+     */
+    private void validateStatId(int statId) {
+        if (statId >= MAX_SUPPORTED_STATS) {
+            throw new IllegalArgumentException(
+                    "Statistic ID " + statId + " exceeds maximum supported value of "
+                            + (MAX_SUPPORTED_STATS - 1)
+            );
         }
-        sb.append("}");
-        return sb.toString();
     }
 }

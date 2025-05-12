@@ -38,6 +38,17 @@ public class PlayerItemProvider {
     }
 
     /**
+     * Updates the cached item for a specific slot
+     * @param slot The slot to update
+     * @return The updated item, or null if none
+     */
+    public @Nullable SkyblockItem updateSlot(@NotNull ItemSlot slot) {
+        SkyblockItem item = slot.getItem(player, processor);
+        cachedItems.put(slot, item);
+        return item;
+    }
+
+    /**
      * Gets all armor items (helmet, chestplate, leggings, boots)
      * @return Map of armor slots to their items
      */

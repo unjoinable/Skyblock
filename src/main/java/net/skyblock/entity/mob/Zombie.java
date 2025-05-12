@@ -1,4 +1,4 @@
-package net.skyblock.entity.impl;
+package net.skyblock.entity.mob;
 
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;

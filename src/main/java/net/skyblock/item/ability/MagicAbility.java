@@ -1,6 +1,5 @@
 package net.skyblock.item.ability;
 
-import net.skyblock.stats.definition.DamageType;
 import org.jetbrains.annotations.NotNull;
 
 /**

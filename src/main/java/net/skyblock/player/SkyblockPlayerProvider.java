@@ -5,6 +5,9 @@ import net.minestom.server.network.PlayerProvider;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.skyblock.item.inventory.ItemProviderFactory;
+import net.skyblock.item.inventory.PlayerItemProvider;
+import net.skyblock.player.manager.PlayerStatsManager;
+import net.skyblock.player.ui.SkyblockPlayerActionBar;
 import org.jetbrains.annotations.NotNull;
 
 public class SkyblockPlayerProvider implements PlayerProvider {
@@ -26,7 +29,18 @@ public class SkyblockPlayerProvider implements PlayerProvider {
     @Override
     public @NotNull Player createPlayer(@NotNull PlayerConnection connection, @NotNull GameProfile gameProfile) {
         SkyblockPlayer player = new SkyblockPlayer(connection, gameProfile);
-        player.setItemProvider(factory.createProvider(player));
+
+        // Dependencies / Systems
+        PlayerItemProvider itemProvider = factory.createProvider(player);
+
+        // Stats
+        PlayerStatsManager playerStatsManager = new PlayerStatsManager(player, itemProvider);
+        player.setStatsManager(playerStatsManager);
+
+        // UI
+        SkyblockPlayerActionBar actionBar = new SkyblockPlayerActionBar(player);
+        player.setActionBar(actionBar);
+
         return player;
     }
 }

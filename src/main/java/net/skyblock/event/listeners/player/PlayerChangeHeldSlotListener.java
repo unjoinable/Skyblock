@@ -35,7 +35,6 @@ public class PlayerChangeHeldSlotListener implements EventListener<PlayerChangeH
     @Override
     public @NotNull Result run(@NotNull PlayerChangeHeldSlotEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-
         MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatsManager().update(VanillaItemSlot.MAIN_HAND));
 
         return Result.SUCCESS;

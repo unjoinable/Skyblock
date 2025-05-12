@@ -5,7 +5,7 @@ import net.skyblock.item.definition.SkyblockItem;
 import net.skyblock.item.io.SkyblockItemLoader;
 import net.skyblock.item.provider.CodecProvider;
 import net.skyblock.item.provider.ItemProvider;
-import net.skyblock.registry.base.Registry;
+import net.skyblock.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 

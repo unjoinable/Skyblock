@@ -6,7 +6,7 @@ import net.minestom.server.tag.Tag;
 import net.skyblock.item.attribute.base.ItemAttribute;
 import net.skyblock.item.attribute.impl.*;
 import net.skyblock.item.provider.CodecProvider;
-import net.skyblock.registry.base.Registry;
+import net.skyblock.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -234,6 +234,7 @@ public class AttributeCodecRegistry extends Registry<Class<? extends ItemAttribu
         registerAttribute(MaterialAttribute.class, MaterialAttribute.ID, MaterialAttribute.CODEC);
         registerAttribute(NameAttribute.class, NameAttribute.ID, NameAttribute.CODEC);
         registerAttribute(StatsAttribute.class, StatsAttribute.ID, StatsAttribute.CODEC);
+        registerAttribute(ReforgeAttribute.class, ReforgeAttribute.ID, ReforgeAttribute.CODEC);
         lock();
     }
 }

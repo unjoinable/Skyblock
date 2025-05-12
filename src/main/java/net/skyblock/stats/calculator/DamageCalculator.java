@@ -1,11 +1,10 @@
 package net.skyblock.stats.calculator;
 
+import net.skyblock.stats.definition.Damage;
 import net.skyblock.item.definition.SkyblockItem;
 import net.skyblock.item.ability.MagicAbility;
-import net.skyblock.stats.definition.SkyblockDamage;
 import net.skyblock.stats.definition.Statistic;
 import net.skyblock.stats.holder.CombatEntity;
-import net.skyblock.stats.definition.DamageType;
 
 import java.util.Random;
 
@@ -32,8 +31,8 @@ public class DamageCalculator {
      * @param damageType The type of damage being dealt
      * @return A built SkyblockDamage object with calculated values
      */
-    public static SkyblockDamage calculateDamage(CombatEntity source, CombatEntity target,
-                                                 SkyblockItem weapon, DamageType damageType) {
+    public static Damage calculateDamage(CombatEntity source, CombatEntity target,
+                                         SkyblockItem weapon, DamageType damageType) {
         StatProfile sourceStats = source.getStatProfile();
 
         // Get base stats
@@ -44,7 +43,7 @@ public class DamageCalculator {
         double ferocity = sourceStats.get(Statistic.FEROCITY);
 
         // Check for critical hit if this damage type can crit
-        boolean isCritical = damageType.canCrit() && RANDOM.nextDouble() * 100 <= critChance;
+       //TODO: boolean isCritical = damageType.canCrit() && RANDOM.nextDouble() * 100 <= critChance;
 
         // Calculate base damage value
         double calculatedDamage = (BASE_PHYSICAL_VALUE + baseDamage) * (1 + strength / 100);
@@ -55,9 +54,9 @@ public class DamageCalculator {
 
         calculatedDamage =  calculatedDamage * additiveMultiplier * multiplicativeMultiplier + bonusModifiers;
 
-        if (isCritical) {
-            calculatedDamage *= (1 + critDamage / 100);
-        }
+//        if (isCritical) {
+//            calculatedDamage *= (1 + critDamage / 100);
+//        }
 
         // Full damage calculation with additional multipliers
         double rawDamage = calculatedDamage;
@@ -65,15 +64,15 @@ public class DamageCalculator {
 
         // Calculate ferocity hits (only for physical damage types)
         int ferocityHits = 0;
-        if (damageType.isPhysical() && ferocity > 0) {
-            ferocityHits = calculateFerocityHits(ferocity);
-        }
+//        if (damageType.isPhysical() && ferocity > 0) {
+//            ferocityHits = calculateFerocityHits(ferocity);
+//        }
 
         //TODO add ferocity handling
 
         return SkyblockDamage.builder()
                 .rawDamage(rawDamage)
-                .criticalHit(isCritical)
+                //.criticalHit(isCritical)
                 .damageType(damageType)
                 .sourceEntity(source)
                 .targetEntity(target)

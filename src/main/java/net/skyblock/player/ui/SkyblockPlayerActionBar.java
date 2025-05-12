@@ -60,8 +60,8 @@ public class SkyblockPlayerActionBar {
      * Updates the health section of the action bar.
      */
     public void updateHealthDisplay() {
-        double currentHealth = player.getCurrentHealth();
-        double maxHealth = player.getMaxHealth();
+        float currentHealth = player.getHealth();
+        float maxHealth = player.getMaxHealth();
 
         Component healthDisplay = Component.text(
                 statsFormat.format(currentHealth) + "/" +
@@ -76,7 +76,7 @@ public class SkyblockPlayerActionBar {
      * Updates the defense section of the action bar.
      */
     public void updateDefenseDisplay() {
-        double defense = player.getStatProfile().get(Statistic.DEFENSE);
+        double defense = player.getStatsManager().getStat(Statistic.DEFENSE);
 
         Component defenseDisplay = Component.text(
                 statsFormat.format(defense) + DEFENSE_SYMBOL + " Defense",

@@ -1,338 +1,194 @@
 package net.skyblock.player;
 
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
-import net.skyblock.item.definition.SkyblockItem;
-import net.skyblock.item.inventory.VanillaItemSlot;
-import net.skyblock.item.inventory.PlayerItemProvider;
+import net.skyblock.command.base.RankableSender;
 import net.skyblock.player.manager.PlayerStatsManager;
 import net.skyblock.player.rank.PlayerRank;
-import net.skyblock.command.base.RankableSender;
 import net.skyblock.player.ui.SkyblockPlayerActionBar;
-import net.skyblock.stats.calculator.DamageCalculator;
-import net.skyblock.stats.calculator.StatProfile;
-import net.skyblock.stats.definition.DamageType;
-import net.skyblock.stats.definition.SkyblockDamage;
 import net.skyblock.stats.definition.Statistic;
-import net.skyblock.stats.holder.CombatEntity;
-import net.skyblock.stats.holder.StatHolder;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a player in the Skyblock game, extending {@link Player} to include additional
- * stats, combat functionality, and mana management.
- * <p>
- * This class implements the {@link CombatEntity} interface to handle combat interactions
- * and integrates with the stat system to calculate health, mana, and other combat attributes.
+ * Extends vanilla Player with Skyblock-specific functionality including stats,
+ * health/mana management, and rank privileges.
  */
-public class SkyblockPlayer extends Player implements StatHolder, CombatEntity, RankableSender {
-    private PlayerItemProvider itemProvider;
+public class SkyblockPlayer extends Player implements RankableSender {
     private PlayerStatsManager statsManager;
-    private PlayerRank playerRank;
+    private PlayerRank playerRank = PlayerRank.DEFAULT;
 
-    // Combat-related fields
-    private double currentHealth;
-    private double currentMana;
-    private boolean invulnerable;
+    // Core player attributes
+    private float currentHealth;
+    private float currentMana;
 
-    // Systems
-    private final SkyblockPlayerActionBar actionBar;
+    // UI Systems
+    private SkyblockPlayerActionBar actionBar;
 
-    /**
-     * Constructs a {@link SkyblockPlayer} instance, initializing the player's connection,
-     * game profile, stats manager, and item provider.
-     * <p>
-     * The player is assigned a default rank of {@link PlayerRank#DEFAULT}.
-     *
-     * @param playerConnection the connection of the player
-     * @param gameProfile the game profile of the player
-     */
     public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
         super(playerConnection, gameProfile);
-        this.playerRank = PlayerRank.DEFAULT;
-
-        // Initialize health and mana to maximum values
-        resetHealthAndMana();
-
-        // Systems
-        this.actionBar = new SkyblockPlayerActionBar(this);
+        getAttribute(Attribute.MAX_HEALTH).setBaseValue(40);
     }
 
+    /**
+     * Initializes recurring tasks for this player
+     */
     public void initTaskLoop() {
+        statsManager.recalculateAll();
+        resetHealthAndMana();
         MinecraftServer.getSchedulerManager()
-                .scheduleTask(this::taskLoop, TaskSchedule.tick(4), TaskSchedule.tick(2*20));
+                .scheduleTask(this::taskLoop, TaskSchedule.immediate(), TaskSchedule.tick(2*20));
     }
 
     private void taskLoop() {
-        regenerateHealth();
-        regenerateMana();
-
+        if (!isDead()) {
+            regenerateHealth();
+            regenerateMana();
+        }
+        updateAttributes();
         actionBar.update();
     }
 
     /**
-     * Returns a new, empty stat profile for this player.
-     *
-     * @return a new {@link StatProfile} instance with no player statistics
-     */
-    @Override
-    public @NotNull StatProfile getStatProfile() {
-        return new StatProfile();// this.statsManager.getStatProfile();
-    }
-
-    /**
-     * Sets the rank of this player.
-     * <p>
-     * This method allows for changing the player's rank to a new {@link PlayerRank}.
-     *
-     * @param playerRank the new rank to assign to this player
-     */
-    public void setPlayerRank(PlayerRank playerRank) {
-        this.playerRank = playerRank;
-    }
-
-    /**
-     * Gets the stats manager for this player.
-     * <p>
-     * The stats manager handles the player's stat profile and provides methods for updating
-     * or retrieving individual stats.
-     *
-     * @return the {@link PlayerStatsManager} for the player
-     */
-    public PlayerStatsManager getStatsManager() {
-        return statsManager;
-    }
-
-    /**
-     * Resets the player's health and mana to their maximum values.
-     * Useful when respawning or initializing the player.
+     * Resets player's health and mana to maximum values
      */
     public void resetHealthAndMana() {
-        this.currentHealth = getMaxHealth();
-        this.currentMana = getMaxMana();
+        setHealth(getMaxHealth());
+        setCurrentMana(getMaxMana());
     }
 
     /**
-     * Regenerates player health based on stats.
-     * This should be called from a scheduled task.
-     */
-    public void regenerateHealth() {
-        if (isDead()) return;
-
-        double regenAmount = statsManager.calculateHealthRegeneration();
-        setCurrentHealth(getCurrentHealth() + regenAmount);
-    }
-
-    /**
-     * Regenerates player mana based on stats.
-     * This should be called from a scheduled task.
+     * Regenerates player mana based on stats
      */
     public void regenerateMana() {
-        if (isDead()) return;
-
         double regenAmount = statsManager.calculateManaRegeneration();
-        setCurrentMana(getCurrentMana() + regenAmount);
+        setCurrentMana((float) (getCurrentMana() + regenAmount));
     }
 
-    /* === CombatEntity Interface Implementation === */
-
-    @Override
-    public Entity getEntity() {
-        return this;
+    /**
+     * Regenerates player health based on stats
+     */
+    public void regenerateHealth() {
+        double regenAmount = statsManager.calculateHealthRegeneration();
+        setHealth((float) (getHealth() + regenAmount));
     }
 
     @Override
-    public double getCurrentHealth() {
+    public void setHealth(float healthToSet) {
+        if (healthToSet <= 0) {
+            kill();
+            return;
+        }
+        float maxHealth = getMaxHealth();
+        this.currentHealth = Math.min(healthToSet, maxHealth);
+        this.sendPacket(new UpdateHealthPacket((currentHealth / maxHealth) * 40, 20, 20));
+    }
+
+    @Override
+    public float getHealth() {
         return currentHealth;
     }
 
     @Override
-    public void setCurrentHealth(double health) {
-        double maxHealth = getMaxHealth();
-        this.currentHealth = Math.max(0.0, Math.min(health, maxHealth));
-
-        //TODO: Update client-side health display
-        double healthPercentage = this.currentHealth / maxHealth;
-        this.setHealth((float) (healthPercentage * 20.0)); // 40 hearts
-
-        // If health drops to 0, trigger death
-        if (this.currentHealth <= 0.0) {
-            kill();
-        }
-    }
-
-    @Override
-    public double getMaxHealth() {
-        return getStatProfile().get(Statistic.HEALTH);
+    public void kill() {
+        resetHealthAndMana();
     }
 
     /**
-     * Gets the current mana of the player
-     *
-     * @return current mana value
+     * @return Maximum health from player stats
+     */
+    public float getMaxHealth() {
+        return (float) statsManager.getStat(Statistic.HEALTH);
+    }
+
+    /**
+     * @return Current mana value
      */
     public double getCurrentMana() {
         return currentMana;
     }
 
     /**
-     * Sets the current mana of the player
-     *
-     * @param mana the new mana value
+     * Sets player's current mana, if mana is larger than maxMana then its set to maxMana
      */
-    public void setCurrentMana(double mana) {
+    public void setCurrentMana(float mana) {
         double maxMana = getMaxMana();
-        this.currentMana = Math.max(0.0, Math.min(mana, maxMana));
+        this.currentMana = (float) Math.min(mana, maxMana);
     }
 
     /**
-     * Gets the maximum possible mana of the player
-     *
-     * @return maximum mana value
+     * @return Maximum mana from player stats
      */
-    public double getMaxMana() {
-        return getStatProfile().get(Statistic.INTELLIGENCE);
+    public float getMaxMana() {
+        return (float) statsManager.getStat(Statistic.INTELLIGENCE);
     }
 
     /**
-     * Consumes mana for ability usage
+     * Attempts to consume mana for ability usage
      *
-     * @param amount the amount of mana to consume
-     * @return true if enough mana was available and consumed; false otherwise
+     * @param amount Mana cost
+     * @return true if successful, false if insufficient mana
      */
     public boolean consumeMana(double amount) {
         if (currentMana >= amount) {
-            setCurrentMana(currentMana - amount);
+            setCurrentMana((float) (currentMana - amount));
             return true;
         }
         return false;
     }
 
-    @Override
-    public boolean isInvulnerable() {
-        return invulnerable;
-    }
-
-    @Override
-    public void setInvulnerable(boolean invulnerable) {
-        this.invulnerable = invulnerable;
-    }
-
-    @Override
-    public void attack(CombatEntity target, DamageType damageType) {
-        if (target == null || target.isInvulnerable()) {
-            return;
+    /**
+     * Sets the player's stats manager (can only be set once)
+     */
+    public void setStatsManager(@NotNull PlayerStatsManager statsManager) {
+        if (this.statsManager != null) {
+            throw new IllegalStateException("Stats manager has already been set");
         }
-
-        SkyblockItem weapon = itemProvider.getItem(VanillaItemSlot.MAIN_HAND);
-        SkyblockDamage damage = DamageCalculator.calculateDamage(this, target, weapon, damageType);
-
-        target.damage(damage);
-    }
-
-    @Override
-    public void damage(SkyblockDamage damage) {
-        if (isInvulnerable() || isDead()) {
-            return;
-        }
-
-        double finalDamage = damage.getRawDamage();
-        StatProfile stats = getStatProfile();
-
-        // Reduction by Defense
-        if (!damage.getDamageType().bypassesDefense()) {
-            double defense = stats.get(Statistic.DEFENSE);
-            finalDamage = finalDamage * (1.0 - (defense / (defense + 100.0)));
-        }
-
-        // Reduction by True Defense
-        if (damage.getDamageType().bypassesDefense()) {
-            double trueDefense = stats.get(Statistic.TRUE_DEFENSE);
-            finalDamage = finalDamage * (1.0 - (trueDefense / (trueDefense + 100.0)));
-        }
-
-        // Apply the damage
-        setCurrentHealth(getCurrentHealth() - finalDamage);
-
-        // Display damage indicator
-        spawnDamageIndicator(damage);
-
-        // Apply knockback if source exists
-        if (damage.getSourceEntity() != null) {
-            applyKnockback(damage.getSourceEntity().getEntity());
-        }
-    }
-
-    @Override
-    public void applyKnockback(Entity source) { //TODO fix the knockback
-        if (source == null) return;
-
-        // Calculate knockback direction
-        Pos sourcePos = source.getPosition();
-        Pos myPos = getPosition();
-
-        // Get direction vector from source to this entity
-        double dx = myPos.x() - sourcePos.x();
-        double dz = myPos.z() - sourcePos.z();
-
-        // Normalize and apply knockback strength
-        double length = Math.sqrt(dx * dx + dz * dz);
-        if (length > 0) {
-            double knockbackStrength = 0.4; // Base knockback strength
-            dx = dx / length * knockbackStrength;
-            dz = dz / length * knockbackStrength;
-
-            // Apply velocity
-            setVelocity(getVelocity().add(dx, 0.4, dz)); // 0.4 is upward knockback
-        }
-    }
-
-    @Override
-    public void spawnDamageIndicator(SkyblockDamage damage) {}
-
-    @Override
-    public void kill() {
-        this.currentHealth = 0.0;
+        this.statsManager = statsManager;
     }
 
     /**
-     * Gets the player's action bar manager.
-     *
-     * @return The action bar manager for this player
+     * Sets the player's action bar manager (can only be set once)
      */
+    public void setActionBar(@NotNull SkyblockPlayerActionBar actionBar) {
+        if (this.actionBar != null) {
+            throw new IllegalStateException("ActionBar has already been set");
+        }
+        this.actionBar = actionBar;
+    }
+
+    /**
+     * Updates player attributes based on current stats
+     * - Movement speed scaled down by 1000
+     * - Entity interaction range based on swing range stat
+     * - Attack speed calculated using bonus attack speed percentage
+     */
+    private void updateAttributes() {
+        double speed = this.statsManager.getStat(Statistic.SPEED);
+        double swingRange = this.statsManager.getStat(Statistic.SWING_RANGE);
+        double attackSpeed = this.statsManager.getStat(Statistic.BONUS_ATTACK_SPEED);
+
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(speed / 1000);
+        getAttribute(Attribute.ENTITY_INTERACTION_RANGE).setBaseValue(swingRange);
+        getAttribute(Attribute.ATTACK_SPEED).setBaseValue((10 / (1 + (attackSpeed / 100))));
+    }
+
+    public PlayerStatsManager getStatsManager() {
+        return statsManager;
+    }
+
+    public void setPlayerRank(PlayerRank playerRank) {
+        this.playerRank = playerRank;
+    }
+
     public SkyblockPlayerActionBar getActionBar() {
         return actionBar;
     }
 
-    /**
-     * Convenience method to perform a melee attack on a target
-     *
-     * @param target the entity to attack
-     */
-    @Override
-    public void meleeDamage(CombatEntity target) {
-        attack(target, DamageType.MELEE);
-    }
-
-    /**
-     * Sets the item provider
-     *
-     * @param itemProvider the provider for player items
-     */
-    public void setItemProvider(PlayerItemProvider itemProvider) {
-        this.itemProvider = itemProvider;
-    }
-
-    /**
-     * Gets the {@link PlayerRank} associated with this sender.
-     *
-     * @return the rank of the sender
-     */
     @Override
     public @NotNull PlayerRank getRank() {
         return playerRank;

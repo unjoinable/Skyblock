@@ -2,6 +2,7 @@ package net.skyblock.item.attribute.impl;
 
 import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
+import net.minestom.server.codec.StructCodec;
 import net.skyblock.item.attribute.AttributeContainer;
 import net.skyblock.item.attribute.base.ItemAttribute;
 import net.skyblock.item.attribute.base.StatModifierAttribute;
@@ -24,7 +25,10 @@ import static net.skyblock.utils.Utils.formatStatValue;
  * @param reforge The specific {@link Reforge} defining this attribute's effects.
  */
 public record ReforgeAttribute(@NotNull Reforge reforge) implements StatModifierAttribute {
-    private static final String ID = "reforge";
+    public static final String ID = "reforge";
+    public static final Codec<ReforgeAttribute> CODEC = StructCodec.struct(
+            "reforge", null, null,  null
+    );
 
     /**
      * Returns the statistical modifiers provided by the reforge for the item's rarity.
@@ -66,12 +70,12 @@ public record ReforgeAttribute(@NotNull Reforge reforge) implements StatModifier
     }
 
     /**
-     * Returns {@code null} to indicate that this attribute does not support serialization or deserialization via a codec.
+     * A codec
      *
-     * @return {@code null}, as no codec is provided for this attribute
+     * @return A codec
      */
     @Override
     public @NotNull Codec<? extends ItemAttribute> getCodec() {
-        return null;
+        return CODEC;
     }
 }
