@@ -5,50 +5,70 @@ import net.skyblock.stats.definition.StatValueType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a profile of character statistics with optimized performance characteristics.
+ * Ultra-optimized statistic profile implementation with enhanced performance characteristics.
  * <p>
- * This implementation uses array-based storage and bitwise dirty flag tracking for efficient
- * updates and calculations. Statistics are automatically recalculated only when needed.
- * </p>
- *
- * <p>Key features:</p>
+ * This version includes significant optimizations over the original implementation:
  * <ul>
- *   <li>O(1) stat access for clean values</li>
- *   <li>Bitwise dirty flag tracking (supports up to 64 statistics)</li>
- *   <li>Array-based storage for memory efficiency</li>
- *   <li>Automatic cap enforcement during recalculation</li>
+ *   <li>Precomputed statistic metadata caching</li>
+ *   <li>Efficient bitwise dirty flag propagation</li>
+ *   <li>Memory layout optimization for CPU cache efficiency</li>
+ *   <li>Bulk array operations for fast copying</li>
+ *   <li>Reduced method calls in hot paths</li>
+ * </ul>
+ *
+ * <p>Performance Characteristics:</p>
+ * <ul>
+ *   <li>O(1) stat lookup for clean values</li>
+ *   <li>Zero allocations during stat updates</li>
+ *   <li>Bitwise operations with 64-bit dirty flag long</li>
+ *   <li>Array-based storage with data locality</li>
  * </ul>
  */
 public class StatProfile {
-    private static final int STAT_COUNT = Statistic.values().length;
-    private static final int MAX_SUPPORTED_STATS = 64;
+    private static final Statistic[] STATS = Statistic.values();
+    private static final int STAT_COUNT = STATS.length;
+    private static final int MAX_SUPPORTED_STATS = 64; // Bitwise operation fails if we go beyond this, BitSet for future
 
+    // Storage arrays with direct index access
     private final double[] base = new double[STAT_COUNT];
     private final double[] additive = new double[STAT_COUNT];
     private final double[] multiplicative = new double[STAT_COUNT];
     private final double[] bonus = new double[STAT_COUNT];
     private final double[] cached = new double[STAT_COUNT];
+
+    // Precomputed statistic metadata
+    private final boolean[] isCapped = new boolean[STAT_COUNT];
+    private final double[] capValue = new double[STAT_COUNT];
+
+    // Bitwise dirty flag tracking (1 bit per statistic)
     private long dirtyFlags = ~0L;
 
     /**
-     * Constructs a new StatProfile with default values.
+     * Constructs a new StatProfile with optimized initialization.
      * <p>
-     * Initializes all statistics to their base values as defined in the {@link Statistic} enum
-     * and marks all values as needing recalculation.
-     * </p>
+     * Initializes all modifiers to their default values:
+     * <ul>
+     *   <li>Base values from Statistic definitions</li>
+     *   <li>Multiplicative modifiers to 1.0 (identity value)</li>
+     *   <li>Precomputed cap configurations</li>
+     * </ul>
      */
     public StatProfile() {
-        for (Statistic stat : Statistic.values()) {
-            base[stat.ordinal()] = stat.getBaseValue();
+        for (Statistic stat : STATS) {
+            int id = stat.ordinal();
+            base[id] = stat.getBaseValue();
+            multiplicative[id] = 1.0;  // Critical multiplicative identity
+            isCapped[id] = stat.isCapped();
+            capValue[id] = stat.getCapValue();
         }
     }
 
     /**
-     * Retrieves the current value of a statistic, recalculating if necessary.
+     * Retrieves the current value of a statistic with automatic recalculation.
      *
-     * @param stat The statistic to retrieve, must not be {@code null}
-     * @return The calculated value of the statistic, respecting defined caps
-     * @throws IllegalArgumentException If the statistic's ordinal exceeds 63
+     * @param stat The statistic to retrieve (non-null)
+     * @return The calculated value respecting statistic caps
+     * @throws IllegalArgumentException If statistic ID exceeds supported maximum
      */
     public double get(@NotNull Statistic stat) {
         final int id = stat.ordinal();
@@ -61,12 +81,12 @@ public class StatProfile {
     }
 
     /**
-     * Modifies a statistic value using the specified modifier type.
+     * Modifies a statistic using the specified operation type.
      *
-     * @param stat   The statistic to modify, must not be {@code null}
-     * @param type   The type of modification to apply, must not be {@code null}
-     * @param amount The value to add to the modifier
-     * @throws IllegalArgumentException If the statistic's ordinal exceeds 63
+     * @param stat   Target statistic (non-null)
+     * @param type   Modification type (non-null)
+     * @param amount Value to apply (use negative values for subtraction)
+     * @throws IllegalArgumentException If statistic ID is invalid
      */
     public void addStat(@NotNull Statistic stat, @NotNull StatValueType type, double amount) {
         final int id = stat.ordinal();
@@ -82,29 +102,25 @@ public class StatProfile {
     }
 
     /**
-     * Combines another StatProfile into this one using additive stacking rules.
+     * Merges another profile into this one using bulk operations.
      *
-     * @param other The profile to combine with this one, must not be {@code null}
-     * @throws IllegalArgumentException If the other profile is {@code null}
+     * @param other Profile to combine (non-null)
+     * @implNote Efficiently combines dirty flags using bitwise OR
      */
     public void combineWith(@NotNull StatProfile other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Other profile cannot be null");
-        }
-
         for (int i = 0; i < STAT_COUNT; i++) {
             base[i] += other.base[i];
             additive[i] += other.additive[i];
             multiplicative[i] *= other.multiplicative[i];
             bonus[i] += other.bonus[i];
-            markDirty(i);
         }
+        dirtyFlags |= other.dirtyFlags;  // Propagate dirty states
     }
 
     /**
-     * Creates a deep copy of this StatProfile.
+     * Creates a deep copy of the profile using optimized array operations.
      *
-     * @return A new StatProfile instance with identical values and dirty flags
+     * @return New independent profile with identical state
      */
     @NotNull
     public StatProfile copy() {
@@ -119,38 +135,34 @@ public class StatProfile {
     }
 
     /**
-     * Recalculates the final value for a specific statistic ID.
+     * Recalculates a statistic value using precomputed metadata.
      *
-     * @param id The ordinal ID of the statistic to recalculate
+     * @param id Statistic ID to recalculate
+     * @implNote Uses precomputed cap values to avoid virtual calls
      */
     private void recalculate(int id) {
-        final Statistic stat = Statistic.values()[id];
-        final double calculated = (base[id] * (1 + additive[id]))
-                * multiplicative[id]
-                + bonus[id];
+        final double additiveFactor = 1.0 + additive[id];
+        final double calculated = (base[id] * additiveFactor) * multiplicative[id] + bonus[id];
 
-        cached[id] = stat.isCapped()
-                ? Math.min(calculated, stat.getCapValue())
-                : calculated;
-
+        cached[id] = isCapped[id] ? Math.min(calculated, capValue[id]) : calculated;
         clearDirty(id);
     }
 
-    /* Bitwise Operations */
+    /* Bitwise Dirty Flag Management */
 
     /**
      * Marks a statistic as needing recalculation.
      *
-     * @param statId The ordinal ID of the statistic
+     * @param statId Target statistic ID
      */
     private void markDirty(int statId) {
         dirtyFlags |= (1L << statId);
     }
 
     /**
-     * Clears the dirty flag for a statistic.
+     * Clears the dirty state for a statistic.
      *
-     * @param statId The ordinal ID of the statistic
+     * @param statId Target statistic ID
      */
     private void clearDirty(int statId) {
         dirtyFlags &= ~(1L << statId);
@@ -159,24 +171,23 @@ public class StatProfile {
     /**
      * Checks if a statistic needs recalculation.
      *
-     * @param statId The ordinal ID of the statistic
-     * @return {@code true} if the statistic needs recalculation
+     * @param statId Target statistic ID
+     * @return True if the statistic is marked dirty
      */
     private boolean isDirty(int statId) {
         return (dirtyFlags & (1L << statId)) != 0;
     }
 
     /**
-     * Validates that a statistic ID is within supported range.
+     * Validates statistic ID against supported range.
      *
-     * @param statId The ordinal ID to validate
-     * @throws IllegalArgumentException If ID exceeds supported maximum
+     * @param statId ID to validate
+     * @throws IllegalArgumentException For IDs >= 64
      */
     private void validateStatId(int statId) {
         if (statId >= MAX_SUPPORTED_STATS) {
             throw new IllegalArgumentException(
-                    "Statistic ID " + statId + " exceeds maximum supported value of "
-                            + (MAX_SUPPORTED_STATS - 1)
+                    "Statistic ID " + statId + " exceeds maximum supported value of " + (MAX_SUPPORTED_STATS - 1)
             );
         }
     }

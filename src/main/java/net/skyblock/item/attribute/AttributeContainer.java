@@ -7,9 +7,7 @@ import net.skyblock.item.attribute.base.ItemAttribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -20,21 +18,26 @@ import java.util.stream.Stream;
  * through the Builder pattern, ensuring immutability of the main container.</p>
  */
 public final class AttributeContainer {
-    private static final AttributeContainer EMPTY = new AttributeContainer(new Builder());
+    /**
+     * Retrieves the shared immutable instance of an empty attribute container.
+     */
+    private static final AttributeContainer EMPTY = new AttributeContainer(Object2ObjectMaps.emptyMap(), Object2ObjectMaps.emptyMap());
 
     private final Object2ObjectMap<String, ItemAttribute> attributeMap;
     private final Object2ObjectMap<Class<? extends ItemAttribute>, ItemAttribute> attributeByClassMap;
 
     /**
-     * Constructs an immutable AttributeContainer from the provided Builder.
+     * Constructs an immutable AttributeContainer using given maps.
      *
-     * Copies the builder's attribute maps and wraps them in unmodifiable views to ensure immutability.
-     *
-     * @param builder the Builder containing the attributes to initialize this container with
+     * @param attributeMap          map of attribute IDs to attributes
+     * @param attributeByClassMap   map of attribute classes to attributes
      */
-    private AttributeContainer(@NotNull Builder builder) {
-        this.attributeMap = Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>(builder.attributeMap));
-        this.attributeByClassMap = Object2ObjectMaps.unmodifiable(new Object2ObjectOpenHashMap<>(builder.attributeByClassMap));
+    private AttributeContainer(
+            @NotNull Object2ObjectMap<String, ItemAttribute> attributeMap,
+            @NotNull Object2ObjectMap<Class<? extends ItemAttribute>, ItemAttribute> attributeByClassMap
+    ) {
+        this.attributeMap = Object2ObjectMaps.unmodifiable(attributeMap);
+        this.attributeByClassMap = Object2ObjectMaps.unmodifiable(attributeByClassMap);
     }
 
     /**
@@ -74,13 +77,7 @@ public final class AttributeContainer {
      */
     public <T extends ItemAttribute> @NotNull Optional<T> get(@NotNull Class<T> type) {
         ItemAttribute attribute = attributeByClassMap.get(type);
-        if (attribute == null) {
-            return Optional.empty();
-        }
-
-        //noinspection unchecked
-        T castedAttribute = (T) attribute;
-        return Optional.of(castedAttribute);
+        return attribute != null ? Optional.of(type.cast(attribute)) : Optional.empty();
     }
 
     /**
@@ -137,9 +134,7 @@ public final class AttributeContainer {
      */
     public @NotNull Builder toBuilder() {
         Builder builder = new Builder();
-        // Directly copy the maps instead of calling with() to avoid side effects in event handlers
-        builder.attributeMap.putAll(attributeMap);
-        builder.attributeByClassMap.putAll(attributeByClassMap);
+        builder.attributes.addAll(attributeMap.values());
         return builder;
     }
 
@@ -156,8 +151,7 @@ public final class AttributeContainer {
      * Mutable builder for creating AttributeContainer instances.
      */
     public static final class Builder {
-        final Object2ObjectMap<String, ItemAttribute> attributeMap = new Object2ObjectOpenHashMap<>();
-        final Object2ObjectMap<Class<? extends ItemAttribute>, ItemAttribute> attributeByClassMap = new Object2ObjectOpenHashMap<>();
+        private final List<ItemAttribute> attributes = new ArrayList<>(8); // Initial capacity for small collections
 
         /**
          * Adds or replaces an attribute in the builder by both its ID and class type.
@@ -168,23 +162,20 @@ public final class AttributeContainer {
          */
         public @NotNull Builder with(@NotNull ItemAttribute attribute) {
             Objects.requireNonNull(attribute, "Attribute cannot be null");
-
-            attributeMap.put(attribute.id(), attribute);
-            attributeByClassMap.put(attribute.getClass(), attribute);
+            // Remove existing attributes with the same ID or class
+            attributes.removeIf(a -> a.id().equals(attribute.id()) || a.getClass() == attribute.getClass());
+            attributes.add(attribute);
             return this;
         }
 
         /**
-         * Removes the attribute with the specified ID from the builder, also removing its class mapping if present.
+         * Removes the attribute with the specified ID from the builder.
          *
          * @param id the attribute ID to remove
          * @return this builder instance for chaining
          */
         public @NotNull Builder without(@NotNull String id) {
-            ItemAttribute removed = attributeMap.remove(id);
-            if (removed != null) {
-                attributeByClassMap.remove(removed.getClass());
-            }
+            attributes.removeIf(a -> a.id().equals(id));
             return this;
         }
 
@@ -195,10 +186,7 @@ public final class AttributeContainer {
          * @return this builder instance for chaining
          */
         public @NotNull Builder without(@NotNull Class<? extends ItemAttribute> type) {
-            ItemAttribute removed = attributeByClassMap.remove(type);
-            if (removed != null) {
-                attributeMap.remove(removed.id());
-            }
+            attributes.removeIf(a -> a.getClass() == type);
             return this;
         }
 
@@ -209,7 +197,12 @@ public final class AttributeContainer {
          * @return the corresponding attribute, or null if no attribute with the given ID exists
          */
         public @Nullable ItemAttribute get(@NotNull String id) {
-            return attributeMap.get(id);
+            for (ItemAttribute attr : attributes) {
+                if (attr.id().equals(id)) {
+                    return attr;
+                }
+            }
+            return null;
         }
 
         /**
@@ -220,34 +213,32 @@ public final class AttributeContainer {
          * @return an Optional containing the attribute instance if present, or an empty Optional if not found
          */
         public <T extends ItemAttribute> @NotNull Optional<T> get(@NotNull Class<T> type) {
-            ItemAttribute attribute = attributeByClassMap.get(type);
-            if (attribute == null) {
-                return Optional.empty();
+            for (ItemAttribute attr : attributes) {
+                if (type.isInstance(attr)) {
+                    return Optional.of(type.cast(attr));
+                }
             }
-
-            //noinspection unchecked
-            T castedAttribute = (T) attribute;
-            return Optional.of(castedAttribute);
+            return Optional.empty();
         }
 
         /**
-         * Determines whether an attribute with the specified ID is present in the container.
+         * Determines whether an attribute with the specified ID is present in the builder.
          *
          * @param id the attribute ID to check for presence
          * @return true if an attribute with the given ID exists; false otherwise
          */
         public boolean contains(@NotNull String id) {
-            return attributeMap.containsKey(id);
+            return get(id) != null;
         }
 
         /**
-         * Determines whether an attribute of the specified class type is present in the container.
+         * Determines whether an attribute of the specified class type is present in the builder.
          *
          * @param type the class of the attribute to check for
          * @return true if an attribute of the given class type exists; false otherwise
          */
         public boolean contains(@NotNull Class<? extends ItemAttribute> type) {
-            return attributeByClassMap.containsKey(type);
+            return get(type).isPresent();
         }
 
         /**
@@ -256,7 +247,17 @@ public final class AttributeContainer {
          * @return a new immutable AttributeContainer with the builder's attributes
          */
         public @NotNull AttributeContainer build() {
-            return new AttributeContainer(this);
+            Object2ObjectOpenHashMap<String, ItemAttribute> attributeMap = new Object2ObjectOpenHashMap<>(attributes.size());
+            attributeMap.defaultReturnValue(null);
+            Object2ObjectOpenHashMap<Class<? extends ItemAttribute>, ItemAttribute> attributeByClassMap = new Object2ObjectOpenHashMap<>(attributes.size());
+            attributeByClassMap.defaultReturnValue(null);
+
+            for (ItemAttribute attr : attributes) {
+                attributeMap.put(attr.id(), attr);
+                attributeByClassMap.put(attr.getClass(), attr);
+            }
+
+            return new AttributeContainer(attributeMap, attributeByClassMap);
         }
     }
 }
