@@ -14,7 +14,7 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    implementation("net.minestom:minestom-snapshots:1_21_5-5ee99e3da4")
+    implementation("net.minestom:minestom-snapshots:1_21_5-69b9a5d844")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.google.guava:guava:33.2.1-jre")
