@@ -34,6 +34,6 @@ public class Skyblock {
     }
 
     public static void main(String[] args) {
-        Skyblock skyblock = new Skyblock();
+        new Skyblock();
     }
 }

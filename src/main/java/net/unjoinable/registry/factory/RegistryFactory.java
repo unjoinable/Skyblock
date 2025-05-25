@@ -21,6 +21,7 @@ import net.minestom.server.codec.Codec;
 import net.unjoinable.item.SkyblockItem;
 import net.unjoinable.item.attribute.ItemAttribute;
 import net.unjoinable.item.attribute.impls.BaseStatsAttribute;
+import net.unjoinable.item.attribute.impls.UpgradedRarityAttribute;
 import net.unjoinable.registry.Registry;
 import net.unjoinable.registry.impl.ImmutableRegistry;
 import net.unjoinable.utility.NamespaceId;
@@ -54,7 +55,8 @@ public class RegistryFactory {
 
     public static Registry<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> createAttributeCodecRegistry() {
         return new ImmutableRegistry<>(Map.of(
-                BaseStatsAttribute.class, BaseStatsAttribute.CODEC
+                BaseStatsAttribute.class, BaseStatsAttribute.CODEC,
+                UpgradedRarityAttribute.class, UpgradedRarityAttribute.CODEC
         ));
     }
 }

@@ -8,7 +8,7 @@ import net.unjoinable.statistic.Statistic;
 import net.unjoinable.utility.NamespaceId;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -19,10 +19,9 @@ import java.util.Map;
  * external modification after construction.
  */
 public record BaseStatsAttribute(@NotNull Map<Statistic, Double> baseStats) implements ItemAttribute, CodecAttribute {
-    public static final NamespaceId ID = new NamespaceId("attribute", "basestats");
+    public static final NamespaceId ID = new NamespaceId("attribute", "baseStats");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
-            "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE),
-            BaseStatsAttribute::baseStats,
+            "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,
             BaseStatsAttribute::new
     );
 
@@ -40,7 +39,7 @@ public record BaseStatsAttribute(@NotNull Map<Statistic, Double> baseStats) impl
      * Default constructor that creates an empty stats attribute.
      */
     public BaseStatsAttribute() {
-        this(new HashMap<>());
+        this(new EnumMap<>(Statistic.class));
     }
 
     @Override
