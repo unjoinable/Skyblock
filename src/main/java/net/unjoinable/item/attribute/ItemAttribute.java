@@ -13,9 +13,12 @@ public interface ItemAttribute {
     @NotNull NamespaceId id();
 
     /**
-     * Returns the codec for this attribute type.
+     * Returns the codec used for encoding and decoding this attribute.
      *
-     * @return A codec capable of encoding/decoding this attribute type
+     * <p>The codec defines the serialization format and rules for converting
+     * this attribute to and from various representations.</p>
+     *
+     * @return the codec for this attribute, never null
      */
     @NotNull Codec<? extends ItemAttribute> codec();
 }

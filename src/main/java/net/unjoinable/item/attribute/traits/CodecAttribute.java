@@ -26,16 +26,6 @@ import java.util.Optional;
 public interface CodecAttribute extends ItemAttribute {
 
     /**
-     * Returns the codec used for encoding and decoding this attribute.
-     *
-     * <p>The codec defines the serialization format and rules for converting
-     * this attribute to and from various representations.</p>
-     *
-     * @return the codec for this attribute, never null
-     */
-    @NotNull Codec<? extends ItemAttribute> codec();
-
-    /**
      * Encodes this attribute to an object of the specified type using the provided transcoder.
      *
      * <p>This method attempts to serialize the current attribute instance into the target

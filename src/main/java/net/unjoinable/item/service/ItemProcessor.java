@@ -78,7 +78,7 @@ public class ItemProcessor {
             if (!(attribute instanceof NbtAttribute nbtAttribute)) {
                 continue;
             }
-            nbtAttribute.asNbtTag().ifPresent(binaryTag ->
+            nbtAttribute.asObject().ifPresent(binaryTag ->
                     builder.setTag(getOrCreateTag(nbtAttribute), binaryTag)
             );
         }

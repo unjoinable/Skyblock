@@ -1,43 +1,23 @@
 package net.unjoinable.item.attribute.traits;
 
 import net.kyori.adventure.nbt.BinaryTag;
-import net.minestom.server.codec.Codec;
-import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
 import net.unjoinable.item.attribute.ItemAttribute;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 /**
- * Extension of {@link ItemAttribute} with NBT (Named Binary Tag) serialization capabilities.
+ * Represents an extension of {@link ItemAttribute} that enables NBT (Named Binary Tag) serialization.
  * This interface provides methods for converting attributes to NBT tags and vice versa.
  */
-public interface NbtAttribute extends ItemAttribute {
-    /**
-     * Converts this attribute to an NBT tag.
-     *
-     * @return An Optional containing the NBT representation if successful, or empty if encoding failed
-     */
-    default @NotNull Optional<BinaryTag> asNbtTag() {
-        final Result<BinaryTag> result = asNbtCodec().encode(Transcoder.NBT, this);
-        return result instanceof Result.Ok<BinaryTag>(BinaryTag value) ? Optional.of(value) : Optional.empty();
-    }
+public interface NbtAttribute extends CodecAttribute {
 
     /**
-     * Attempts to create an attribute of the specified type from an NBT tag.
+     * Converts the attribute into an optional {@link BinaryTag} representation using the default NBT {@link Transcoder}.
      *
-     * @param tag The NBT tag to decode
-     * @return An Optional containing the decoded attribute if successful and of the correct type,
-     *         or empty if decoding failed or produced an attribute of the wrong type
+     * @return An {@link Optional} containing the serialized NBT tag, or empty if not applicable.
      */
-    default @NotNull Optional<NbtAttribute> fromNbtTag(@NotNull BinaryTag tag) {
-        final Result<NbtAttribute> result = asNbtCodec().decode(Transcoder.NBT, tag);
-        return result instanceof Result.Ok(NbtAttribute value) ? Optional.of(value) : Optional.empty();
-    }
-
-    private Codec<NbtAttribute> asNbtCodec() {
-        //noinspection unchecked
-        return (Codec<NbtAttribute>) codec();
+    default Optional<BinaryTag> asObject() {
+        return asObject(Transcoder.NBT);
     }
 }
