@@ -19,6 +19,13 @@ package net.unjoinable.player;
 public interface PlayerSystem {
 
     /**
+     * Checks whether the player system is initialized.
+     *
+     * @return true if the system has been initialized successfully, false otherwise.
+     */
+    boolean isInitialized();
+
+    /**
      * Initializes the player system and associated resources.
      * <p>
      * This method should be called during application startup before any player
@@ -30,7 +37,7 @@ public interface PlayerSystem {
      * </ul>
      * </p>
      */
-    void start();
+    default void start() {}
 
     /**
      * Updates the player system state during each game tick.
@@ -45,7 +52,7 @@ public interface PlayerSystem {
      * Implementations should optimize this method for performance as it runs frequently.
      * </p>
      */
-    void update();
+    default void update() {}
 
     /**
      * Performs cleanup when shutting down the player system.
@@ -60,5 +67,5 @@ public interface PlayerSystem {
      * before returning from this method.
      * </p>
      */
-    void shutdown();
+    default void shutdown() {}
 }

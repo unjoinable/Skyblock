@@ -28,7 +28,7 @@ import static net.kyori.adventure.text.Component.text;
  */
 public class ItemProcessor {
     // Constants
-    private static final Tag<String> ID_TAG = Tag.String("id");
+    private static final Tag<String> ID_TAG = Tag.String("id").defaultValue("skyblock:air");
 
     // Instance fields
     private final Map<Class<? extends NbtAttribute>, Tag<BinaryTag>> cachedTags;

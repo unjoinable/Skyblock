@@ -4,7 +4,7 @@ import net.minestom.server.entity.EquipmentSlot;
 import net.unjoinable.item.SkyblockItem;
 import net.unjoinable.item.service.ItemProcessor;
 import net.unjoinable.player.SkyblockPlayer;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Standard equipment slots based on vanilla Minecraft
@@ -31,7 +31,7 @@ public enum VanillaItemSlot implements ItemSlot {
     private final String name;
     private final SlotItemGetter itemGetter;
 
-    VanillaItemSlot(String name, SlotItemGetter itemGetter) {
+    VanillaItemSlot(@NotNull String name, @NotNull SlotItemGetter itemGetter) {
         this.name = name;
         this.itemGetter = itemGetter;
     }
@@ -42,7 +42,7 @@ public enum VanillaItemSlot implements ItemSlot {
     }
 
     @Override
-    public @Nullable SkyblockItem getItem(SkyblockPlayer player, ItemProcessor processor) {
+    public @NotNull SkyblockItem getItem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor processor) {
         return itemGetter.getItem(player, processor);
     }
 
@@ -51,6 +51,6 @@ public enum VanillaItemSlot implements ItemSlot {
      */
     @FunctionalInterface
     private interface SlotItemGetter {
-        @Nullable SkyblockItem getItem(SkyblockPlayer player, ItemProcessor processor);
+        @NotNull SkyblockItem getItem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor processor);
     }
 }

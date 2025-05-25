@@ -2,6 +2,7 @@ package net.unjoinable.player.systems;
 
 import net.unjoinable.item.SkyblockItem;
 import net.unjoinable.item.service.ItemProcessor;
+import net.unjoinable.item.service.ItemStatsCalculator;
 import net.unjoinable.player.PlayerSystem;
 import net.unjoinable.player.SkyblockPlayer;
 import net.unjoinable.player.ui.inventory.ItemSlot;
@@ -13,18 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerStatSystem implements PlayerSystem {
-    private final StatProfile baseStats;
-    private final Map<ItemSlot, SkyblockItem> cachedItems;
-    private final Map<ItemSlot, StatProfile> itemStats;
+    private StatProfile baseStats;
+    private Map<ItemSlot, StatProfile> cachedItemStats;
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
+    private StatProfile cachedFinalStats;
+    private boolean isDirty;
+
+    private boolean isInitialized;
 
     public PlayerStatSystem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor itemProcessor) {
-        this.cachedItems = new HashMap<>();
         this.itemProcessor = itemProcessor;
         this.player = player;
-        this.baseStats = StatProfile.createDefaultProfile();
-        this.itemStats = new HashMap<>();
     }
 
     /**
@@ -33,23 +34,34 @@ public class PlayerStatSystem implements PlayerSystem {
      */
     public void updateSlot(@NotNull ItemSlot slot) {
         SkyblockItem item = slot.getItem(player, itemProcessor);
-        cachedItems.put(slot, item);
+
+        // Update Stat Cache
+        StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
+        cachedItemStats.put(slot, itemStats);
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return isInitialized;
     }
 
     @Override
     public void start() {
-        update();
-    }
+        this.baseStats = StatProfile.createDefaultProfile();
+        this.cachedItemStats = new HashMap<>();
+        this.cachedFinalStats = new StatProfile();
+        this.isDirty = true;
 
-    @Override
-    public void update() {
+
         for (VanillaItemSlot value : VanillaItemSlot.values()) {
             updateSlot(value);
         }
+        isInitialized = true;
     }
+
 
     @Override
     public void shutdown() {
-        cachedItems.clear();
+        cachedItemStats.clear();
     }
 }
