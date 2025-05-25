@@ -2,17 +2,9 @@ package net.unjoinable.utility;
 
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.DumperOptions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 public final class TranscoderYamlImpl implements Transcoder<Object> {
@@ -24,7 +16,7 @@ public final class TranscoderYamlImpl implements Transcoder<Object> {
 
     @Override
     public @NotNull Object createNull() {
-        return null;
+        return new Object();
     }
 
     @Override
@@ -33,8 +25,12 @@ public final class TranscoderYamlImpl implements Transcoder<Object> {
             case Boolean b -> new Result.Ok<>(b);
             case String s -> {
                 String lower = s.toLowerCase();
-                if (TRUE_VALUES.contains(lower)) yield new Result.Ok<>(true);
-                if (FALSE_VALUES.contains(lower)) yield new Result.Ok<>(false);
+                if (TRUE_VALUES.contains(lower)) {
+                    yield new Result.Ok<>(true);
+                }
+                if (FALSE_VALUES.contains(lower)) {
+                    yield new Result.Ok<>(false);
+                }
                 yield new Result.Error<>("Not a boolean: " + value);
             }
             default -> new Result.Error<>("Not a boolean: " + value);
@@ -113,7 +109,7 @@ public final class TranscoderYamlImpl implements Transcoder<Object> {
             case String s -> {
                 try {
                     yield new Result.Ok<>(parser.apply(s));
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException _) {
                     yield new Result.Error<>("Not a valid " + type + ": " + value);
                 }
             }
@@ -123,9 +119,10 @@ public final class TranscoderYamlImpl implements Transcoder<Object> {
 
     @Override
     public @NotNull Result<String> getString(@NotNull Object value) {
-        return value instanceof String s ? new Result.Ok<>(s) :
-                value != null ? new Result.Ok<>(value.toString()) :
-                        new Result.Error<>("Not a string: null");
+        if (value instanceof String s) {
+            return new Result.Ok<>(s);
+        }
+        return new Result.Ok<>(value.toString());
     }
 
     @Override
@@ -190,9 +187,9 @@ public final class TranscoderYamlImpl implements Transcoder<Object> {
                 }
 
                 return map.entrySet().stream()
-                        .filter(e -> key.equals(toString(e.getKey())))
+                        .filter(entry -> key.equals(toString(entry.getKey())))
                         .findFirst()
-                        .<Result<Object>>map(e -> new Result.Ok<>(e.getValue()))
+                        .<Result<Object>>map(entry -> new Result.Ok<>(entry.getValue()))
                         .orElse(new Result.Error<>("No such key: " + key));
             }
 
@@ -236,8 +233,6 @@ public final class TranscoderYamlImpl implements Transcoder<Object> {
 
     @Override
     public @NotNull <O> Result<O> convertTo(@NotNull Transcoder<O> coder, @NotNull Object value) {
-        if (value == null) return new Result.Ok<>(coder.createNull());
-
         return switch (value) {
             case Map<?, ?> map -> convertMap(coder, map);
             case List<?> list -> convertList(coder, list);
