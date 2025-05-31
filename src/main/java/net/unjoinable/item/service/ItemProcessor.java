@@ -9,7 +9,7 @@ import net.minestom.server.tag.Tag;
 import net.unjoinable.item.ItemMetadata;
 import net.unjoinable.item.SkyblockItem;
 import net.unjoinable.item.attribute.AttributeContainer;
-import net.unjoinable.item.attribute.ItemAttribute;
+import net.unjoinable.item.attribute.traits.ItemAttribute;
 import net.unjoinable.item.attribute.traits.NbtAttribute;
 import net.unjoinable.registry.Registry;
 import net.unjoinable.utility.NamespaceId;

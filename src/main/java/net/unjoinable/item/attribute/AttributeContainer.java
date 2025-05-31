@@ -1,5 +1,6 @@
 package net.unjoinable.item.attribute;
 
+import net.unjoinable.item.attribute.traits.ItemAttribute;
 import net.unjoinable.utility.NamespaceId;
 import org.jetbrains.annotations.NotNull;
 
@@ -190,7 +191,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          * @return a new immutable AttributeContainer with the builder's attributes
          */
         public @NotNull AttributeContainer build() {
-            Map<NamespaceId, ItemAttribute> attributeMap = new HashMap<>(attributes.size());
+            Map<NamespaceId, ItemAttribute> attributeMap = HashMap.newHashMap(attributes.size());
 
             for (ItemAttribute attr : attributes) {
                 attributeMap.put(attr.id(), attr);

@@ -19,7 +19,7 @@ package net.unjoinable.registry.factory;
 
 import net.minestom.server.codec.Codec;
 import net.unjoinable.item.SkyblockItem;
-import net.unjoinable.item.attribute.ItemAttribute;
+import net.unjoinable.item.attribute.traits.ItemAttribute;
 import net.unjoinable.item.attribute.impls.BaseStatsAttribute;
 import net.unjoinable.item.attribute.impls.UpgradedRarityAttribute;
 import net.unjoinable.registry.Registry;

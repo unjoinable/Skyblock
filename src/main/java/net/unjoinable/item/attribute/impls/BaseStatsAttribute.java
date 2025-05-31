@@ -2,7 +2,7 @@ package net.unjoinable.item.attribute.impls;
 
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
-import net.unjoinable.item.attribute.ItemAttribute;
+import net.unjoinable.item.attribute.traits.ItemAttribute;
 import net.unjoinable.item.attribute.traits.CodecAttribute;
 import net.unjoinable.statistic.Statistic;
 import net.unjoinable.utility.NamespaceId;
@@ -18,7 +18,7 @@ import java.util.Map;
  * The attribute performs defensive copying of the statistics map to prevent
  * external modification after construction.
  */
-public record BaseStatsAttribute(@NotNull Map<Statistic, Double> baseStats) implements ItemAttribute, CodecAttribute {
+public record BaseStatsAttribute(@NotNull Map<Statistic, Double> baseStats) implements CodecAttribute {
     public static final NamespaceId ID = new NamespaceId("attribute", "baseStats");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
             "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,

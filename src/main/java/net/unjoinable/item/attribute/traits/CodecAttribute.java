@@ -3,8 +3,6 @@ package net.unjoinable.item.attribute.traits;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
-import net.unjoinable.item.attribute.ItemAttribute;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -23,7 +21,7 @@ import java.util.Optional;
  * @see Codec
  * @see Transcoder
  */
-public interface CodecAttribute extends ItemAttribute {
+public non-sealed interface CodecAttribute extends ItemAttribute {
 
     /**
      * Encodes this attribute to an object of the specified type using the provided transcoder.

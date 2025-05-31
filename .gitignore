@@ -45,3 +45,5 @@ bin/
 .idea
 /src/main/resources/skyblock_items.json
 /src/main/resources/
+/run/
+/run/worlds/

@@ -1,6 +1,5 @@
 package net.unjoinable.item.attribute.traits;
 
-import net.unjoinable.item.attribute.ItemAttribute;
 import net.unjoinable.utility.TranscoderYamlImpl;
 import org.jetbrains.annotations.NotNull;
 

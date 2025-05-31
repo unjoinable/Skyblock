@@ -4,7 +4,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.extras.MojangAuth;
 import net.unjoinable.item.SkyblockItem;
-import net.unjoinable.item.attribute.ItemAttribute;
+import net.unjoinable.item.attribute.traits.ItemAttribute;
 import net.unjoinable.item.service.ItemProcessor;
 import net.unjoinable.player.factory.PlayerFactory;
 import net.unjoinable.registry.Registry;

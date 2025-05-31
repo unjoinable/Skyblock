@@ -2,7 +2,6 @@ package net.unjoinable.item.attribute.traits;
 
 import net.kyori.adventure.nbt.BinaryTag;
 import net.minestom.server.codec.Transcoder;
-import net.unjoinable.item.attribute.ItemAttribute;
 
 import java.util.Optional;
 
