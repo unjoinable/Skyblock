@@ -8,60 +8,108 @@ import net.unjoinable.player.SkyblockPlayer;
 import net.unjoinable.player.ui.inventory.ItemSlot;
 import net.unjoinable.player.ui.inventory.VanillaItemSlot;
 import net.unjoinable.statistic.StatProfile;
+import net.unjoinable.statistic.Statistic;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Handles player statistics by calculating and caching stats
+ * based on equipped items and base values.
+ */
 public class PlayerStatSystem implements PlayerSystem {
-    private StatProfile baseStats;
-    private Map<ItemSlot, StatProfile> cachedItemStats;
+
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
-    private StatProfile cachedFinalStats;
-    private boolean isDirty;
 
+    private final StatProfile baseStats;
+    private final Map<ItemSlot, StatProfile> cachedItemStats;
+    private StatProfile cachedFinalStats;
+
+    private boolean isDirty;
     private boolean isInitialized;
 
     public PlayerStatSystem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor itemProcessor) {
-        this.itemProcessor = itemProcessor;
-        this.player = player;
-    }
+        this.player = Objects.requireNonNull(player, "player must not be null");
+        this.itemProcessor = Objects.requireNonNull(itemProcessor, "itemProcessor must not be null");
 
-    /**
-     * Updates the cached item for a specific slot
-     * @param slot The slot to update
-     */
-    public void updateSlot(@NotNull ItemSlot slot) {
-        SkyblockItem item = slot.getItem(player, itemProcessor);
-
-        // Update Stat Cache
-        StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
-        cachedItemStats.put(slot, itemStats);
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return isInitialized;
-    }
-
-    @Override
-    public void start() {
         this.baseStats = StatProfile.createDefaultProfile();
         this.cachedItemStats = new HashMap<>();
         this.cachedFinalStats = new StatProfile();
         this.isDirty = true;
-
-
-        for (VanillaItemSlot value : VanillaItemSlot.values()) {
-            updateSlot(value);
-        }
-        isInitialized = true;
+        this.isInitialized = false;
     }
 
+    /**
+     * Updates the cached stats for the given item slot.
+     *
+     * @param slot the item slot to update
+     */
+    public void updateSlot(@NotNull ItemSlot slot) {
+        if (!this.isInitialized) return;
+
+        SkyblockItem item = slot.getItem(this.player, this.itemProcessor);
+        StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
+        this.cachedItemStats.put(slot, itemStats);
+        this.isDirty = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return this.isInitialized;
+    }
+
+    @Override
+    public void start() {
+        for (VanillaItemSlot slot : VanillaItemSlot.values()) {
+            this.updateSlot(slot);
+        }
+        this.isInitialized = true;
+    }
 
     @Override
     public void shutdown() {
-        cachedItemStats.clear();
+        this.cachedItemStats.clear();
+        this.isInitialized = false;
+    }
+
+    /**
+     * Returns the player's final stats, recalculating if dirty.
+     *
+     * @return combined base + item stats
+     */
+    public StatProfile getFinalStats() {
+        if (this.isDirty) {
+            this.recalculateFinalStats();
+        }
+        return this.cachedFinalStats;
+    }
+
+    /**
+     * Retrieves the value of a specific statistic from the player's final stats.
+     * <p>
+     * If the cached final stats are dirty (outdated), they will be recalculated first.
+     *
+     * @param stat the statistic to retrieve (e.g. HEALTH, STRENGTH, CRIT_DAMAGE)
+     * @return the current value of the specified statistic
+     */
+    public double getStat(@NotNull Statistic stat) {
+        return this.getFinalStats().get(stat);
+    }
+
+    /**
+     * Recalculates the final stats by combining base and item stats.
+     */
+    private void recalculateFinalStats() {
+        this.cachedFinalStats = new StatProfile();
+        this.cachedFinalStats.combineWith(this.baseStats);
+
+        for (StatProfile itemStat : this.cachedItemStats.values()) {
+            this.cachedFinalStats.combineWith(itemStat);
+        }
+
+        this.isDirty = false;
     }
 }
