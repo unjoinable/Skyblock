@@ -26,7 +26,6 @@ public class PlayerFactory implements PlayerProvider {
         sysManager.registerSystem(new PlayerStatSystem(player, itemProcessor));
         player.setSystemsManager(sysManager);
 
-        sysManager.startAllSystems();
         return player;
     }
 }
