@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * Supports dynamic items that can be updated, playback items with click interactions,
  * and stealable/non-stealable item controls.
  */
-public final class SkyblockInventory extends Inventory {
+public abstract class SkyblockInventory extends Inventory {
     /**
      * Allowed inventory types to prevent misuse
      */

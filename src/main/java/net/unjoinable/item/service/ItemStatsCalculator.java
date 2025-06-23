@@ -66,7 +66,7 @@ public final class ItemStatsCalculator {
     ) {
         attributes.stream()
                 .filter(StatModifierAttribute.class::isInstance)
-                .map(attr -> (StatModifierAttribute) attr)
+                .map(StatModifierAttribute.class::cast)
                 .map(modifier -> modifier.modifierStats(attributes, metadata))
                 .forEach(stats::combineWith);
     }

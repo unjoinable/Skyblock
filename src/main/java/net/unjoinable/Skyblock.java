@@ -3,6 +3,7 @@ package net.unjoinable;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.extras.MojangAuth;
+import net.unjoinable.command.TestCommand;
 import net.unjoinable.event.listener.PlayerListener;
 import net.unjoinable.item.SkyblockItem;
 import net.unjoinable.item.attribute.traits.ItemAttribute;
@@ -33,6 +34,8 @@ public class Skyblock {
 
         // Listeners
         new PlayerListener(MinecraftServer.getGlobalEventHandler()).register();
+
+        MinecraftServer.getCommandManager().register(new TestCommand());
 
         server.start("0.0.0.0", 25565);
     }

@@ -1,6 +1,8 @@
 package net.unjoinable.statistic;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -178,7 +180,7 @@ public class StatProfile {
      *
      * @return This profile instance for method chaining
      */
-    public @NotNull StatProfile resetToDefaults() {
+    public @NotNull StatProfile setToDefaults() {
         for (int i = 0; i < STAT_COUNT; i++) {
             base[i] = STATS[i].baseValue();
             additive[i] = 0.0;
@@ -196,7 +198,7 @@ public class StatProfile {
      * @return A new StatProfile instance with default values
      */
     public static @NotNull StatProfile createDefaultProfile() {
-        return new StatProfile().resetToDefaults();
+        return new StatProfile().setToDefaults();
     }
 
     /**
@@ -295,6 +297,44 @@ public class StatProfile {
             }
             setStat(stat, valueType, value);
         }
+        return this;
+    }
+
+    /**
+     * Resets this profile back to its initial constructor state.
+     * <p>
+     * This restores the profile to exactly the same state as when it was first created:
+     * <ul>
+     *   <li>All base values set to 0.0</li>
+     *   <li>All additive values set to 0.0</li>
+     *   <li>All multiplicative values set to 1.0</li>
+     *   <li>All bonus values set to 0.0</li>
+     *   <li>Cap configurations restored from Statistic definitions</li>
+     *   <li>All stats marked as dirty</li>
+     * </ul>
+     *
+     * @return This profile instance for method chaining
+     */
+    public @NotNull StatProfile reset() {
+        Arrays.fill(base, 0.0);
+        Arrays.fill(additive, 0.0);
+        Arrays.fill(multiplicative, 1.0);
+        Arrays.fill(bonus, 0.0);
+        Arrays.fill(cached, 0.0);
+        Arrays.fill(capValue, 0.0);
+
+        cappedFlags.clear();
+        dirtyFlags.clear();
+
+        for (Statistic stat : STATS) {
+            int id = stat.ordinal();
+            if (stat.isCapped()) {
+                setCapped(id, true);
+                capValue[id] = stat.capValue();
+            }
+        }
+
+        dirtyFlags.set(0, STAT_COUNT);
         return this;
     }
 

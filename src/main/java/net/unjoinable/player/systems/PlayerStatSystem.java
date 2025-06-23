@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Handles player statistics by calculating and caching stats
@@ -26,14 +25,14 @@ public class PlayerStatSystem implements PlayerSystem {
 
     private final StatProfile baseStats;
     private final Map<ItemSlot, StatProfile> cachedItemStats;
-    private StatProfile cachedFinalStats;
+    private final StatProfile cachedFinalStats;
 
     private boolean isDirty;
     private boolean isInitialized;
 
     public PlayerStatSystem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor itemProcessor) {
-        this.player = Objects.requireNonNull(player, "player must not be null");
-        this.itemProcessor = Objects.requireNonNull(itemProcessor, "itemProcessor must not be null");
+        this.player = player;
+        this.itemProcessor = itemProcessor;
 
         this.baseStats = StatProfile.createDefaultProfile();
         this.cachedItemStats = new HashMap<>();
@@ -48,7 +47,7 @@ public class PlayerStatSystem implements PlayerSystem {
      * @param slot the item slot to update
      */
     public void updateSlot(@NotNull ItemSlot slot) {
-        if (!this.isInitialized) return;
+        if (!this.isInitialized) throw  new IllegalStateException("PlayerStatSystem has not been initialized");
 
         SkyblockItem item = slot.getItem(this.player, this.itemProcessor);
         StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
@@ -103,7 +102,7 @@ public class PlayerStatSystem implements PlayerSystem {
      * Recalculates the final stats by combining base and item stats.
      */
     private void recalculateFinalStats() {
-        this.cachedFinalStats = new StatProfile();
+        this.cachedFinalStats.reset();
         this.cachedFinalStats.combineWith(this.baseStats);
 
         for (StatProfile itemStat : this.cachedItemStats.values()) {
