@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 /**
@@ -72,7 +73,7 @@ public class SystemsManager {
      * @param <T> the type of the system
      * @return the system instance, or null if not found or uninitialized
      */
-    public <T extends PlayerSystem> T getSystem(Class<T> systemClass) {
+    public @Nullable <T extends PlayerSystem> T getSystem(Class<T> systemClass) {
         PlayerSystem system = systems.get(systemClass);
 
         if (system == null) {

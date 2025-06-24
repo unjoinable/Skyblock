@@ -30,6 +30,16 @@ public class PlayerStatSystem implements PlayerSystem {
     private boolean isDirty;
     private boolean isInitialized;
 
+    private double currentHealth;
+    private double currentMana;
+    private boolean invulnerable;
+
+    /**
+     * Constructs a new PlayerStatSystem for the specified player.
+     *
+     * @param player the SkyblockPlayer this system belongs to
+     * @param itemProcessor the processor used to handle item operations
+     */
     public PlayerStatSystem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor itemProcessor) {
         this.player = player;
         this.itemProcessor = itemProcessor;
@@ -43,8 +53,12 @@ public class PlayerStatSystem implements PlayerSystem {
 
     /**
      * Updates the cached stats for the given item slot.
+     * <p>
+     * This method recalculates the stats for the item in the specified slot
+     * and marks the system as dirty, requiring a recalculation of final stats.
      *
      * @param slot the item slot to update
+     * @throws IllegalStateException if the system has not been initialized
      */
     public void updateSlot(@NotNull ItemSlot slot) {
         if (!this.isInitialized) throw  new IllegalStateException("PlayerStatSystem has not been initialized");
@@ -76,6 +90,10 @@ public class PlayerStatSystem implements PlayerSystem {
 
     /**
      * Returns the player's final stats, recalculating if dirty.
+     * <p>
+     * This method combines base stats with all equipped item stats to provide
+     * the player's current total statistics. The result is cached and only
+     * recalculated when the system is marked as dirty.
      *
      * @return combined base + item stats
      */
@@ -100,6 +118,10 @@ public class PlayerStatSystem implements PlayerSystem {
 
     /**
      * Recalculates the final stats by combining base and item stats.
+     * <p>
+     * This method resets the cached final stats and combines them with
+     * base stats and all item stats from equipped items. After recalculation,
+     * the system is marked as clean (not dirty).
      */
     private void recalculateFinalStats() {
         this.cachedFinalStats.reset();
@@ -110,5 +132,112 @@ public class PlayerStatSystem implements PlayerSystem {
         }
 
         this.isDirty = false;
+    }
+
+    /**
+     * Attempts to consume the specified amount of mana from the player's current mana pool.
+     * <p>
+     * If the player has sufficient mana, it will be deducted and the method returns true.
+     * Otherwise, no mana is consumed and the method returns false.
+     *
+     * @param amount the amount of mana to consume
+     * @return true if the mana was successfully consumed, false if insufficient mana
+     */
+    public boolean consumeMana(double amount) {
+        if (currentMana >= amount) {
+            setCurrentMana(currentMana - amount);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets the player's current intelligence stat, which determines maximum mana.
+     *
+     * @return the current intelligence value
+     */
+    public double getIntelligence() {
+        return getStat(Statistic.INTELLIGENCE);
+    }
+
+    /**
+     * Gets the player's maximum health based on their current health stat.
+     *
+     * @return the maximum health value
+     */
+    public double getMaxHealth() {
+        return getStat(Statistic.HEALTH);
+    }
+
+    /**
+     * Gets the player's current health points.
+     * <p>
+     * This represents the actual health remaining, not the maximum possible health.
+     *
+     * @return the current health value
+     */
+    public double getCurrentHealth() {
+        return currentHealth;
+    }
+
+    /**
+     * Gets the player's current mana points.
+     * <p>
+     * This represents the actual mana remaining, not the maximum possible mana.
+     *
+     * @return the current mana value
+     */
+    public double getCurrentMana() {
+        return currentMana;
+    }
+
+    /**
+     * Checks if the player is currently invulnerable to damage.
+     *
+     * @return true if the player is invulnerable, false otherwise
+     */
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
+    /**
+     * Sets the player's current health, clamping it between 0 and maximum health.
+     * <p>
+     * This method automatically updates the underlying Minecraft player's health bar
+     * and will kill the player if health reaches 0.
+     *
+     * @param health the new health value to set
+     */
+    public void setCurrentHealth(double health) {
+        double maxHealth = getMaxHealth();
+        this.currentHealth = Math.clamp(0.0, health, maxHealth);
+
+        double healthPercentage = this.currentHealth / maxHealth;
+        this.player.setHealth((float) (healthPercentage * 20.0)); // 40 hearts
+
+        if (this.currentHealth <= 0.0) {
+            player.kill();
+        }
+    }
+
+    /**
+     * Sets the player's current mana, clamping it between 0 and maximum mana (intelligence).
+     *
+     * @param mana the new mana value to set
+     */
+    public void setCurrentMana(double mana) {
+        double maxMana = getIntelligence();
+        this.currentMana = Math.clamp(0.0, mana, maxMana);
+    }
+
+    /**
+     * Sets the player's invulnerability status.
+     * <p>
+     * When invulnerable, the player should not take damage from most sources.
+     *
+     * @param invulnerable true to make the player invulnerable, false to make them vulnerable
+     */
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
     }
 }
