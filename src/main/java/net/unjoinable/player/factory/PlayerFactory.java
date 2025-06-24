@@ -7,6 +7,7 @@ import net.minestom.server.network.player.PlayerConnection;
 import net.unjoinable.item.service.ItemProcessor;
 import net.unjoinable.player.SkyblockPlayer;
 import net.unjoinable.player.SystemsManager;
+import net.unjoinable.player.systems.EconomySystem;
 import net.unjoinable.player.systems.PlayerStatSystem;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +25,7 @@ public class PlayerFactory implements PlayerProvider {
         // Systems
         SystemsManager sysManager = new SystemsManager();
         sysManager.registerSystem(new PlayerStatSystem(player, itemProcessor));
+        sysManager.registerSystem(new EconomySystem());
         player.setSystemsManager(sysManager);
 
         return player;

@@ -6,6 +6,7 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
+import net.unjoinable.player.systems.EconomySystem;
 import net.unjoinable.player.systems.PlayerStatSystem;
 import net.unjoinable.player.ui.actionbar.PlayerActionBar;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 public class SkyblockPlayer extends Player {
     private SystemsManager systemsManager;
     private PlayerStatSystem statSystem;
+    private EconomySystem economySystem;
     private PlayerActionBar actionBar;
 
     /**
@@ -109,6 +111,15 @@ public class SkyblockPlayer extends Player {
      */
     public @NotNull PlayerStatSystem getStatSystem() {
         return statSystem;
+    }
+
+    /**
+     * Gets the player's economy system instance.
+     *
+     * @return the economy system managing this player's coins and bits
+     */
+    public @NotNull EconomySystem getEconomySystem() {
+        return this.economySystem;
     }
 
     /**
