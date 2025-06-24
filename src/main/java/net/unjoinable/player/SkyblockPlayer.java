@@ -22,6 +22,7 @@ public class SkyblockPlayer extends Player {
     private PlayerStatSystem statSystem;
     private EconomySystem economySystem;
     private PlayerActionBar actionBar;
+    private MainSidebar sidebar;
 
     /**
      * Constructs a new SkyblockPlayer with the specified connection and profile.
@@ -47,6 +48,8 @@ public class SkyblockPlayer extends Player {
     public void init() {
         this.statSystem.resetHealthAndMana();
         this.actionBar = new PlayerActionBar(this);
+        this.sidebar = new MainSidebar();
+        this.sidebar.send(this);
         MinecraftServer.getSchedulerManager().scheduleTask(
                 this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(2));
     }
@@ -61,6 +64,7 @@ public class SkyblockPlayer extends Player {
         this.actionBar.update();
         this.statSystem.regenerateHealth();
         this.statSystem.regenerateMana();
+        this.sidebar.update(this);
     }
 
     @Override
@@ -84,6 +88,7 @@ public class SkyblockPlayer extends Player {
         }
         this.systemsManager = systemsManager;
         this.statSystem = systemsManager.getSystem(PlayerStatSystem.class);
+        this.economySystem = systemsManager.getSystem(EconomySystem.class);
     }
 
 
