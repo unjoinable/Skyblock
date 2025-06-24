@@ -19,6 +19,8 @@ import java.util.Map;
  * based on equipped items and base values.
  */
 public class PlayerStatSystem implements PlayerSystem {
+    private static final double BASE_HEALTH_REGEN_CONST = 1.5;
+    private static final double BASE_MANA_REGEN_CONST = 0.02;
 
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
@@ -239,5 +241,26 @@ public class PlayerStatSystem implements PlayerSystem {
      */
     public void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
+    }
+
+    /**
+     * Calculates how much health should regenerate every 2 seconds
+     *
+     * @return the amount of health to regenerate
+     */
+    public double calculateHealthRegeneration() {
+        double healthRegenStat = getStat(Statistic.HEALTH_REGEN);
+        double maxHealth = getMaxHealth();
+
+        return (BASE_HEALTH_REGEN_CONST + (maxHealth / 100.0)) * (healthRegenStat / 100.0);
+    }
+
+    /**
+     * Calculates how much mana should regenerate per tick
+     *
+     * @return the amount of mana to regenerate
+     */
+    public double calculateManaRegeneration() {
+        return getIntelligence() * BASE_MANA_REGEN_CONST;
     }
 }
