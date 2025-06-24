@@ -29,6 +29,7 @@ public class PlayerActionBar extends ActionBar {
     public PlayerActionBar(@NotNull SkyblockPlayer player) {
         this.player = player;
         this.statSystem = player.getStatSystem();
+        updateDefaultDisplays(); // init the system
     }
 
     /**

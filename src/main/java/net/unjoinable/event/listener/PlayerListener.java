@@ -1,6 +1,8 @@
 package net.unjoinable.event.listener;
 
 import net.minestom.server.event.GlobalEventHandler;
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.player.AsyncPlayerPreLoginEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.unjoinable.player.SkyblockPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +31,20 @@ public class PlayerListener {
      */
     public void register() {
         registerPlayerSpawnListener();
+        registerPlayerConfigListener();
+    }
+
+    /**
+     * Registers a listener for {@link AsyncPlayerConfigurationEvent}.
+     * <p>
+     * This is triggered during the player's configuration phase, before they
+     * enter the game world. It initializes the {@link SkyblockPlayer} instance.
+     */
+    private void registerPlayerConfigListener() {
+        this.eventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
+            SkyblockPlayer player =  (SkyblockPlayer) event.getPlayer();
+            player.init();
+        });
     }
 
     /**

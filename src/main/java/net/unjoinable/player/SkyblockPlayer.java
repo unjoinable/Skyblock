@@ -1,8 +1,10 @@
 package net.unjoinable.player;
 
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
+import net.minestom.server.timer.TaskSchedule;
 import net.unjoinable.player.systems.PlayerStatSystem;
 import net.unjoinable.player.ui.actionbar.PlayerActionBar;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class SkyblockPlayer extends Player {
     private SystemsManager systemsManager;
     private PlayerStatSystem statSystem;
-    private final PlayerActionBar actionBar;
+    private PlayerActionBar actionBar;
 
     /**
      * Constructs a new SkyblockPlayer with the specified connection and profile.
@@ -29,7 +31,29 @@ public class SkyblockPlayer extends Player {
      */
     public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
         super(playerConnection, gameProfile);
+    }
+
+    /**
+     * Initializes the Skyblock player after login.
+     * <p>
+     * This method sets up the action bar and starts the recurring game loop task
+     * which periodically updates the player's UI and systems.
+     * It should be called once during the player's configuration phase.
+     */
+    public void init() {
         this.actionBar = new PlayerActionBar(this);
+        MinecraftServer.getSchedulerManager().scheduleTask(
+                this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(2));
+    }
+
+    /**
+     * The recurring game loop for the Skyblock player.
+     * <p>
+     * This method is called on a fixed interval (every 2 seconds) and is responsible
+     * for updating the action bar and any other periodic systems or visual feedback.
+     */
+    private void gameLoop() {
+        this.actionBar.update();
     }
 
     @Override
@@ -78,7 +102,7 @@ public class SkyblockPlayer extends Player {
      * @return the player's stat system
      * @throws NullPointerException if the systems manager has not been set
      */
-    public PlayerStatSystem getStatSystem() {
+    public @NotNull PlayerStatSystem getStatSystem() {
         return statSystem;
     }
 
@@ -90,7 +114,7 @@ public class SkyblockPlayer extends Player {
      *
      * @return the player's action bar component
      */
-    public PlayerActionBar getActionBar() {
+    public @NotNull PlayerActionBar getActionBar() {
         return actionBar;
     }
 }
