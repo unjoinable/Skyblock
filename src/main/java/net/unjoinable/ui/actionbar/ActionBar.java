@@ -19,7 +19,7 @@ public class ActionBar {
     private final Map<ActionBarSection, List<ActionBarDisplay>> replacements;
     private final Map<ActionBarSection, Component> defaultDisplays;
 
-    private static final Component SECTION_SEPARATOR = text("     ");
+    protected static final Component SECTION_SEPARATOR = text("     ");
 
     /**
      * Creates a new action bar manager with empty sections.

@@ -2,6 +2,7 @@ package net.unjoinable.player;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
@@ -31,6 +32,7 @@ public class SkyblockPlayer extends Player {
      */
     public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
         super(playerConnection, gameProfile);
+        this.getAttribute(Attribute.MAX_HEALTH).setBaseValue(40);
     }
 
     /**
@@ -41,6 +43,7 @@ public class SkyblockPlayer extends Player {
      * It should be called once during the player's configuration phase.
      */
     public void init() {
+        this.statSystem.resetHealthAndMana();
         this.actionBar = new PlayerActionBar(this);
         MinecraftServer.getSchedulerManager().scheduleTask(
                 this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(2));
@@ -54,6 +57,8 @@ public class SkyblockPlayer extends Player {
      */
     private void gameLoop() {
         this.actionBar.update();
+        this.statSystem.regenerateHealth();
+        this.statSystem.regenerateMana();
     }
 
     @Override

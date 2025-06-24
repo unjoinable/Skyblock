@@ -81,9 +81,6 @@ public class SystemsManager {
             return null;
         }
 
-        if (!system.isInitialized()) {
-            Logger.warn("System {} is not initialized. Call start() first.", systemClass.getSimpleName());
-        }
         //noinspection unchecked
         return (T) system;
     }

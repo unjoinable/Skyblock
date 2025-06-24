@@ -1,9 +1,12 @@
 package net.unjoinable.event.listener;
 
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.player.*;
+import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.item.Material;
 import net.unjoinable.player.SkyblockPlayer;
 import net.unjoinable.player.ui.inventory.ItemSlot;
@@ -67,7 +70,7 @@ public class PlayerListener {
         registerPlayerSpawnListener();
         registerPlayerConfigListener();
         registerPlayerSwapItemListener();
-        registerInventryPreClickListener();
+        registerInventoryPreClickListener();
         registerPlayerUseItemEvent();
     }
 
@@ -78,9 +81,16 @@ public class PlayerListener {
      * enter the game world. It initializes the {@link SkyblockPlayer} instance.
      */
     private void registerPlayerConfigListener() {
+        InstanceContainer container = MinecraftServer.getInstanceManager().createInstanceContainer();
+        container.setChunkLoader(new AnvilLoader("worlds/hub"));
+
+
         this.eventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
-            SkyblockPlayer player =  (SkyblockPlayer) event.getPlayer();
-            player.init();
+            event.setSpawningInstance(container);
+
+            SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+            player.setRespawnPoint(new Pos(-2, 71, -68).withYaw(-180F));
+            player.getSystemsManager().startAllSystems();
         });
     }
 
@@ -93,7 +103,7 @@ public class PlayerListener {
     private void registerPlayerSpawnListener() {
         this.eventHandler.addListener(PlayerSpawnEvent.class, event -> {
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-            player.getSystemsManager().startAllSystems();
+            player.init();
         });
     }
 
@@ -119,7 +129,7 @@ public class PlayerListener {
      * affected slot at the end of the current tick to ensure the inventory change
      * has been fully processed.
      */
-    private void registerInventryPreClickListener() {
+    private void registerInventoryPreClickListener() {
         this.eventHandler.addListener(InventoryPreClickEvent.class, event -> {
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
 

@@ -63,7 +63,7 @@ public class PlayerStatSystem implements PlayerSystem {
      * @throws IllegalStateException if the system has not been initialized
      */
     public void updateSlot(@NotNull ItemSlot slot) {
-        if (!this.isInitialized) throw  new IllegalStateException("PlayerStatSystem has not been initialized");
+        if (!this.isInitialized) throw new IllegalStateException("PlayerStatSystem has not been initialized");
 
         SkyblockItem item = slot.getItem(this.player, this.itemProcessor);
         StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
@@ -78,10 +78,11 @@ public class PlayerStatSystem implements PlayerSystem {
 
     @Override
     public void start() {
-        for (VanillaItemSlot slot : VanillaItemSlot.values()) {
-            this.updateSlot(slot);
-        }
         this.isInitialized = true;
+
+        for (VanillaItemSlot slot : VanillaItemSlot.values()) {
+            updateSlot(slot);
+        }
     }
 
     @Override
@@ -212,10 +213,10 @@ public class PlayerStatSystem implements PlayerSystem {
      */
     public void setCurrentHealth(double health) {
         double maxHealth = getMaxHealth();
-        this.currentHealth = Math.clamp(0.0, health, maxHealth);
+        this.currentHealth = Math.clamp(health, 0.0D, maxHealth);
 
         double healthPercentage = this.currentHealth / maxHealth;
-        this.player.setHealth((float) (healthPercentage * 20.0)); // 40 hearts
+        this.player.setHealth((float) (healthPercentage * 40.0)); // 40 hp or 20 hearts
 
         if (this.currentHealth <= 0.0) {
             player.kill();
@@ -229,7 +230,7 @@ public class PlayerStatSystem implements PlayerSystem {
      */
     public void setCurrentMana(double mana) {
         double maxMana = getIntelligence();
-        this.currentMana = Math.clamp(0.0, mana, maxMana);
+        this.currentMana = Math.clamp(mana, 0.0D, maxMana);
     }
 
     /**
@@ -262,5 +263,36 @@ public class PlayerStatSystem implements PlayerSystem {
      */
     public double calculateManaRegeneration() {
         return getIntelligence() * BASE_MANA_REGEN_CONST;
+    }
+
+    /**
+     * Regenerates player health based on stats.
+     * This should be called from a scheduled task.
+     */
+    public void regenerateHealth() {
+        if (player.isDead()) return;
+
+        double regenAmount = calculateHealthRegeneration();
+        setCurrentHealth(getCurrentHealth() + regenAmount);
+    }
+
+    /**
+     * Regenerates player mana based on stats.
+     * This should be called from a scheduled task.
+     */
+    public void regenerateMana() {
+        if (player.isDead()) return;
+
+        double regenAmount = calculateManaRegeneration();
+        setCurrentMana(getCurrentMana() + regenAmount);
+    }
+
+    /**
+     * Resets the player's health and mana to their maximum values.
+     * Useful when respawning or initializing the player.
+     */
+    public void resetHealthAndMana() {
+        this.currentHealth = getMaxHealth();
+        this.currentMana = getIntelligence();
     }
 }

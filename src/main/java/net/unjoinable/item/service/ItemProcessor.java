@@ -165,4 +165,8 @@ public class ItemProcessor {
     private @NotNull NamespaceId retrieveIdTag(@NotNull ItemStack itemStack) {
         return NamespaceId.fromString(itemStack.getTag(ID_TAG));
     }
+
+    public void asYaml(@NotNull SkyblockItem item) {
+
+    }
 }
