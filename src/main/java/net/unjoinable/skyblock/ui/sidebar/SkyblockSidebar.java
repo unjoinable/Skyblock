@@ -3,7 +3,7 @@ package net.unjoinable.skyblock.ui.sidebar;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.scoreboard.Sidebar;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;

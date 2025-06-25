@@ -3,7 +3,7 @@ package net.unjoinable.skyblock.item.attribute.traits;
 import net.kyori.adventure.text.Component;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

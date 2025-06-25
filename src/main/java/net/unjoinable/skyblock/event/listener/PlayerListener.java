@@ -14,7 +14,7 @@ import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
 import net.unjoinable.skyblock.player.ui.inventory.VanillaItemSlot;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
