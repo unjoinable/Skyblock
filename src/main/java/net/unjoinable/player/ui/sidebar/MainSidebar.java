@@ -1,4 +1,4 @@
-package net.unjoinable.player;
+package net.unjoinable.player.ui.sidebar;
 
 import net.kyori.adventure.text.format.TextDecoration;
 import net.unjoinable.ui.sidebar.SkyblockSidebar;

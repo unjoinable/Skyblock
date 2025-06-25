@@ -23,8 +23,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.yaml:snakeyaml:2.4")
 
-    // Logging
-    implementation("org.tinylog:tinylog-api:2.7.0")
-    implementation("org.tinylog:tinylog-impl:2.7.0")
-    implementation("org.tinylog:slf4j-tinylog:2.7.0")
+    // Annotations
+    implementation("org.jspecify:jspecify:1.0.0")
 }

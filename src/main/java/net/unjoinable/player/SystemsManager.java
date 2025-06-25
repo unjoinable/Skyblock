@@ -5,7 +5,8 @@ import java.util.HashMap;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tinylog.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages registration, retrieval, and lifecycle of game systems.
@@ -29,6 +30,7 @@ import org.tinylog.Logger;
  * </p>
  */
 public class SystemsManager {
+    private static final Logger LOG = LoggerFactory.getLogger(SystemsManager.class);
     private final Map<Class<?>, PlayerSystem> systems;
     private boolean isShuttingDown;
 
@@ -77,7 +79,7 @@ public class SystemsManager {
         PlayerSystem system = systems.get(systemClass);
 
         if (system == null) {
-            Logger.warn("System not found: {}. Make sure it's registered.", systemClass.getSimpleName());
+            LOG.warn("System not found: {}. Make sure it's registered.", systemClass.getSimpleName());
             return null;
         }
 
@@ -104,15 +106,15 @@ public class SystemsManager {
      * </p>
      */
     public void startAllSystems() {
-        Logger.info("Starting all registered systems...");
+        LOG.info("Starting all registered systems...");
 
         for (Map.Entry<Class<?>, PlayerSystem> entry : systems.entrySet()) {
             try {
                 PlayerSystem system = entry.getValue();
                 system.start();
-                Logger.info("Started system: {}", entry.getKey().getSimpleName());
+                LOG.info("Started system: {}", entry.getKey().getSimpleName());
             } catch (Exception e) {
-                Logger.error(e, "Failed to start system: {}", entry.getKey().getSimpleName());
+                LOG.error("Failed to start system: {}", entry.getKey().getSimpleName(), e);
             }
         }
     }
@@ -131,7 +133,7 @@ public class SystemsManager {
                 PlayerSystem system = entry.getValue();
                 system.update();
             } catch (Exception e) {
-                Logger.error(e, "Failed to update system: {}", entry.getKey().getSimpleName());
+                LOG.error("Failed to update system: {}", entry.getKey().getSimpleName(), e);
             }
         }
     }
@@ -145,15 +147,14 @@ public class SystemsManager {
      */
     public void shutdownAllSystems() {
         isShuttingDown = true;
-        Logger.info("Shutting down all registered systems...");
 
         for (Map.Entry<Class<?>, PlayerSystem> entry : systems.entrySet()) {
             try {
                 PlayerSystem system = entry.getValue();
                 system.shutdown();
-                Logger.info("Shut down system: {}", entry.getKey().getSimpleName());
+                LOG.info("Shut down system: {}", entry.getKey().getSimpleName());
             } catch (Exception e) {
-                Logger.error(e, "Failed to shutdown system: {}", entry.getKey().getSimpleName());
+                LOG.error("Failed to shutdown system: {}", entry.getKey().getSimpleName(), e);
             }
         }
 

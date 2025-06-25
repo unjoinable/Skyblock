@@ -8,6 +8,7 @@ import net.unjoinable.player.factory.PlayerCreationContext;
 import net.unjoinable.player.systems.EconomySystem;
 import net.unjoinable.player.systems.PlayerStatSystem;
 import net.unjoinable.player.ui.actionbar.PlayerActionBar;
+import net.unjoinable.player.ui.sidebar.MainSidebar;
 import org.jetbrains.annotations.NotNull;
 
 /**
