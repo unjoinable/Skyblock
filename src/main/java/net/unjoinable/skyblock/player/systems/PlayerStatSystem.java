@@ -9,7 +9,6 @@ import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
 import net.unjoinable.skyblock.player.ui.inventory.VanillaItemSlot;
 import net.unjoinable.skyblock.statistic.StatProfile;
 import net.unjoinable.skyblock.statistic.Statistic;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class PlayerStatSystem implements PlayerSystem {
      * @param player the SkyblockPlayer this system belongs to
      * @param itemProcessor the processor used to handle item operations
      */
-    public PlayerStatSystem(@NotNull SkyblockPlayer player, @NotNull ItemProcessor itemProcessor) {
+    public PlayerStatSystem(SkyblockPlayer player, ItemProcessor itemProcessor) {
         this.player = player;
         this.itemProcessor = itemProcessor;
 
@@ -62,7 +61,7 @@ public class PlayerStatSystem implements PlayerSystem {
      * @param slot the item slot to update
      * @throws IllegalStateException if the system has not been initialized
      */
-    public void updateSlot(@NotNull ItemSlot slot) {
+    public void updateSlot(ItemSlot slot) {
         if (!this.isInitialized) throw new IllegalStateException("PlayerStatSystem has not been initialized");
 
         SkyblockItem item = slot.getItem(this.player, this.itemProcessor);
@@ -115,7 +114,7 @@ public class PlayerStatSystem implements PlayerSystem {
      * @param stat the statistic to retrieve (e.g. HEALTH, STRENGTH, CRIT_DAMAGE)
      * @return the current value of the specified statistic
      */
-    public double getStat(@NotNull Statistic stat) {
+    public double getStat(Statistic stat) {
         return this.getFinalStats().get(stat);
     }
 

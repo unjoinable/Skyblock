@@ -1,7 +1,5 @@
 package net.unjoinable.skyblock.statistic;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Map;
@@ -78,7 +76,7 @@ public class StatProfile {
      * @param stat The statistic to retrieve (non-null)
      * @return The calculated value respecting statistic caps
      */
-    public double get(@NotNull Statistic stat) {
+    public double get(Statistic stat) {
         final int id = stat.ordinal();
 
         if (isDirty(id)) {
@@ -94,7 +92,7 @@ public class StatProfile {
      * @param type   Modification type (non-null)
      * @param amount Value to apply (use negative values for subtraction)
      */
-    public void addStat(@NotNull Statistic stat, @NotNull StatValueType type, double amount) {
+    public void addStat(Statistic stat, StatValueType type, double amount) {
         final int id = stat.ordinal();
 
         switch (type) {
@@ -113,7 +111,7 @@ public class StatProfile {
      * @param type   Modification type (non-null)
      * @param value  Exact value to set
      */
-    public void setStat(@NotNull Statistic stat, @NotNull StatValueType type, double value) {
+    public void setStat(Statistic stat, StatValueType type, double value) {
         final int id = stat.ordinal();
 
         switch (type) {
@@ -131,7 +129,7 @@ public class StatProfile {
      * @param other Profile to combine (non-null)
      * @implNote Efficiently combines dirty flags using BitSet OR
      */
-    public void combineWith(@NotNull StatProfile other) {
+    public void combineWith(StatProfile other) {
         for (int i = 0; i < STAT_COUNT; i++) {
             base[i] += other.base[i];
             additive[i] += other.additive[i];
@@ -148,7 +146,6 @@ public class StatProfile {
      *
      * @return New independent profile with identical state
      */
-    @NotNull
     public StatProfile copy() {
         StatProfile copy = new StatProfile();
         System.arraycopy(base, 0, copy.base, 0, STAT_COUNT);
@@ -180,7 +177,7 @@ public class StatProfile {
      *
      * @return This profile instance for method chaining
      */
-    public @NotNull StatProfile setToDefaults() {
+    public StatProfile setToDefaults() {
         for (int i = 0; i < STAT_COUNT; i++) {
             base[i] = STATS[i].baseValue();
             additive[i] = 0.0;
@@ -197,7 +194,7 @@ public class StatProfile {
      *
      * @return A new StatProfile instance with default values
      */
-    public static @NotNull StatProfile createDefaultProfile() {
+    public static StatProfile createDefaultProfile() {
         return new StatProfile().setToDefaults();
     }
 
@@ -288,7 +285,7 @@ public class StatProfile {
      * @param valueType Type of modifier to apply the values as
      * @return This profile instance for method chaining
      */
-    public @NotNull StatProfile loadFromMap(@NotNull Map<Statistic, Double> statsMap, @NotNull StatValueType valueType) {
+    public StatProfile loadFromMap(Map<Statistic, Double> statsMap, StatValueType valueType) {
         for (Map.Entry<Statistic, Double> entry : statsMap.entrySet()) {
             Statistic stat = entry.getKey();
             Double value = entry.getValue();
@@ -315,7 +312,7 @@ public class StatProfile {
      *
      * @return This profile instance for method chaining
      */
-    public @NotNull StatProfile reset() {
+    public StatProfile reset() {
         Arrays.fill(base, 0.0);
         Arrays.fill(additive, 0.0);
         Arrays.fill(multiplicative, 1.0);
@@ -345,7 +342,7 @@ public class StatProfile {
      * @param valueType Type of modifier to apply the values as
      * @return A new StatProfile with the specified values
      */
-    public static @NotNull StatProfile fromMap(@NotNull Map<Statistic, Double> statsMap, @NotNull StatValueType valueType) {
+    public static StatProfile fromMap(Map<Statistic, Double> statsMap, StatValueType valueType) {
         StatProfile profile = new StatProfile();
         return profile.loadFromMap(statsMap, valueType);
     }

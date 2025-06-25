@@ -9,7 +9,6 @@ import net.unjoinable.skyblock.player.systems.EconomySystem;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
 import net.unjoinable.skyblock.player.ui.sidebar.MainSidebar;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Extended Player class for Skyblock gameplay with custom systems and UI components.
@@ -24,7 +23,7 @@ public class SkyblockPlayer extends Player {
     private final PlayerActionBar actionBar;
     private final MainSidebar sidebar;
 
-    public SkyblockPlayer(@NotNull PlayerCreationContext ctx) {
+    public SkyblockPlayer(PlayerCreationContext ctx) {
         super(ctx.connection(), ctx.gameProfile());
 
         // Systems
@@ -83,7 +82,7 @@ public class SkyblockPlayer extends Player {
      * @return the systems manager for this player
      * @throws NullPointerException if the systems manager has not been set
      */
-    public @NotNull SystemsManager getSystemsManager() {
+    public SystemsManager getSystemsManager() {
         return systemsManager;
     }
 
@@ -96,7 +95,7 @@ public class SkyblockPlayer extends Player {
      * @return the player's stat system
      * @throws NullPointerException if the systems manager has not been set
      */
-    public @NotNull PlayerStatSystem getStatSystem() {
+    public PlayerStatSystem getStatSystem() {
         return statSystem;
     }
 
@@ -105,7 +104,7 @@ public class SkyblockPlayer extends Player {
      *
      * @return the economy system managing this player's coins and bits
      */
-    public @NotNull EconomySystem getEconomySystem() {
+    public EconomySystem getEconomySystem() {
         return this.economySystem;
     }
 
@@ -117,7 +116,7 @@ public class SkyblockPlayer extends Player {
      *
      * @return the player's action bar component
      */
-    public @NotNull PlayerActionBar getActionBar() {
+    public PlayerActionBar getActionBar() {
         return actionBar;
     }
 }

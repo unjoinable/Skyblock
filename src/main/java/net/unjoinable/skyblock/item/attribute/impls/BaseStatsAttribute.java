@@ -6,7 +6,7 @@ import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.CodecAttribute;
 import net.unjoinable.skyblock.statistic.Statistic;
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
  * The attribute performs defensive copying of the statistics map to prevent
  * external modification after construction.
  */
-public record BaseStatsAttribute(@NotNull Map<Statistic, Double> baseStats) implements CodecAttribute {
+public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements CodecAttribute {
     public static final NamespaceId ID = new NamespaceId("attribute", "baseStats");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
             "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,
@@ -43,12 +43,12 @@ public record BaseStatsAttribute(@NotNull Map<Statistic, Double> baseStats) impl
     }
 
     @Override
-    public @NotNull NamespaceId id() {
+    public NamespaceId id() {
         return ID;
     }
 
     @Override
-    public @NotNull Codec<? extends ItemAttribute> codec() {
+    public Codec<? extends ItemAttribute> codec() {
         return CODEC;
     }
 }

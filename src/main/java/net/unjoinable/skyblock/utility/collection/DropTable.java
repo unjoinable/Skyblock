@@ -1,7 +1,5 @@
 package net.unjoinable.skyblock.utility.collection;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,7 +31,7 @@ public class DropTable<T> {
      * @throws IllegalArgumentException if any weight is negative or zero
      * @throws NullPointerException if initialWeights is null
      */
-    public DropTable(@NotNull Map<T, Double> initialWeights) {
+    public DropTable(Map<T, Double> initialWeights) {
         Objects.requireNonNull(initialWeights, "Initial weights cannot be null");
         initialWeights.forEach(this::add);
     }
@@ -47,7 +45,7 @@ public class DropTable<T> {
      * @throws IllegalArgumentException if weight is negative or zero
      * @throws NullPointerException if item is null
      */
-    public void add(@NotNull T item, double weight) {
+    public void add(T item, double weight) {
         Objects.requireNonNull(item, "Item cannot be null");
         validateWeight(weight);
 
@@ -66,7 +64,7 @@ public class DropTable<T> {
      * @return true if the item was present and removed, false otherwise
      * @throws NullPointerException if item is null
      */
-    public boolean remove(@NotNull T item) {
+    public boolean remove(T item) {
         Objects.requireNonNull(item, "Item cannot be null");
 
         Double removedWeight = weights.remove(item);
@@ -86,7 +84,7 @@ public class DropTable<T> {
      * @throws IllegalArgumentException if newWeight is negative or zero
      * @throws NullPointerException if item is null
      */
-    public boolean updateWeight(@NotNull T item, double newWeight) {
+    public boolean updateWeight(T item, double newWeight) {
         Objects.requireNonNull(item, "Item cannot be null");
         validateWeight(newWeight);
 
@@ -102,7 +100,7 @@ public class DropTable<T> {
      *
      * @return a randomly selected item, or null if the table is empty
      */
-    public @NotNull T select() {
+    public T select() {
         if (isEmpty()) {
             return null;
         }
@@ -129,7 +127,7 @@ public class DropTable<T> {
      * @return a list of selected items
      * @throws IllegalArgumentException if count is negative
      */
-    public @NotNull List<T> selectMultiple(int count) {
+    public List<T> selectMultiple(int count) {
         if (count < 0) {
             throw new IllegalArgumentException("Count cannot be negative: " + count);
         }
@@ -147,7 +145,7 @@ public class DropTable<T> {
      * @return the probability as a value between 0.0 and 1.0, or 0.0 if item not found
      * @throws NullPointerException if item is null
      */
-    public double getProbability(@NotNull T item) {
+    public double getProbability(T item) {
         Objects.requireNonNull(item, "Item cannot be null");
 
         Double weight = weights.get(item);
@@ -159,7 +157,7 @@ public class DropTable<T> {
      *
      * @return a new map containing all items and their weights
      */
-    public @NotNull Map<T, Double> getWeights() {
+    public Map<T, Double> getWeights() {
         return Map.copyOf(weights);
     }
 

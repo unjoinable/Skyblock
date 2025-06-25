@@ -3,7 +3,6 @@ package net.unjoinable.skyblock.item.attribute.traits;
 import net.kyori.adventure.text.Component;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -20,8 +19,7 @@ public non-sealed interface LoreAttribute extends ItemAttribute {
      * @param container the attribute container providing context for generating lore lines
      * @return a non-null list of {@link Component} representing the lore lines; returns an empty list if no lore is present
      */
-    @NotNull
-    default List<Component> loreLines(@NotNull AttributeContainer container) {
+    default List<Component> loreLines(AttributeContainer container) {
         return loreLines(null, container);
     }
 
@@ -32,7 +30,7 @@ public non-sealed interface LoreAttribute extends ItemAttribute {
      * @param container the attribute container providing context for generating lore lines
      * @return a non-null list of {@link Component} representing the lore lines; returns an empty list if no lore is present
      */
-    @NotNull List<Component> loreLines(@Nullable SkyblockPlayer player, @NotNull AttributeContainer container);
+    List<Component> loreLines(@Nullable SkyblockPlayer player, AttributeContainer container);
 
     /**
      * Returns the sorting priority of this attribute's lore lines relative to other lore attributes.

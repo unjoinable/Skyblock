@@ -1,12 +1,11 @@
 package net.unjoinable.skyblock.player;
 
-import java.util.Map;
-import java.util.HashMap;
-
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages registration, retrieval, and lifecycle of game systems.
@@ -50,7 +49,7 @@ public class SystemsManager {
      * @throws IllegalStateException if the manager is shutting down
      * @throws IllegalArgumentException if a system of the same type is already registered
      */
-    public <T extends PlayerSystem> void registerSystem(@NotNull T system) {
+    public <T extends PlayerSystem> void registerSystem(T system) {
         if (isShuttingDown) {
             throw new IllegalStateException("Cannot register systems during shutdown");
         }
@@ -93,7 +92,7 @@ public class SystemsManager {
      * @param systemClass the class type to check for
      * @return true if a system of this type is registered, false otherwise
      */
-    public boolean hasSystem(@NotNull Class<?> systemClass) {
+    public boolean hasSystem(Class<?> systemClass) {
         return systems.containsKey(systemClass);
     }
 

@@ -13,7 +13,6 @@ import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.NbtAttribute;
 import net.unjoinable.skyblock.registry.Registry;
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +41,8 @@ public class ItemProcessor {
      * @param itemRegistry Registry of all available Skyblock items
      */
     public ItemProcessor(
-            @NotNull Registry<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> attributeCodecRegistry,
-            @NotNull Registry<NamespaceId, SkyblockItem> itemRegistry) {
+            Registry<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> attributeCodecRegistry,
+            Registry<NamespaceId, SkyblockItem> itemRegistry) {
         this.attributeCodecRegistry = attributeCodecRegistry;
         this.itemRegistry = itemRegistry;
         this.cachedTags = new HashMap<>();
@@ -55,7 +54,7 @@ public class ItemProcessor {
      * @param skyblockItem The SkyblockItem to convert
      * @return A fully constructed Minestom ItemStack
      */
-    public @NotNull ItemStack toItemStack(@NotNull SkyblockItem skyblockItem) {
+    public ItemStack toItemStack(SkyblockItem skyblockItem) {
         ItemMetadata metadata = skyblockItem.metadata();
         AttributeContainer attributes = skyblockItem.attributes();
         ItemStack.Builder builder = ItemStack.builder(metadata.material());
@@ -100,7 +99,7 @@ public class ItemProcessor {
      * @param itemStack The Minestom ItemStack to convert
      * @return A SkyblockItem representing the ItemStack, or AIR if conversion fails
      */
-    public @NotNull SkyblockItem fromItemStack(@NotNull ItemStack itemStack) {
+    public SkyblockItem fromItemStack(ItemStack itemStack) {
         NamespaceId id = retrieveIdTag(itemStack);
         SkyblockItem templateItem = itemRegistry.get(id).orElse(SkyblockItem.AIR);
         AttributeContainer attributes = extractAttributesFromItemStack(itemStack);
@@ -114,7 +113,7 @@ public class ItemProcessor {
      * @param itemStack The ItemStack to extract attributes from
      * @return A container with all successfully decoded attributes
      */
-    private AttributeContainer extractAttributesFromItemStack(@NotNull ItemStack itemStack) {
+    private AttributeContainer extractAttributesFromItemStack(ItemStack itemStack) {
         AttributeContainer.Builder builder = AttributeContainer.builder();
 
         cachedTags.forEach((attributeClass, tag) -> attributeCodecRegistry.get(attributeClass).ifPresent(codec -> {
@@ -139,7 +138,7 @@ public class ItemProcessor {
      * @param attribute The NBT attribute
      * @return The Tag object for the attribute
      */
-    private @NotNull Tag<BinaryTag> getOrCreateTag(@NotNull NbtAttribute attribute) {
+    private Tag<BinaryTag> getOrCreateTag(NbtAttribute attribute) {
         return this.cachedTags.computeIfAbsent(
                 attribute.getClass(),
                 _ -> Tag.NBT(attribute.id().toString())
@@ -152,7 +151,7 @@ public class ItemProcessor {
      * @param builder The ItemStack builder
      * @param id The unique identifier to apply
      */
-    private void applyIdTag(@NotNull ItemStack.Builder builder, @NotNull NamespaceId id) {
+    private void applyIdTag(ItemStack.Builder builder, NamespaceId id) {
         builder.setTag(ID_TAG, id.toString());
     }
 
@@ -162,11 +161,7 @@ public class ItemProcessor {
      * @param itemStack The ItemStack to get the ID from
      * @return The unique identifier of the item
      */
-    private @NotNull NamespaceId retrieveIdTag(@NotNull ItemStack itemStack) {
+    private NamespaceId retrieveIdTag(ItemStack itemStack) {
         return NamespaceId.fromString(itemStack.getTag(ID_TAG));
-    }
-
-    public void asYaml(@NotNull SkyblockItem item) {
-
     }
 }

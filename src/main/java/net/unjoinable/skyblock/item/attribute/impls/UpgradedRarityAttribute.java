@@ -4,7 +4,7 @@ import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
 import net.unjoinable.skyblock.item.attribute.traits.NbtAttribute;
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
+
 
 public record UpgradedRarityAttribute(boolean isUpgraded) implements NbtAttribute {
     public static final NamespaceId ID = new NamespaceId("attribute", "upgraded_rarity");
@@ -14,12 +14,12 @@ public record UpgradedRarityAttribute(boolean isUpgraded) implements NbtAttribut
     );
 
     @Override
-    public @NotNull NamespaceId id() {
+    public NamespaceId id() {
         return ID;
     }
 
     @Override
-    public @NotNull Codec<UpgradedRarityAttribute> codec() {
+    public Codec<UpgradedRarityAttribute> codec() {
         return CODEC;
     }
 }

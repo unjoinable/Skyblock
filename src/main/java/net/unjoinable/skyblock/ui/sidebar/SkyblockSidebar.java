@@ -3,7 +3,6 @@ package net.unjoinable.skyblock.ui.sidebar;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.scoreboard.Sidebar;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class SkyblockSidebar {
      * @param title The title component to display at the top of the sidebar
      * @throws NullPointerException if title is null
      */
-    public SkyblockSidebar(@NotNull Component title) {
+    public SkyblockSidebar(Component title) {
         this.sidebar = new Sidebar(title);
         this.lines = new ArrayList<>();
     }
@@ -35,7 +34,7 @@ public class SkyblockSidebar {
      * @param component The static component to display
      * @throws NullPointerException if component is null
      */
-    public void addStaticLine(@NotNull Component component) {
+    public void addStaticLine(Component component) {
         lines.add(new SidebarLine(component, null));
     }
 
@@ -46,7 +45,7 @@ public class SkyblockSidebar {
      * @param lineFunction Function that takes a SkyblockPlayer and returns the component to display
      * @throws NullPointerException if lineFunction is null
      */
-    public void addDynamicLine(@NotNull Function<SkyblockPlayer, Component> lineFunction) {
+    public void addDynamicLine(Function<SkyblockPlayer, Component> lineFunction) {
         lines.add(new SidebarLine(null, lineFunction));
     }
 
@@ -56,7 +55,7 @@ public class SkyblockSidebar {
      * @param components List of static components to add
      * @throws NullPointerException if components is null or contains null elements
      */
-    public void addStaticLines(@NotNull List<Component> components) {
+    public void addStaticLines(List<Component> components) {
         for (Component component : components) {
             addStaticLine(component);
         }
@@ -81,7 +80,7 @@ public class SkyblockSidebar {
      * @param player The player whose sidebar should be updated
      * @throws NullPointerException if player is null
      */
-    public void update(@NotNull SkyblockPlayer player) {
+    public void update(SkyblockPlayer player) {
         for (int i = 0; i < lines.size(); i++) {
             SidebarLine line = lines.get(i);
 
@@ -92,7 +91,7 @@ public class SkyblockSidebar {
         }
     }
 
-    public void fullUpdate(@NotNull SkyblockPlayer player) {
+    public void fullUpdate(SkyblockPlayer player) {
         sidebar.getLines().forEach(line -> sidebar.removeLine(line.getId()));
 
         for (int i = 0; i < lines.size(); i++) {
@@ -117,7 +116,7 @@ public class SkyblockSidebar {
      * @param player The player to send the sidebar to
      * @throws NullPointerException if player is null
      */
-    public void send(@NotNull SkyblockPlayer player) {
+    public void send(SkyblockPlayer player) {
         fullUpdate(player);
         sidebar.addViewer(player);
     }
@@ -128,7 +127,7 @@ public class SkyblockSidebar {
      * @param player The player to remove the sidebar from
      * @throws NullPointerException if player is null
      */
-    public void remove(@NotNull SkyblockPlayer player) {
+    public void remove(SkyblockPlayer player) {
         sidebar.removeViewer(player);
     }
 
@@ -138,7 +137,7 @@ public class SkyblockSidebar {
      *
      * @return The underlying sidebar
      */
-    public @NotNull Sidebar getSidebar() {
+    public Sidebar getSidebar() {
         return sidebar;
     }
 

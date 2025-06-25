@@ -3,7 +3,6 @@ package net.unjoinable.skyblock.player.factory;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents all required context to create a Player instance in the game.
@@ -17,16 +16,16 @@ import org.jetbrains.annotations.NotNull;
  * @param itemProcessor a service to manage the player's item-related logic
  */
 public record PlayerCreationContext(
-        @NotNull PlayerConnection connection,
-        @NotNull GameProfile gameProfile,
-        @NotNull ItemProcessor itemProcessor
+        PlayerConnection connection,
+        GameProfile gameProfile,
+        ItemProcessor itemProcessor
 ) {
     /**
      * Creates a new {@link Builder} instance to construct a {@link PlayerCreationContext}.
      *
      * @return a new Builder
      */
-    public static @NotNull Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -39,17 +38,17 @@ public record PlayerCreationContext(
         private GameProfile gameProfile;
         private ItemProcessor itemProcessor;
 
-        public @NotNull Builder connection(@NotNull PlayerConnection connection) {
+        public Builder connection(PlayerConnection connection) {
             this.connection = connection;
             return this;
         }
 
-        public @NotNull Builder gameProfile(@NotNull GameProfile gameProfile) {
+        public Builder gameProfile(GameProfile gameProfile) {
             this.gameProfile = gameProfile;
             return this;
         }
 
-        public @NotNull Builder itemProcessor(@NotNull ItemProcessor itemProcessor) {
+        public Builder itemProcessor(ItemProcessor itemProcessor) {
             this.itemProcessor = itemProcessor;
             return this;
         }
@@ -60,7 +59,7 @@ public record PlayerCreationContext(
          * @return the constructed {@link PlayerCreationContext}
          * @throws IllegalStateException if any field is null
          */
-        public @NotNull PlayerCreationContext build() {
+        public PlayerCreationContext build() {
             if (connection == null) {
                 throw new IllegalStateException("PlayerConnection must not be null.");
             }

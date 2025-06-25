@@ -6,7 +6,6 @@ import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A factory responsible for creating {@link SkyblockPlayer} instances.
@@ -28,12 +27,12 @@ public class PlayerFactory implements PlayerProvider {
      *
      * @param itemProcessor the service responsible for handling item logic in the game; must not be null
      */
-    public PlayerFactory(@NotNull ItemProcessor itemProcessor) {
+    public PlayerFactory(ItemProcessor itemProcessor) {
         this.itemProcessor = itemProcessor;
     }
 
     @Override
-    public @NotNull Player createPlayer(@NotNull PlayerConnection connection, @NotNull GameProfile gameProfile) {
+    public Player createPlayer(PlayerConnection connection, GameProfile gameProfile) {
         PlayerCreationContext ctx = PlayerCreationContext.builder()
                 .connection(connection)
                 .gameProfile(gameProfile)

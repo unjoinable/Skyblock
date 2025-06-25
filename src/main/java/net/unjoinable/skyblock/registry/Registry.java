@@ -1,7 +1,5 @@
 package net.unjoinable.skyblock.registry;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -21,7 +19,7 @@ public interface Registry<K, V> {
      * @param value The value to register
      * @return The registry instance for chaining
      */
-    @NotNull Registry<K, V> register(@NotNull K key, @NotNull V value);
+    Registry<K, V> register(K key, V value);
 
     /**
      * Register multiple entries from a Map.
@@ -29,7 +27,7 @@ public interface Registry<K, V> {
      * @param entries The entries to register
      * @return The registry instance for chaining
      */
-    @NotNull Registry<K, V> registerAll(@NotNull Map<K, V> entries);
+    Registry<K, V> registerAll(Map<K, V> entries);
 
     /**
      * Get a value by its key.
@@ -37,7 +35,7 @@ public interface Registry<K, V> {
      * @param key The key to look up
      * @return An Optional containing the value if found, or empty if not found
      */
-    @NotNull Optional<V> get(@NotNull K key);
+    Optional<V> get(K key);
 
     /**
      * Check if the registry contains a value for the specified key.
@@ -45,7 +43,7 @@ public interface Registry<K, V> {
      * @param key The key to check
      * @return true if the registry contains the key, false otherwise
      */
-    boolean contains(@NotNull K key);
+    boolean contains(K key);
 
     /**
      * Remove a value from the registry.
@@ -53,21 +51,21 @@ public interface Registry<K, V> {
      * @param key The key to remove
      * @return An Optional containing the removed value if found, or empty if not found
      */
-    @NotNull Optional<V> remove(@NotNull K key);
+    Optional<V> remove(K key);
 
     /**
      * Get all keys in the registry.
      *
      * @return A set of all keys
      */
-    @NotNull Set<K> keys();
+    Set<K> keys();
 
     /**
      * Get all values in the registry.
      *
      * @return A set of all values
      */
-    @NotNull Set<V> values();
+    Set<V> values();
 
     /**
      * Clear all entries from the registry.

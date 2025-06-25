@@ -5,7 +5,6 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,12 +39,12 @@ public abstract class SkyblockInventory extends Inventory {
     /**
      * Represents an item that can be dynamically updated
      */
-    private record DynamicItem(@NotNull Supplier<ItemStack> itemSupplier) {}
+    private record DynamicItem(Supplier<ItemStack> itemSupplier) {}
 
     /**
      * Represents an item with a specific click interaction
      */
-    private record PlaybackItem(@NotNull ItemStack item, @NotNull Consumer<InventoryPreClickEvent> clickHandler) {}
+    private record PlaybackItem(ItemStack item, Consumer<InventoryPreClickEvent> clickHandler) {}
 
     /**
      * Creates a new SkyblockInventory with type validation
@@ -54,7 +53,7 @@ public abstract class SkyblockInventory extends Inventory {
      * @param title The title of the inventory
      * @throws IllegalArgumentException if an invalid inventory type is used
      */
-    protected SkyblockInventory(@NotNull InventoryType inventoryType, @NotNull Component title) {
+    protected SkyblockInventory(InventoryType inventoryType, Component title) {
         super(inventoryType, title);
 
         // Validate inventory type
@@ -69,7 +68,7 @@ public abstract class SkyblockInventory extends Inventory {
      * @param slot The slot to place the dynamic item
      * @param itemSupplier A supplier that provides the current version of the item
      */
-    public void setDynamicItem(int slot, @NotNull Supplier<ItemStack> itemSupplier) {
+    public void setDynamicItem(int slot, Supplier<ItemStack> itemSupplier) {
         validateSlot(slot);
         dynamicItems.put(slot, new DynamicItem(itemSupplier));
         setItemStack(slot, itemSupplier.get());
@@ -85,8 +84,8 @@ public abstract class SkyblockInventory extends Inventory {
      */
     public void setPlaybackItem(
             int slot,
-            @NotNull ItemStack item,
-            @NotNull Consumer<InventoryPreClickEvent> clickHandler
+            ItemStack item,
+            Consumer<InventoryPreClickEvent> clickHandler
     ) {
         validateSlot(slot);
         playbackItems.put(slot, new PlaybackItem(item, clickHandler));
@@ -239,7 +238,7 @@ public abstract class SkyblockInventory extends Inventory {
      *
      * @param item The item to fill the inventory with
      */
-    public void fill(@NotNull ItemStack item) {
+    public void fill(ItemStack item) {
         for (int i = 0; i < getSize(); i++) {
             setItemStack(i, item);
         }
@@ -250,7 +249,7 @@ public abstract class SkyblockInventory extends Inventory {
      *
      * @param item The item to use for the border
      */
-    public void border(@NotNull ItemStack item) {
+    public void border(ItemStack item) {
         int centerSlot = calculateCenterSlot();
         int maxRadius = calculateMaxRadius(centerSlot);
         border(centerSlot, maxRadius, item);
@@ -263,7 +262,7 @@ public abstract class SkyblockInventory extends Inventory {
      * @param item The item to use for the border
      * @throws IllegalArgumentException if radius exceeds maximum possible radius
      */
-    public void border(int radius, @NotNull ItemStack item) {
+    public void border(int radius, ItemStack item) {
         int centerSlot = calculateCenterSlot();
         int maxRadius = calculateMaxRadius(centerSlot);
 
@@ -281,7 +280,7 @@ public abstract class SkyblockInventory extends Inventory {
      * @param radius The radius of the border
      * @param item The item to use for the border
      */
-    public void border(int centerSlot, int radius, @NotNull ItemStack item) {
+    public void border(int centerSlot, int radius, ItemStack item) {
         validateSlot(centerSlot);
 
         if (radius < 0) {

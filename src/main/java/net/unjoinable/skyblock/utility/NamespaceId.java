@@ -2,13 +2,13 @@ package net.unjoinable.skyblock.utility;
 
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
-import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
  * Record representing a namespaced identifier with a namespace and a key.
  */
-public record NamespaceId(@NotNull String namespace, @NotNull String key) {
+public record NamespaceId(String namespace, String key) {
     public static final Codec<NamespaceId> CODEC = StructCodec.struct(
             "namespace", Codec.STRING, NamespaceId::namespace,
             "key", Codec.STRING, NamespaceId::key,
@@ -34,7 +34,7 @@ public record NamespaceId(@NotNull String namespace, @NotNull String key) {
      * @param key The key for the identifier
      * @return A new NamespaceId with skyblock namespace
      */
-    public static NamespaceId fromSkyblock(@NotNull String key) {
+    public static NamespaceId fromSkyblock(String key) {
         return new NamespaceId(SKYBLOCK_NAMESPACE, key);
     }
 
@@ -45,7 +45,7 @@ public record NamespaceId(@NotNull String namespace, @NotNull String key) {
      * @return The parsed NamespaceId
      * @throws IllegalArgumentException If the string is not in the correct format
      */
-    public static NamespaceId fromString(@NotNull String string) {
+    public static NamespaceId fromString(String string) {
         Objects.requireNonNull(string, "String cannot be null");
 
         int separatorIndex = string.indexOf(':');
@@ -72,7 +72,7 @@ public record NamespaceId(@NotNull String namespace, @NotNull String key) {
      * @return The string representation
      */
     @Override
-    public @NotNull String toString() {
+    public String toString() {
         return namespace + ":" + key;
     }
 

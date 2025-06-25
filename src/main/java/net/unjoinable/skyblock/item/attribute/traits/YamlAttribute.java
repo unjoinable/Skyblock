@@ -1,7 +1,6 @@
 package net.unjoinable.skyblock.item.attribute.traits;
 
 import net.unjoinable.skyblock.utility.TranscoderYamlImpl;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -17,11 +16,11 @@ public interface YamlAttribute extends CodecAttribute {
      *
      * @return An {@link Optional} containing the serialized YAML object, or empty if not applicable.
      */
-    default @NotNull Optional<Object> asObject() {
+    default Optional<Object> asObject() {
         return asObject(TranscoderYamlImpl.INSTANCE);
     }
 
-    default Optional<ItemAttribute> fromObject(@NotNull Object object) {
+    default Optional<ItemAttribute> fromObject(Object object) {
         return CodecAttribute.super.fromObject(TranscoderYamlImpl.INSTANCE, object);
     }
 }

@@ -7,7 +7,6 @@ import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.item.enums.ItemCategory;
 import net.unjoinable.skyblock.item.enums.Rarity;
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -30,12 +29,12 @@ import java.util.List;
  * @param description A list of rich text {@link Component}s that represent the item's lore or detailed description.
  */
 public record ItemMetadata(
-        @NotNull NamespaceId id,
-        @NotNull String displayName,
-        @NotNull Material material,
-        @NotNull ItemCategory category,
-        @NotNull Rarity rarity,
-        @NotNull List<Component> description) {
+        NamespaceId id,
+        String displayName,
+        Material material,
+        ItemCategory category,
+        Rarity rarity,
+        List<Component> description) {
 
     public static final Codec<ItemMetadata> CODEC = StructCodec.struct(
             "id", NamespaceId.CODEC, ItemMetadata::id,

@@ -7,7 +7,6 @@ import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.statistic.Statistic;
 import net.unjoinable.skyblock.ui.actionbar.ActionBar;
 import net.unjoinable.skyblock.ui.actionbar.ActionBarSection;
-import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 
@@ -26,7 +25,7 @@ public class PlayerActionBar extends ActionBar {
     private static final String MANA_SYMBOL = Statistic.INTELLIGENCE.symbol();
 
 
-    public PlayerActionBar(@NotNull SkyblockPlayer player) {
+    public PlayerActionBar(SkyblockPlayer player) {
         this.player = player;
         this.statSystem = player.getStatSystem();
         updateDefaultDisplays(); // init the system

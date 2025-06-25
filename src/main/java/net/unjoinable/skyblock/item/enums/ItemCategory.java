@@ -1,7 +1,5 @@
 package net.unjoinable.skyblock.item.enums;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -90,7 +88,7 @@ public enum ItemCategory {
     /**
      * @return Cleaned display name (no underscores, lowercase etc.)
      */
-    public @NotNull String displayName() {
+    public String displayName() {
         return name;
     }
 

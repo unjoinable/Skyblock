@@ -2,7 +2,6 @@ package net.unjoinable.skyblock.item.attribute.traits;
 
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * The base interface for all item attributes.
@@ -10,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public sealed interface ItemAttribute permits CodecAttribute, LoreAttribute, StatModifierAttribute {
 
-    @NotNull NamespaceId id();
+    NamespaceId id();
 
     /**
      * Returns the codec used for encoding and decoding this attribute.
@@ -20,5 +19,5 @@ public sealed interface ItemAttribute permits CodecAttribute, LoreAttribute, Sta
      *
      * @return the codec for this attribute, never null
      */
-    @NotNull Codec<? extends ItemAttribute> codec();
+    Codec<? extends ItemAttribute> codec();
 }

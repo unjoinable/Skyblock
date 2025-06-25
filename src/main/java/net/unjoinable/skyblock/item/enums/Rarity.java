@@ -2,7 +2,6 @@ package net.unjoinable.skyblock.item.enums;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the rarity tier of an item.
@@ -31,7 +30,7 @@ public enum Rarity {
      *
      * @param color The {@link TextColor} associated with the rarity tier.
      */
-    Rarity(@NotNull TextColor color) {
+    Rarity(TextColor color) {
         this.color = color;
     }
 
@@ -40,14 +39,14 @@ public enum Rarity {
      *
      * @return the rarity's color
      */
-    public @NotNull TextColor color() {
+    public TextColor color() {
         return color;
     }
 
     /**
      * @return the next higher rarity tier, or this if it's already the highest
      */
-    public @NotNull Rarity upgrade() {
+    public Rarity upgrade() {
         return this.ordinal() > 0
                 ? values()[this.ordinal() - 1]
                 : this;
@@ -56,7 +55,7 @@ public enum Rarity {
     /**
      * @return the next lower rarity tier, or this if it's already the lowest
      */
-    public @NotNull Rarity degrade() {
+    public Rarity degrade() {
         int next = this.ordinal() + 1;
         return next < values().length ? values()[next] : this;
     }

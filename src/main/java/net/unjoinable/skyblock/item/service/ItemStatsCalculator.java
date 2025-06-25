@@ -7,7 +7,6 @@ import net.unjoinable.skyblock.item.attribute.impls.BaseStatsAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.StatModifierAttribute;
 import net.unjoinable.skyblock.statistic.StatProfile;
 import net.unjoinable.skyblock.statistic.StatValueType;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility service for calculating item statistics by combining attributes.
@@ -30,7 +29,7 @@ public final class ItemStatsCalculator {
      * @param item The item to calculate stats for
      * @return A new StatProfile containing all stat contributions
      */
-    public static @NotNull StatProfile computeItemStats(@NotNull SkyblockItem item) {
+    public static StatProfile computeItemStats(SkyblockItem item) {
         AttributeContainer attributes = item.attributes();
         ItemMetadata metadata = item.metadata();
         StatProfile stats = new StatProfile();
@@ -47,7 +46,7 @@ public final class ItemStatsCalculator {
      * @param stats The StatProfile to update
      * @param attributes The attribute container to extract base stats from
      */
-    private static void applyBaseStats(@NotNull StatProfile stats, @NotNull AttributeContainer attributes) {
+    private static void applyBaseStats(StatProfile stats, AttributeContainer attributes) {
         attributes.get(BaseStatsAttribute.class)
                 .ifPresent(baseStats -> stats.loadFromMap(baseStats.baseStats(), StatValueType.BASE));
     }
@@ -60,9 +59,9 @@ public final class ItemStatsCalculator {
      * @param metadata The item metadata for contextual calculations
      */
     private static void applyStatModifiers(
-            @NotNull StatProfile stats,
-            @NotNull AttributeContainer attributes,
-            @NotNull ItemMetadata metadata
+            StatProfile stats,
+            AttributeContainer attributes,
+            ItemMetadata metadata
     ) {
         attributes.stream()
                 .filter(StatModifierAttribute.class::isInstance)

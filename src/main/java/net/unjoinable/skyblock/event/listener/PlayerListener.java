@@ -4,14 +4,16 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
-import net.minestom.server.event.player.*;
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.player.PlayerSpawnEvent;
+import net.minestom.server.event.player.PlayerSwapItemEvent;
+import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
 import net.unjoinable.skyblock.player.ui.inventory.VanillaItemSlot;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -55,7 +57,7 @@ public class PlayerListener {
      *
      * @param eventHandler the global event handler used to register event listeners
      */
-    public PlayerListener(@NotNull GlobalEventHandler eventHandler) {
+    public PlayerListener(GlobalEventHandler eventHandler) {
         this.eventHandler = eventHandler;
     }
 

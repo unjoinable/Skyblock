@@ -2,7 +2,6 @@ package net.unjoinable.skyblock.statistic;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
@@ -93,11 +92,11 @@ public enum Statistic {
      * @param symbol The symbol representing the statistic.
      * @param baseValue The base value of the statistic (no cap).
      */
-    Statistic(@NotNull String displayName,
-              @NotNull NamedTextColor loreColor,
-              @NotNull NamedTextColor displayColor,
+    Statistic(String displayName,
+              NamedTextColor loreColor,
+              NamedTextColor displayColor,
               boolean isPercentage,
-              @NotNull String symbol,
+              String symbol,
               int baseValue) {
         this.displayName = displayName;
         this.loreColor = loreColor;
@@ -125,11 +124,11 @@ public enum Statistic {
      * @param baseValue The base value of the statistic (before capping).
      * @param capValue The maximum value the statistic can reach.
      */
-    Statistic(@NotNull String displayName,
-              @NotNull NamedTextColor loreColor,
-              @NotNull NamedTextColor displayColor,
+    Statistic(String displayName,
+              NamedTextColor loreColor,
+              NamedTextColor displayColor,
               boolean isPercentage,
-              @NotNull String symbol,
+              String symbol,
               int baseValue,
               int capValue) {
         this.displayName = displayName;
@@ -145,7 +144,7 @@ public enum Statistic {
     /**
      * @return The symbol of the statistic.
      */
-    public @NotNull String symbol() {
+    public String symbol() {
         return symbol;
     }
 
@@ -159,14 +158,14 @@ public enum Statistic {
     /**
      * @return Lore-able display name of statistic.
      */
-    public @NotNull String displayName() {
+    public String displayName() {
         return displayName;
     }
 
     /**
      * @return Display color of that statistic
      */
-    public @NotNull TextColor displayColor() {
+    public TextColor displayColor() {
         return displayColor;
     }
 
@@ -174,7 +173,7 @@ public enum Statistic {
      * @return Returns color based on if its passive or aggressive.
      *         RED/GREEN (Yellow for Swing Range)
      */
-    public @NotNull TextColor loreColor() {
+    public TextColor loreColor() {
         return loreColor;
     }
 

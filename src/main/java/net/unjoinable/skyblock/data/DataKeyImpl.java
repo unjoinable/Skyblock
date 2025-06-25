@@ -1,7 +1,6 @@
 package net.unjoinable.skyblock.data;
 
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A generic and type-safe implementation of the {@link DataKey} interface.
@@ -19,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
  * @param <T>  the type of data this key holds
  */
 record DataKeyImpl<T>(
-        @NotNull NamespaceId id,
-        @NotNull Class<T> type) implements DataKey<T> {
+        NamespaceId id,
+        Class<T> type) implements DataKey<T> {
 
     /**
      * Creates a new {@code DataKeyImpl} instance from a namespaced ID string.
@@ -30,7 +29,7 @@ record DataKeyImpl<T>(
      * @param <T>      the type of the data
      * @return a new {@code DataKeyImpl<T>} instance
      */
-    public static <T> @NotNull DataKeyImpl<T> of(@NotNull String idString, @NotNull Class<T> type) {
+    public static <T> DataKeyImpl<T> of(String idString, Class<T> type) {
         return new DataKeyImpl<>(NamespaceId.fromString(idString), type);
     }
 
@@ -42,7 +41,7 @@ record DataKeyImpl<T>(
      * @param <T>  the type of the data
      * @return a new {@code DataKeyImpl<T>} instance
      */
-    public static <T> @NotNull DataKeyImpl<T> of(@NotNull NamespaceId id, @NotNull Class<T> type) {
+    public static <T> DataKeyImpl<T> of(NamespaceId id, Class<T> type) {
         return new DataKeyImpl<>(id, type);
     }
 }

@@ -2,7 +2,6 @@ package net.unjoinable.skyblock.item.attribute;
 
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.utility.NamespaceId;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -27,7 +26,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @param attributeMap map of attribute IDs to attributes
      */
-    private AttributeContainer(@NotNull Map<NamespaceId, ItemAttribute> attributeMap) {
+    private AttributeContainer(Map<NamespaceId, ItemAttribute> attributeMap) {
         this.attributeMap = Map.copyOf(attributeMap);
     }
 
@@ -36,7 +35,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @return the shared empty AttributeContainer
      */
-    public static @NotNull AttributeContainer empty() {
+    public static AttributeContainer empty() {
         return EMPTY;
     }
 
@@ -55,7 +54,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * @param id the unique identifier of the attribute
      * @return an {@code Optional} containing the attribute if found, or an empty {@code Optional} if not present
      */
-    public @NotNull Optional<ItemAttribute> get(@NotNull NamespaceId id) {
+    public Optional<ItemAttribute> get(NamespaceId id) {
         return Optional.ofNullable(attributeMap.get(id));
     }
 
@@ -66,7 +65,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * @param <T> the type of the attribute
      * @return an Optional containing the attribute instance if found, or an empty Optional if not present
      */
-    public <T extends ItemAttribute> @NotNull Optional<T> get(@NotNull Class<T> type) {
+    public <T extends ItemAttribute> Optional<T> get(Class<T> type) {
         for (ItemAttribute attribute : attributeMap.values()) {
             if (type.isInstance(attribute)) {
                 return Optional.of(type.cast(attribute));
@@ -81,7 +80,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * @param id the attribute ID to check for presence
      * @return true if an attribute with the given ID exists; false otherwise
      */
-    public boolean contains(@NotNull NamespaceId id) {
+    public boolean contains(NamespaceId id) {
         return attributeMap.containsKey(id);
     }
 
@@ -91,7 +90,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * @param type the class of the attribute to check for
      * @return true if an attribute of the given class type exists; false otherwise
      */
-    public boolean contains(@NotNull Class<? extends ItemAttribute> type) {
+    public boolean contains(Class<? extends ItemAttribute> type) {
         for (ItemAttribute attribute : attributeMap.values()) {
             if (type.isInstance(attribute)) {
                 return true;
@@ -105,7 +104,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @return an unmodifiable map of attribute IDs to their corresponding attributes
      */
-    public @NotNull Map<NamespaceId, ItemAttribute> asMap() {
+    public Map<NamespaceId, ItemAttribute> asMap() {
         return attributeMap;
     }
 
@@ -114,7 +113,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @return a stream of all item attributes
      */
-    public @NotNull Stream<ItemAttribute> stream() {
+    public Stream<ItemAttribute> stream() {
         return attributeMap.values().stream();
     }
 
@@ -123,7 +122,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @return a builder containing copies of the current attributes
      */
-    public @NotNull Builder toBuilder() {
+    public Builder toBuilder() {
         Builder builder = new Builder();
         builder.attributes.addAll(attributeMap.values());
         return builder;
@@ -134,12 +133,12 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @return a new {@code AttributeContainer.Builder} instance
      */
-    public static @NotNull Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
     @Override
-    public @NotNull Iterator<ItemAttribute> iterator() {
+    public Iterator<ItemAttribute> iterator() {
         return attributeMap.values().iterator();
     }
 
@@ -156,7 +155,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          * @return this builder instance for chaining
          * @throws NullPointerException if the attribute is null
          */
-        public @NotNull Builder with(@NotNull ItemAttribute attribute) {
+        public Builder with(ItemAttribute attribute) {
             Objects.requireNonNull(attribute, "Attribute cannot be null");
             attributes.removeIf(a -> a.id().equals(attribute.id()) || a.getClass() == attribute.getClass());
             attributes.add(attribute);
@@ -169,7 +168,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          * @param id the attribute ID to remove
          * @return this builder instance for chaining
          */
-        public @NotNull Builder without(@NotNull NamespaceId id) {
+        public Builder without(NamespaceId id) {
             attributes.removeIf(a -> a.id().equals(id));
             return this;
         }
@@ -180,7 +179,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          * @param type the attribute class to remove
          * @return this builder instance for chaining
          */
-        public @NotNull Builder without(@NotNull Class<? extends ItemAttribute> type) {
+        public Builder without(Class<? extends ItemAttribute> type) {
             attributes.removeIf(a -> a.getClass() == type);
             return this;
         }
@@ -190,7 +189,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          *
          * @return a new immutable AttributeContainer with the builder's attributes
          */
-        public @NotNull AttributeContainer build() {
+        public AttributeContainer build() {
             Map<NamespaceId, ItemAttribute> attributeMap = HashMap.newHashMap(attributes.size());
 
             for (ItemAttribute attr : attributes) {
