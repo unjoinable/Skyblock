@@ -91,7 +91,7 @@ public class SystemsManager {
      * @param systemClass the class type to check for
      * @return true if a system of this type is registered, false otherwise
      */
-    public boolean hasSystem(Class<?> systemClass) {
+    public boolean hasSystem(@NotNull Class<?> systemClass) {
         return systems.containsKey(systemClass);
     }
 

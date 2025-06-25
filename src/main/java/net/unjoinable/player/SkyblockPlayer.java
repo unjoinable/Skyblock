@@ -3,9 +3,8 @@ package net.unjoinable.player;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
-import net.minestom.server.network.player.GameProfile;
-import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.TaskSchedule;
+import net.unjoinable.player.factory.PlayerCreationContext;
 import net.unjoinable.player.systems.EconomySystem;
 import net.unjoinable.player.systems.PlayerStatSystem;
 import net.unjoinable.player.ui.actionbar.PlayerActionBar;
@@ -18,23 +17,27 @@ import org.jetbrains.annotations.NotNull;
  * including stat systems, action bar management, and invulnerability handling.
  */
 public class SkyblockPlayer extends Player {
-    private SystemsManager systemsManager;
-    private PlayerStatSystem statSystem;
-    private EconomySystem economySystem;
-    private PlayerActionBar actionBar;
-    private MainSidebar sidebar;
+    private final SystemsManager systemsManager;
+    private final PlayerStatSystem statSystem;
+    private final EconomySystem economySystem;
+    private final PlayerActionBar actionBar;
+    private final MainSidebar sidebar;
 
-    /**
-     * Constructs a new SkyblockPlayer with the specified connection and profile.
-     * <p>
-     * Initializes the player with a custom action bar for displaying Skyblock-specific
-     * information such as health, mana, and other stats.
-     *
-     * @param playerConnection the player's network connection
-     * @param gameProfile the player's game profile containing UUID and username
-     */
-    public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
-        super(playerConnection, gameProfile);
+    public SkyblockPlayer(@NotNull PlayerCreationContext ctx) {
+        super(ctx.connection(), ctx.gameProfile());
+
+        // Systems
+        this.systemsManager = new SystemsManager();
+        this.statSystem = new PlayerStatSystem(this, ctx.itemProcessor());
+        this.economySystem = new EconomySystem();
+        this.systemsManager.registerSystem(this.statSystem);
+        this.systemsManager.registerSystem(this.economySystem);
+
+        // UI
+        this.actionBar = new PlayerActionBar(this);
+        this.sidebar = new MainSidebar();
+
+        // Attribute
         this.getAttribute(Attribute.MAX_HEALTH).setBaseValue(40);
     }
 
@@ -47,8 +50,6 @@ public class SkyblockPlayer extends Player {
      */
     public void init() {
         this.statSystem.resetHealthAndMana();
-        this.actionBar = new PlayerActionBar(this);
-        this.sidebar = new MainSidebar();
         this.sidebar.send(this);
         MinecraftServer.getSchedulerManager().scheduleTask(
                 this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(2));
@@ -71,26 +72,6 @@ public class SkyblockPlayer extends Player {
     public boolean isInvulnerable() {
         return statSystem.isInvulnerable();
     }
-
-    /**
-     * Sets the systems manager for this player and initializes the stat system.
-     * <p>
-     * This method can only be called once per player instance. The systems manager
-     * is responsible for managing all player-related systems, and the stat system
-     * is automatically retrieved and cached for quick access.
-     *
-     * @param systemsManager the systems manager to set
-     * @throws IllegalStateException if a systems manager has already been set
-     */
-    public void setSystemsManager(@NotNull SystemsManager systemsManager) {
-        if (this.systemsManager != null) {
-            throw new IllegalStateException("Systems manager already set");
-        }
-        this.systemsManager = systemsManager;
-        this.statSystem = systemsManager.getSystem(PlayerStatSystem.class);
-        this.economySystem = systemsManager.getSystem(EconomySystem.class);
-    }
-
 
     /**
      * Gets the systems manager responsible for managing this player's systems.
