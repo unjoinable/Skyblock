@@ -1,31 +1,22 @@
 package net.unjoinable.skyblock;
 
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.codec.Codec;
 import net.minestom.server.extras.MojangAuth;
 import net.unjoinable.skyblock.command.TestCommand;
 import net.unjoinable.skyblock.event.listener.PlayerListener;
-import net.unjoinable.skyblock.item.SkyblockItem;
-import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.player.factory.PlayerFactory;
-import net.unjoinable.skyblock.registry.Registry;
 import net.unjoinable.skyblock.registry.factory.RegistryFactory;
-import net.unjoinable.skyblock.utility.NamespaceId;
 
 public class Skyblock {
-    private final Registry<NamespaceId, SkyblockItem> itemRegistry;
-    private final Registry<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> attributeCodecRegistry;
-
-    private final ItemProcessor itemProcessor;
 
     private Skyblock() {
         // Registries
-        this.itemRegistry = RegistryFactory.createItemRegistry();
-        this.attributeCodecRegistry = RegistryFactory.createAttributeCodecRegistry();
+        var itemRegistry = RegistryFactory.createItemRegistry();
+        var attributeCodecRegistry = RegistryFactory.createAttributeCodecRegistry();
 
         // Systems
-        this.itemProcessor = new ItemProcessor(this.attributeCodecRegistry, this.itemRegistry);
+        ItemProcessor itemProcessor = new ItemProcessor(attributeCodecRegistry, itemRegistry);
 
         // Server
         MinecraftServer server = MinecraftServer.init();

@@ -2,7 +2,6 @@ package net.unjoinable.skyblock.item.service;
 
 import net.kyori.adventure.text.Component;
 import net.unjoinable.skyblock.item.ItemMetadata;
-import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
 
@@ -25,15 +24,6 @@ public class LoreGenerator {
     }
 
     /**
-     * Constructs a LoreGenerator using the attributes from the specified SkyblockItem.
-     *
-     * @param item the SkyblockItem whose attributes will be used for lore generation
-     */
-    public LoreGenerator(SkyblockItem item) {
-        this(item.attributes(), item.metadata());
-    }
-
-    /**
      * Generates a combined list of lore components from all `ItemLoreAttribute` instances in the container, sorted by priority.
      *
      * @return a list of lore lines as Components, ordered by attribute priority
@@ -53,7 +43,7 @@ public class LoreGenerator {
      * @return a list of lore components with spacing between attribute sections
      */
     private List<Component> generateCombinedLore(List<LoreAttribute> attributes) {
-        List<Component> result = new ArrayList<>();
+        List<Component> result = new ArrayList<>(metadata.description());
 
         for (int i = 0; i < attributes.size(); i++) {
             List<Component> attrLore = attributes.get(i).loreLines(container);

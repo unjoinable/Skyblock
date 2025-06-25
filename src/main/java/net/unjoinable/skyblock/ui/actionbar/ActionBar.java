@@ -121,7 +121,7 @@ public class ActionBar {
         List<ActionBarDisplay> sectionReplacements = replacements.get(section);
 
         if (!sectionReplacements.isEmpty()) {
-            return sectionReplacements.get(0).display();
+            return sectionReplacements.getFirst().display();
         }
 
         return defaultDisplays.getOrDefault(section, Component.empty());

@@ -40,7 +40,7 @@ public class SystemsManager {
 
     /**
      * Registers a system instance with the manager.
-     *
+     * <p>
      * The system will be stored and can be retrieved later using its class type.
      * If a system of the same type already exists, the registration will be ignored.
      *
