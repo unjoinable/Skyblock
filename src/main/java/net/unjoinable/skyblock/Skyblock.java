@@ -1,0 +1,37 @@
+package net.unjoinable.skyblock;
+
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.extras.MojangAuth;
+import net.unjoinable.skyblock.command.TestCommand;
+import net.unjoinable.skyblock.event.listener.PlayerListener;
+import net.unjoinable.skyblock.item.service.ItemProcessor;
+import net.unjoinable.skyblock.player.factory.PlayerFactory;
+import net.unjoinable.skyblock.registry.factory.RegistryFactory;
+
+public class Skyblock {
+
+    private Skyblock() {
+        // Registries
+        var itemRegistry = RegistryFactory.createItemRegistry();
+        var attributeCodecRegistry = RegistryFactory.createAttributeCodecRegistry();
+
+        // Systems
+        ItemProcessor itemProcessor = new ItemProcessor(attributeCodecRegistry, itemRegistry);
+
+        // Server
+        MinecraftServer server = MinecraftServer.init();
+        MojangAuth.init();
+        MinecraftServer.getConnectionManager().setPlayerProvider(new PlayerFactory(itemProcessor));
+
+        // Listeners
+        new PlayerListener(MinecraftServer.getGlobalEventHandler()).register();
+
+        MinecraftServer.getCommandManager().register(new TestCommand());
+
+        server.start("0.0.0.0", 25565);
+    }
+
+    public static void main(String[] args) {
+        new Skyblock();
+    }
+}

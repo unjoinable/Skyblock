@@ -15,16 +15,13 @@ tasks.withType<JavaCompile> {
 
 dependencies {
     // Libs
-    implementation("net.minestom:minestom-snapshots:9604a39476")
-    implementation("net.kyori:adventure-text-minimessage:4.17.0")
+    implementation("net.minestom:minestom-snapshots:1_21_6-a40d7115d4")
     implementation("com.google.guava:guava:33.2.1-jre")
 
     // Data
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.yaml:snakeyaml:2.4")
 
-    // Logging
-    implementation("org.tinylog:tinylog-api:2.7.0")
-    implementation("org.tinylog:tinylog-impl:2.7.0")
-    implementation("org.tinylog:slf4j-tinylog:2.7.0")
+    // Annotations
+    implementation("org.jspecify:jspecify:1.0.0")
 }
