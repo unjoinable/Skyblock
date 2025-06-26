@@ -86,7 +86,6 @@ public class PlayerListener {
         InstanceContainer container = MinecraftServer.getInstanceManager().createInstanceContainer();
         container.setChunkLoader(new AnvilLoader("worlds/hub"));
 
-
         this.eventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             event.setSpawningInstance(container);
 
@@ -105,7 +104,7 @@ public class PlayerListener {
     private void registerPlayerSpawnListener() {
         this.eventHandler.addListener(PlayerSpawnEvent.class, event -> {
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-            player.init();
+            if (event.isFirstSpawn()) player.init();
         });
     }
 

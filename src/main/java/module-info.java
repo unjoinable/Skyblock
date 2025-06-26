@@ -9,4 +9,6 @@ module net.unjoinable.skyblock {
     requires org.jetbrains.annotations;
     requires org.slf4j;
     requires org.jspecify;
+    requires net.kyori.adventure.text.serializer.legacy;
+    requires net.kyori.adventure.text.serializer.plain;
 }

@@ -66,6 +66,7 @@ public class SkyblockPlayer extends Player {
         this.statSystem.regenerateHealth();
         this.statSystem.regenerateMana();
         this.sidebar.update(this);
+        //Tab.updateTab(this, this.getInstance().getPlayers());
     }
 
     @Override
