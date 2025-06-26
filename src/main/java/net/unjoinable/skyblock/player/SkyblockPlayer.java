@@ -5,6 +5,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.timer.TaskSchedule;
 import net.unjoinable.skyblock.player.factory.PlayerCreationContext;
+import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.player.systems.EconomySystem;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
@@ -22,6 +23,7 @@ public class SkyblockPlayer extends Player {
     private final EconomySystem economySystem;
     private final PlayerActionBar actionBar;
     private final MainSidebar sidebar;
+    private PlayerRank playerRank;
 
     public SkyblockPlayer(PlayerCreationContext ctx) {
         super(ctx.connection(), ctx.gameProfile());
@@ -39,6 +41,7 @@ public class SkyblockPlayer extends Player {
 
         // Attribute
         this.getAttribute(Attribute.MAX_HEALTH).setBaseValue(40);
+        this.playerRank = PlayerRank.HYPIXEL_STAFF;
     }
 
     /**
@@ -66,7 +69,6 @@ public class SkyblockPlayer extends Player {
         this.statSystem.regenerateHealth();
         this.statSystem.regenerateMana();
         this.sidebar.update(this);
-        //Tab.updateTab(this, this.getInstance().getPlayers());
     }
 
     @Override
@@ -74,6 +76,29 @@ public class SkyblockPlayer extends Player {
         return statSystem.isInvulnerable();
     }
 
+    /**
+     * Sets the player's rank.
+     *
+     * <p>This method updates the player's current rank, which affects their permissions,
+     * chat prefix display, and other rank-based features throughout the server.</p>
+     *
+     * @param playerRank The new {@link PlayerRank} to assign to this player
+     */
+    public void setPlayerRank(PlayerRank playerRank) {
+        this.playerRank = playerRank;
+    }
+
+    /**
+     * Gets the player's current rank.
+     *
+     * <p>Returns the player's assigned rank, which determines their permissions,
+     * chat display formatting, and access to rank-specific features.</p>
+     *
+     * @return The player's current {@link PlayerRank}
+     */
+    public PlayerRank getPlayerRank() {
+        return playerRank;
+    }
     /**
      * Gets the systems manager responsible for managing this player's systems.
      * <p>

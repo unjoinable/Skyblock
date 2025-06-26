@@ -1,23 +1,26 @@
 package net.unjoinable.skyblock.event.listener;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
-import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
-import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.event.player.PlayerSwapItemEvent;
-import net.minestom.server.event.player.PlayerUseItemEvent;
+import net.minestom.server.event.player.*;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
+import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
 import net.unjoinable.skyblock.player.ui.inventory.VanillaItemSlot;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
+import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 
 /**
  * Registers and handles global player-related events for the Skyblock server.
@@ -74,6 +77,22 @@ public class PlayerListener {
         registerPlayerSwapItemListener();
         registerInventoryPreClickListener();
         registerPlayerUseItemEvent();
+        registerPlayerYapListener();
+    }
+
+    private void registerPlayerYapListener() {
+        this.eventHandler.addListener(PlayerChatEvent.class, event -> {
+            SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+            PlayerRank rank = player.getPlayerRank();
+
+            Component message = rank == PlayerRank.DEFAULT
+                    ? text(player.getUsername() + ": " + event.getRawMessage(), GRAY)
+                    : rank.getComponentPrefix()
+                    .append(text(" " + player.getUsername(), rank.getColor()))
+                    .append(text(": " + event.getRawMessage(), WHITE));
+
+            event.setFormattedMessage(message);
+        });
     }
 
     /**

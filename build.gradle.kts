@@ -15,5 +15,5 @@ tasks.withType<JavaCompile> {
 
 dependencies {
     implementation("net.minestom:minestom-snapshots:1_21_6-a40d7115d4")
-    implementation("org.jspecify:jspecify:1.0.0")
+    compileOnly("org.jspecify:jspecify:1.0.0")
 }
