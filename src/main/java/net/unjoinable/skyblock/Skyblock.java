@@ -12,6 +12,10 @@ import net.unjoinable.skyblock.registry.registries.ItemRegistry;
 public class Skyblock {
 
     private Skyblock() {
+        throw new AssertionError();
+    }
+
+    public static void main(String[] args) {
         // Registries
         var itemRegistry = ItemRegistry.withDefaults();
         var attributeCodecRegistry = CodecRegistry.withDefaults();
@@ -30,9 +34,5 @@ public class Skyblock {
         MinecraftServer.getCommandManager().register(new TestCommand());
 
         server.start("0.0.0.0", 25565);
-    }
-
-    public static void main(String[] args) {
-        new Skyblock();
     }
 }
