@@ -21,7 +21,7 @@ public enum PlayerRank {
     HYPIXEL_STAFF("HYPIXEL STAFF", RED, textOfChildren(text("[", RED), text("ዞ", GOLD, BOLD), text("]", RED))),
     YOUTUBE("YOUTUBE", RED, textOfChildren(text("[", RED), text("YOUTUBE", WHITE), text("]", RED))),
     MVP_PLUS_PLUS("MVP++", GOLD, textOfChildren(text("[MVP", GOLD), text("++", BLACK), text("]", GOLD))),
-    MVP_PLUS("MVP+", AQUA, textOfChildren(text("[MVP", AQUA), text("+", GOLD), text("]", AQUA))),
+    MVP_PLUS("MVP+", AQUA, textOfChildren(text("[MVP", AQUA), text("+", BLACK), text("]", AQUA))),
     MVP("MVP", AQUA, text("[MVP]", AQUA)),
     VIP_PLUS("VIP+", GREEN, textOfChildren(text("[VIP", GREEN), text("+", GOLD), text("]", GREEN))),
     VIP("VIP", GREEN, text("[VIP]", GREEN)),
