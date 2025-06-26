@@ -5,7 +5,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 import static net.kyori.adventure.text.Component.*;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
-import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
 /**
  * Enum representing different player ranks in the Skyblock server.

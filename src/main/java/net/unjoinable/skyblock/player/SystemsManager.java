@@ -111,7 +111,6 @@ public class SystemsManager {
             try {
                 PlayerSystem system = entry.getValue();
                 system.start();
-                LOG.info("Started system: {}", entry.getKey().getSimpleName());
             } catch (Exception e) {
                 LOG.error("Failed to start system: {}", entry.getKey().getSimpleName(), e);
             }
