@@ -1,7 +1,6 @@
 package net.unjoinable.skyblock.item.service;
 
 import net.kyori.adventure.nbt.BinaryTag;
-import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
 import net.minestom.server.item.ItemStack;
@@ -11,7 +10,8 @@ import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.NbtAttribute;
-import net.unjoinable.skyblock.registry.Registry;
+import net.unjoinable.skyblock.registry.registries.CodecRegistry;
+import net.unjoinable.skyblock.registry.registries.ItemRegistry;
 import net.unjoinable.skyblock.utility.NamespaceId;
 
 import java.util.HashMap;
@@ -31,19 +31,17 @@ public class ItemProcessor {
 
     // Instance fields
     private final Map<Class<? extends NbtAttribute>, Tag<BinaryTag>> cachedTags;
-    private final Registry<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> attributeCodecRegistry;
-    private final Registry<NamespaceId, SkyblockItem> itemRegistry;
+    private final CodecRegistry codecRegistry;
+    private final ItemRegistry itemRegistry;
 
     /**
      * Creates a new ItemProcessor with required registries.
      *
-     * @param attributeCodecRegistry Registry of codecs for serializing/deserializing attributes
+     * @param codecRegistry Registry of codecs for serializing/deserializing attributes
      * @param itemRegistry Registry of all available Skyblock items
      */
-    public ItemProcessor(
-            Registry<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> attributeCodecRegistry,
-            Registry<NamespaceId, SkyblockItem> itemRegistry) {
-        this.attributeCodecRegistry = attributeCodecRegistry;
+    public ItemProcessor(CodecRegistry codecRegistry, ItemRegistry itemRegistry) {
+        this.codecRegistry = codecRegistry;
         this.itemRegistry = itemRegistry;
         this.cachedTags = new HashMap<>();
     }
@@ -116,7 +114,7 @@ public class ItemProcessor {
     private AttributeContainer extractAttributesFromItemStack(ItemStack itemStack) {
         AttributeContainer.Builder builder = AttributeContainer.builder();
 
-        cachedTags.forEach((attributeClass, tag) -> attributeCodecRegistry.get(attributeClass).ifPresent(codec -> {
+        cachedTags.forEach((attributeClass, tag) -> codecRegistry.get(attributeClass).ifPresent(codec -> {
             if (!itemStack.hasTag(tag)) {
                 return;
             }

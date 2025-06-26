@@ -5,6 +5,7 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ public abstract class SkyblockInventory extends Inventory {
             InventoryType.CHEST_5_ROW,
             InventoryType.CHEST_6_ROW
     );
-
+    protected static final ItemStack FILLER = ItemStack.of(Material.GRAY_STAINED_GLASS_PANE).withCustomName(Component.empty());
     private final Map<Integer, DynamicItem> dynamicItems = new HashMap<>();
     private final Map<Integer, PlaybackItem> playbackItems = new HashMap<>();
     private final Set<Integer> stealableSlots = new HashSet<>();

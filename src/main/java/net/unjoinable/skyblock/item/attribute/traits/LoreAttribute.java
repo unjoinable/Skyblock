@@ -11,7 +11,7 @@ import java.util.List;
  * Represents an {@link ItemAttribute} that provides descriptive text for item lore.
  * Classes implementing this contribute lines to the item's tooltip using rich text components.
  */
-public non-sealed interface LoreAttribute extends ItemAttribute {
+public interface LoreAttribute extends ItemAttribute {
 
     /**
      * Returns the lore lines for this attribute as Adventure text components.

@@ -9,7 +9,7 @@ import java.util.Optional;
  * Represents an extension of {@link ItemAttribute} that enables NBT (Named Binary Tag) serialization.
  * This interface provides methods for converting attributes to NBT tags and vice versa.
  */
-public interface NbtAttribute extends CodecAttribute {
+public interface NbtAttribute extends ItemAttribute {
 
     /**
      * Converts the attribute into an optional {@link BinaryTag} representation using the default NBT {@link Transcoder}.

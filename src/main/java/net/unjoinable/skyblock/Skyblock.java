@@ -6,14 +6,15 @@ import net.unjoinable.skyblock.command.TestCommand;
 import net.unjoinable.skyblock.event.listener.PlayerListener;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.player.factory.PlayerFactory;
-import net.unjoinable.skyblock.registry.factory.RegistryFactory;
+import net.unjoinable.skyblock.registry.registries.CodecRegistry;
+import net.unjoinable.skyblock.registry.registries.ItemRegistry;
 
 public class Skyblock {
 
     private Skyblock() {
         // Registries
-        var itemRegistry = RegistryFactory.createItemRegistry();
-        var attributeCodecRegistry = RegistryFactory.createAttributeCodecRegistry();
+        var itemRegistry = ItemRegistry.withDefaults();
+        var attributeCodecRegistry = CodecRegistry.withDefaults();
 
         // Systems
         ItemProcessor itemProcessor = new ItemProcessor(attributeCodecRegistry, itemRegistry);

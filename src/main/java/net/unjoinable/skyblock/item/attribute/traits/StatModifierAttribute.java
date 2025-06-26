@@ -6,7 +6,7 @@ import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.statistic.StatProfile;
 import org.jspecify.annotations.Nullable;
 
-public non-sealed interface StatModifierAttribute extends ItemAttribute {
+public interface StatModifierAttribute extends ItemAttribute {
 
     default StatProfile modifierStats(AttributeContainer container, ItemMetadata metadata) {
         return modifierStats(null, container, metadata);

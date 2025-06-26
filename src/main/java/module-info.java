@@ -11,4 +11,5 @@ module net.unjoinable.skyblock {
     requires org.jspecify;
     requires net.kyori.adventure.text.serializer.legacy;
     requires net.kyori.adventure.text.serializer.plain;
+    requires com.google.gson;
 }

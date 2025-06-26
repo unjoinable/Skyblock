@@ -1,6 +1,9 @@
 package net.unjoinable.skyblock.item.attribute;
 
+import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
+import net.unjoinable.skyblock.registry.registries.CodecRegistry;
+import net.unjoinable.skyblock.utility.AttributeContainerCodec;
 import net.unjoinable.skyblock.utility.NamespaceId;
 
 import java.util.*;
@@ -18,6 +21,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * Retrieves the shared immutable instance of an empty attribute container.
      */
     public static final AttributeContainer EMPTY = new AttributeContainer(Collections.emptyMap());
+    public static final Codec<AttributeContainer> CODEC = new AttributeContainerCodec(CodecRegistry.withDefaults());
 
     private final Map<NamespaceId, ItemAttribute> attributeMap;
 
@@ -115,6 +119,15 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      */
     public Stream<ItemAttribute> stream() {
         return attributeMap.values().stream();
+    }
+
+    /**
+     * Returns the number of attributes in this container.
+     *
+     * @return number of attributes in this container
+     */
+    public int size() {
+        return attributeMap.size();
     }
 
     /**
