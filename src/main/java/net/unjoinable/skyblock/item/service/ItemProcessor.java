@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 /**
  * Processes Skyblock items and converts them between Skyblock and Minestom representations.
@@ -88,7 +89,7 @@ public class ItemProcessor {
         builder.customName(text(
                 metadata.displayName(),
                 metadata.rarity().color()
-        ));
+        ).decoration(ITALIC, false));
     }
 
     /**
