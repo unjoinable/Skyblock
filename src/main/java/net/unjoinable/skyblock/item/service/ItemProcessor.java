@@ -3,7 +3,9 @@ package net.unjoinable.skyblock.item.service;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.AttributeList;
 import net.minestom.server.tag.Tag;
 import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.SkyblockItem;
@@ -63,6 +65,7 @@ public class ItemProcessor {
         applyIdTag(builder, metadata.id());
 
         LoreGenerator loreGenerator = new LoreGenerator(attributes, metadata);
+        builder.set(DataComponents.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY);
         builder.lore(loreGenerator.generate());
 
         return builder.build();
