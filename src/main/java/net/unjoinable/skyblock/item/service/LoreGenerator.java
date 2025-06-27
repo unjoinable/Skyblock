@@ -1,12 +1,19 @@
 package net.unjoinable.skyblock.item.service;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
+import net.unjoinable.skyblock.item.enums.ItemCategory;
+import net.unjoinable.skyblock.item.enums.Rarity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.TextDecoration.*;
 
 public class LoreGenerator {
     private final AttributeContainer container;
@@ -57,7 +64,31 @@ public class LoreGenerator {
                 }
             }
         }
-
+        result.add(Component.empty());
+        result.add(formatRarity(metadata.rarity(), metadata.category(), AttributeResolver.isRarityUpgraded(container)));
         return result;
+    }
+
+    /**
+     * Formats item rarity and category with color and styling.
+     * Upgraded items get obfuscated borders: "§ka§r EPIC SWORD §ka§r"
+     *
+     * @param rarity base rarity before upgrades
+     * @param category item category (SWORD, BOW, etc.)
+     * @param isUpgraded whether rarity was upgraded
+     * @return styled component for display
+     */
+    private static Component formatRarity(Rarity rarity, ItemCategory category, boolean isUpgraded) {
+        Rarity itemRarity = isUpgraded ? rarity.upgrade() : rarity;
+        TextColor color = itemRarity.color();
+        String categoryName = category.displayName();
+
+        Component base = text(itemRarity.name() + " " + categoryName, color, BOLD)
+                .decoration(ITALIC, false);
+
+        return isUpgraded
+                ? textOfChildren(text("a ", color, OBFUSCATED), base, text(" a", color, OBFUSCATED))
+                .decoration(ITALIC, false)
+                : base;
     }
 }
