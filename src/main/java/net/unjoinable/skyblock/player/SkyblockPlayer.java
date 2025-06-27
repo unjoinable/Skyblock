@@ -55,7 +55,7 @@ public class SkyblockPlayer extends Player {
         this.statSystem.resetHealthAndMana();
         this.sidebar.send(this);
         MinecraftServer.getSchedulerManager().scheduleTask(
-                this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(2));
+                this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(1));
     }
 
     /**
