@@ -24,14 +24,23 @@ public final class ItemStatsCalculator {
     }
 
     /**
-     * Computes a complete StatProfile for an item by combining all stat-modifying attributes.
+     * Convenience method to compute stats directly from a {@link SkyblockItem}.
      *
-     * @param item The item to calculate stats for
-     * @return A new StatProfile containing all stat contributions
+     * @param item The item to compute stats for
+     * @return A new {@link StatProfile} with the computed stats
      */
     public static StatProfile computeItemStats(SkyblockItem item) {
-        AttributeContainer attributes = item.attributes();
-        ItemMetadata metadata = item.metadata();
+        return computeItemStats(item.attributes(), item.metadata());
+    }
+
+    /**
+     * Computes a complete {@link StatProfile} for an item by combining all stat-modifying attributes and metadata.
+     *
+     * @param attributes The attribute container holding base and modifier attributes
+     * @param metadata   The item's metadata, which may influence stat modifiers
+     * @return A new {@link StatProfile} containing the calculated stats
+     */
+    public static StatProfile computeItemStats(AttributeContainer attributes, ItemMetadata metadata) {
         StatProfile stats = new StatProfile();
 
         applyBaseStats(stats, attributes);

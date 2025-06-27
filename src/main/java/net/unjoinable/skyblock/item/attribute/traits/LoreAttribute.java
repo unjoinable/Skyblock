@@ -1,6 +1,7 @@
 package net.unjoinable.skyblock.item.attribute.traits;
 
 import net.kyori.adventure.text.Component;
+import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import org.jspecify.annotations.Nullable;
@@ -17,20 +18,22 @@ public interface LoreAttribute extends ItemAttribute {
      * Returns the lore lines for this attribute as Adventure text components.
      *
      * @param container the attribute container providing context for generating lore lines
-     * @return a non-null list of {@link Component} representing the lore lines; returns an empty list if no lore is present
+     * @param metadata  the item meta to get essential data
+     * @return a list of {@link Component} representing the lore lines; returns an empty list if no lore is present
      */
-    default List<Component> loreLines(AttributeContainer container) {
-        return loreLines(null, container);
+    default List<Component> loreLines(AttributeContainer container, ItemMetadata metadata) {
+        return loreLines(null, container, metadata);
     }
 
     /**
      * Returns the lore lines for this attribute as Adventure text components.
      *
-     * @param player If valid the underlying method should support for both null and non-null player
+     * @param player    If valid the underlying method should support for both null and non-null player
      * @param container the attribute container providing context for generating lore lines
-     * @return a non-null list of {@link Component} representing the lore lines; returns an empty list if no lore is present
+     * @param metadata  the item meta to get essential data
+     * @return a list of {@link Component} representing the lore lines; returns an empty list if no lore is present
      */
-    List<Component> loreLines(@Nullable SkyblockPlayer player, AttributeContainer container);
+    List<Component> loreLines(@Nullable SkyblockPlayer player, AttributeContainer container, ItemMetadata metadata);
 
     /**
      * Returns the sorting priority of this attribute's lore lines relative to other lore attributes.

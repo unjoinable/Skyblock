@@ -3,18 +3,26 @@ package net.unjoinable.skyblock.item.attribute.impls;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
+import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
+import net.unjoinable.skyblock.item.service.ItemStatsCalculator;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
+import net.unjoinable.skyblock.statistic.StatProfile;
 import net.unjoinable.skyblock.statistic.Statistic;
 import net.unjoinable.skyblock.utils.NamespaceId;
 import org.jspecify.annotations.Nullable;
 
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 /**
  * An ItemAttribute implementation that defines base statistical values for an item.
@@ -58,12 +66,45 @@ public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements It
     }
 
     @Override
-    public List<Component> loreLines(@Nullable SkyblockPlayer player, AttributeContainer container) {
-        return List.of();
+    public List<Component> loreLines(@Nullable SkyblockPlayer player, AttributeContainer container, ItemMetadata metadata) {
+        StatProfile addedStats = ItemStatsCalculator.computeItemStats(container, metadata);
+        List<Component> loreLines = new ArrayList<>();
+
+        for (Statistic stat : Statistic.values()) {
+            double value = addedStats.get(stat);
+            if (value == 0D) continue;
+
+            loreLines.add(formatStat(stat, value));
+        }
+
+        return loreLines;
     }
 
     @Override
     public int priority() {
         return 0;
+    }
+
+    // Helper method
+
+    /**
+     * Formats a single statistic and its value into a styled {@link Component}
+     * for item lore display.
+     * <p>
+     * The value must be non-zero; this method assumes it has already been filtered out if zero.
+     *
+     * @param stat  The statistic to format (e.g. Strength, Crit Chance)
+     * @param value The non-zero value of the stat
+     * @return A {@link Component} representing the stat line for display
+     */
+    private static Component formatStat(Statistic stat, double value) {
+        boolean isPercent = stat.isPercentage();
+        String formattedValue = String.format(isPercent ? "%.1f" : "%.0f", value);
+
+        return text()
+                .append(text(stat.displayName() + ": ", GRAY))
+                .append(text("+" + formattedValue + (isPercent ? "%" : ""), stat.loreColor()))
+                .decoration(ITALIC, false)
+                .build();
     }
 }

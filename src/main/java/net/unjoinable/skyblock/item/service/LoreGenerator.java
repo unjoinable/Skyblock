@@ -46,7 +46,7 @@ public class LoreGenerator {
         List<Component> result = new ArrayList<>(metadata.description());
 
         for (int i = 0; i < attributes.size(); i++) {
-            List<Component> attrLore = attributes.get(i).loreLines(container);
+            List<Component> attrLore = attributes.get(i).loreLines(container, metadata);
 
             if (!attrLore.isEmpty()) {
                 result.addAll(attrLore);

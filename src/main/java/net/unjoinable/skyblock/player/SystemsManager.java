@@ -105,8 +105,6 @@ public class SystemsManager {
      * </p>
      */
     public void startAllSystems() {
-        LOG.info("Starting all registered systems...");
-
         for (Map.Entry<Class<?>, PlayerSystem> entry : systems.entrySet()) {
             try {
                 PlayerSystem system = entry.getValue();
