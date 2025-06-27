@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.utility.collection;
+package net.unjoinable.skyblock.utils.collection;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

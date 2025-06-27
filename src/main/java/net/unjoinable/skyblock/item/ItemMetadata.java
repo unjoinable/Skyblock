@@ -6,7 +6,7 @@ import net.minestom.server.codec.StructCodec;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.item.enums.ItemCategory;
 import net.unjoinable.skyblock.item.enums.Rarity;
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package net.unjoinable.skyblock.data;
 
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.NamespaceId;
 
 /**
  * A generic and type-safe implementation of the {@link DataKey} interface.

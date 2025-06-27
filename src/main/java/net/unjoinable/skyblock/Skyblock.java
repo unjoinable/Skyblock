@@ -30,6 +30,7 @@ public class Skyblock {
         MinecraftServer server = MinecraftServer.init();
         MojangAuth.init();
         MinecraftServer.getConnectionManager().setPlayerProvider(new PlayerFactory(itemProcessor));
+        MinecraftServer.setBrandName("Hystom");
 
         // Listeners
         new PlayerListener(MinecraftServer.getGlobalEventHandler()).register();
@@ -37,7 +38,7 @@ public class Skyblock {
         // Commands
         CommandManager cmdMgr = MinecraftServer.getCommandManager();
         cmdMgr.register(new TestCommand());
-        cmdMgr.register(new ItemCommand(itemRegistry));
+        cmdMgr.register(new ItemCommand(itemRegistry, itemProcessor));
         cmdMgr.register(new RankCommand());
         server.start("0.0.0.0", 25565);
     }

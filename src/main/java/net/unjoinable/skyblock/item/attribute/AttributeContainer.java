@@ -3,8 +3,8 @@ package net.unjoinable.skyblock.item.attribute;
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.registry.registries.CodecRegistry;
-import net.unjoinable.skyblock.utility.AttributeContainerCodec;
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.AttributeContainerCodec;
+import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.*;
 import java.util.stream.Stream;

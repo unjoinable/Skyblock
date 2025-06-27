@@ -1,13 +1,19 @@
 package net.unjoinable.skyblock.item.attribute.impls;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
+import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
+import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
+import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.statistic.Statistic;
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.NamespaceId;
+import org.jspecify.annotations.Nullable;
 
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +23,7 @@ import java.util.Map;
  * The attribute performs defensive copying of the statistics map to prevent
  * external modification after construction.
  */
-public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements ItemAttribute {
+public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements ItemAttribute, LoreAttribute {
     public static final NamespaceId ID = new NamespaceId("attribute", "baseStats");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
             "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,
@@ -49,5 +55,15 @@ public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements It
     @Override
     public Codec<? extends ItemAttribute> codec() {
         return CODEC;
+    }
+
+    @Override
+    public List<Component> loreLines(@Nullable SkyblockPlayer player, AttributeContainer container) {
+        return List.of();
+    }
+
+    @Override
+    public int priority() {
+        return 0;
     }
 }

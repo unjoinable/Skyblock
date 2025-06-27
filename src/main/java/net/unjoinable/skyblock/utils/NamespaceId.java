@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.utility;
+package net.unjoinable.skyblock.utils;
 
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;

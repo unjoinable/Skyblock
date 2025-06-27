@@ -12,7 +12,7 @@ import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.NbtAttribute;
 import net.unjoinable.skyblock.registry.registries.CodecRegistry;
 import net.unjoinable.skyblock.registry.registries.ItemRegistry;
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.HashMap;
 import java.util.Map;

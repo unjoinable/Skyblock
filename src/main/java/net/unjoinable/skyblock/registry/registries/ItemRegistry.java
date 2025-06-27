@@ -3,7 +3,7 @@ package net.unjoinable.skyblock.registry.registries;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.service.ItemLoader;
 import net.unjoinable.skyblock.registry.impl.ImmutableRegistry;
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.List;
 import java.util.function.Function;

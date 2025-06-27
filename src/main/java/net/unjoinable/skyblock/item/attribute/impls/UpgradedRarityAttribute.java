@@ -3,7 +3,7 @@ package net.unjoinable.skyblock.item.attribute.impls;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
 import net.unjoinable.skyblock.item.attribute.traits.NbtAttribute;
-import net.unjoinable.skyblock.utility.NamespaceId;
+import net.unjoinable.skyblock.utils.NamespaceId;
 
 
 public record UpgradedRarityAttribute(boolean isUpgraded) implements NbtAttribute {
