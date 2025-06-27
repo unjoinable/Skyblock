@@ -63,7 +63,6 @@ public class PlayerStatSystem implements PlayerSystem {
      */
     public void updateSlot(ItemSlot slot) {
         if (!this.isInitialized) throw new IllegalStateException("PlayerStatSystem has not been initialized");
-
         SkyblockItem item = slot.getItem(this.player, this.itemProcessor);
         StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
         this.cachedItemStats.put(slot, itemStats);

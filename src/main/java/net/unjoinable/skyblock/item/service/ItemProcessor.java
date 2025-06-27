@@ -101,20 +101,19 @@ public class ItemProcessor {
     public SkyblockItem fromItemStack(ItemStack itemStack) {
         NamespaceId id = retrieveIdTag(itemStack);
         SkyblockItem templateItem = itemRegistry.get(id).orElse(SkyblockItem.AIR);
-        AttributeContainer attributes = extractAttributesFromItemStack(itemStack);
+        AttributeContainer.Builder attributes = templateItem.attributes().toBuilder();
+        extractAttributesFromItemStack(itemStack, attributes);
 
-        return new SkyblockItem(templateItem.metadata(), attributes);
+        return new SkyblockItem(templateItem.metadata(), attributes.build());
     }
 
     /**
      * Extracts attribute data from an ItemStack's NBT tags.
      *
      * @param itemStack The ItemStack to extract attributes from
-     * @return A container with all successfully decoded attributes
+     * @param builder   The builder to append attributes to
      */
-    private AttributeContainer extractAttributesFromItemStack(ItemStack itemStack) {
-        AttributeContainer.Builder builder = AttributeContainer.builder();
-
+    private void extractAttributesFromItemStack(ItemStack itemStack, AttributeContainer.Builder builder) {
         cachedTags.forEach((attributeClass, tag) -> codecRegistry.get(attributeClass).ifPresent(codec -> {
             if (!itemStack.hasTag(tag)) {
                 return;
@@ -127,8 +126,6 @@ public class ItemProcessor {
                 builder.with(value);
             }
         }));
-
-        return builder.build();
     }
 
     /**

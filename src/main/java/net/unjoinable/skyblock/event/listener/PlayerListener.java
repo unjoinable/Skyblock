@@ -78,6 +78,16 @@ public class PlayerListener {
         registerInventoryPreClickListener();
         registerPlayerUseItemEvent();
         registerPlayerYapListener();
+        registerPlayerChangeHeldSlotListener();
+    }
+
+    private void registerPlayerChangeHeldSlotListener() {
+        this.eventHandler.addListener(PlayerChangeHeldSlotEvent.class, event -> {
+            SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+
+            MinecraftServer.getSchedulerManager()
+                    .scheduleEndOfTick(() -> player.getStatSystem().updateSlot(VanillaItemSlot.MAIN_HAND));
+        });
     }
 
     private void registerPlayerYapListener() {
