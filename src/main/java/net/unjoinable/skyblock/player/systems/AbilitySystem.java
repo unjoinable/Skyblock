@@ -1,7 +1,6 @@
 package net.unjoinable.skyblock.player.systems;
 
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.ability.AbilityCostType;
@@ -26,9 +25,12 @@ import static net.kyori.adventure.text.format.TextDecoration.BOLD;
  * Manages ability cooldowns and execution for players.
  */
 public class AbilitySystem implements PlayerSystem {
-    private static final Component NOT_ENOUGH_MANA = text("NOT ENOUGH MANA", RED, BOLD);
-    private static final Component NOT_ENOUGH_COINS = text("NOT ENOUGH COINS", RED, BOLD);
-    private static final Component NOT_ENOUGH_HEALTH = text("NOT ENOUGH HEALTH", RED, BOLD);
+    private static final ActionBarDisplay NOT_ENOUGH_MANA = new ActionBarDisplay(
+            text("NOT ENOUGH MANA", RED, BOLD),
+            40,
+            90,
+            ActionBarPurpose.ABILITY
+    );
 
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
@@ -183,10 +185,8 @@ public class AbilitySystem implements PlayerSystem {
      */
     private void sendInsufficientResourceMessage(AbilityCostType costType) {
         switch (costType) {
-            case MANA -> player.sendMessage(NOT_ENOUGH_MANA);
-            case COINS -> player.sendMessage(NOT_ENOUGH_COINS);
-            case HEALTH -> player.sendMessage(NOT_ENOUGH_HEALTH);
-            case FREE -> {} // No message needed for free abilities
+            case MANA -> player.getActionBar().addReplacement(ActionBarSection.DEFENSE, NOT_ENOUGH_MANA);
+            default -> {} // No message needed atm
         }
     }
 
