@@ -54,7 +54,7 @@ public record AbilityAttribute(List<ItemAbility> abilities) implements LoreAttri
 
     private List<Component> formatAbility(ItemAbility ability) {
         List<Component> components = new ArrayList<>();
-        components.add(text("Ability: " + ability.key(), GOLD).append(text(" " + ability.trigger().name(), YELLOW)));
+        components.add(text("Ability: " + ability.displayName(), GOLD).append(text(" " + ability.trigger().name(), YELLOW)));
         components.addAll(ability.description());
         components.add(text("Mana cost: ", DARK_GRAY).append(text(ability.cost(), DARK_AQUA)));
         return components;

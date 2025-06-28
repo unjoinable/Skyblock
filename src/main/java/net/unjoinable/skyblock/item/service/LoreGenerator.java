@@ -9,6 +9,7 @@ import net.unjoinable.skyblock.item.enums.ItemCategory;
 import net.unjoinable.skyblock.item.enums.Rarity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static net.kyori.adventure.text.Component.text;
@@ -39,6 +40,7 @@ public class LoreGenerator {
         List<LoreAttribute> attributes = container.stream()
                 .filter(LoreAttribute.class::isInstance)
                 .map(LoreAttribute.class::cast)
+                .sorted(Comparator.comparingInt(LoreAttribute::priority))
                 .toList();
         return generateCombinedLore(attributes);
     }

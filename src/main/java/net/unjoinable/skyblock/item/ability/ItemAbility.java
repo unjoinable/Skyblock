@@ -20,6 +20,15 @@ public interface ItemAbility extends Keyed {
     Codec<ItemAbility> CODEC = new ItemAbilityCodec(AbilityRegistry.withDefaults());
 
     /**
+     * Returns the display name of the ability, typically shown in user interfaces
+     * such as item tooltips or ability menus. This is a human-readable name
+     * that represents the ability's identity and purpose.
+     *
+     * @return the ability's display name as a {@link String}
+     */
+    String displayName();
+
+    /**
      * Returns how the ability is triggered (e.g., right-click, sneak).
      *
      * @return the execution trigger type

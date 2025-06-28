@@ -27,6 +27,11 @@ public class InstantTransmission implements ItemAbility {
     }
 
     @Override
+    public String displayName() {
+        return "Instant Transmission";
+    }
+
+    @Override
     public ExecutionType trigger() {
         return ExecutionType.RIGHT_CLICK;
     }
