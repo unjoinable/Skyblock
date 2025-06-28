@@ -18,8 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.RED;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 /**
  * Manages ability cooldowns and execution for players.
@@ -197,9 +198,11 @@ public class AbilitySystem implements PlayerSystem {
         switch (ability.costType()) {
             case MANA -> {
                 var display = new ActionBarDisplay(
-                        text(ability.key().asString()),
-                        40, 100,
-                        ActionBarPurpose.ABILITY
+                        text("-" + ability.cost() + " Mana (", AQUA)
+                                .decoration(ITALIC, false)
+                                .append(text(ability.displayName(), GOLD))
+                                .append(text(")", AQUA)),
+                        40, 100, ActionBarPurpose.ABILITY
                 );
                 player.getActionBar().addReplacement(ActionBarSection.DEFENSE, display);
             }
