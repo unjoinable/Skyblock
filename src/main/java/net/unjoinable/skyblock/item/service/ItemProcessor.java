@@ -1,5 +1,6 @@
 package net.unjoinable.skyblock.item.service;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
@@ -14,7 +15,6 @@ import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.NbtAttribute;
 import net.unjoinable.skyblock.registry.registries.CodecRegistry;
 import net.unjoinable.skyblock.registry.registries.ItemRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class ItemProcessor {
 
         applyNbtAttributes(attributes, builder);
         applyDisplayProperties(builder, metadata);
-        applyIdTag(builder, metadata.id());
+        applyIdTag(builder, metadata.key());
 
         LoreGenerator loreGenerator = new LoreGenerator(attributes, metadata);
         builder.set(DataComponents.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY);
@@ -102,8 +102,8 @@ public class ItemProcessor {
      * @return A SkyblockItem representing the ItemStack, or AIR if conversion fails
      */
     public SkyblockItem fromItemStack(ItemStack itemStack) {
-        NamespaceId id = retrieveIdTag(itemStack);
-        SkyblockItem templateItem = itemRegistry.get(id).orElse(SkyblockItem.AIR);
+        Key key = retrieveIdTag(itemStack);
+        SkyblockItem templateItem = itemRegistry.get(key).orElse(SkyblockItem.AIR);
         AttributeContainer.Builder attributes = templateItem.attributes().toBuilder();
         extractAttributesFromItemStack(itemStack, attributes);
 
@@ -140,27 +140,27 @@ public class ItemProcessor {
     private Tag<BinaryTag> getOrCreateTag(NbtAttribute attribute) {
         return this.cachedTags.computeIfAbsent(
                 attribute.getClass(),
-                _ -> Tag.NBT(attribute.id().toString())
+                _ -> Tag.NBT(attribute.key().asString())
         );
     }
 
     /**
-     * Applies the unique identifier tag to the ItemStack.
+     * Applies the unique key tag to the ItemStack.
      *
      * @param builder The ItemStack builder
-     * @param id The unique identifier to apply
+     * @param key The unique key to apply
      */
-    private void applyIdTag(ItemStack.Builder builder, NamespaceId id) {
-        builder.setTag(ID_TAG, id.toString());
+    private void applyIdTag(ItemStack.Builder builder, Key key) {
+        builder.setTag(ID_TAG, key.asString());
     }
 
     /**
-     * Retrieves the unique identifier from an ItemStack.
+     * Retrieves the unique key from an ItemStack.
      *
-     * @param itemStack The ItemStack to get the ID from
-     * @return The unique identifier of the item
+     * @param itemStack The ItemStack to get the Key from
+     * @return The unique key of the item
      */
-    private NamespaceId retrieveIdTag(ItemStack itemStack) {
-        return NamespaceId.fromString(itemStack.getTag(ID_TAG));
+    private Key retrieveIdTag(ItemStack itemStack) {
+        return Key.key(itemStack.getTag(ID_TAG));
     }
 }

@@ -1,9 +1,9 @@
 package net.unjoinable.skyblock.item.attribute.traits;
 
+import net.kyori.adventure.key.Keyed;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.Optional;
 
@@ -11,9 +11,7 @@ import java.util.Optional;
  * The base interface for all item attributes.
  * This interface provides codec functionality for serialization and deserialization.
  */
-public interface ItemAttribute {
-
-    NamespaceId id();
+public interface ItemAttribute extends Keyed {
 
     /**
      * Returns the codec used for encoding and decoding this attribute.

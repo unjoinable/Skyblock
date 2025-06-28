@@ -1,11 +1,11 @@
 package net.unjoinable.skyblock.utils.codec;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
 import net.unjoinable.skyblock.item.ability.ItemAbility;
 import net.unjoinable.skyblock.registry.registries.AbilityRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,13 +18,13 @@ public class ItemAbilityCodec implements Codec<ItemAbility> {
 
     @Override
     public @NotNull <D> Result<ItemAbility> decode(@NotNull Transcoder<D> coder, @NotNull D value) {
-        Result<NamespaceId> idResult = NamespaceId.CODEC.decode(coder, value);
+        Result<Key> keyResult = Codec.KEY.decode(coder, value);
 
-        if (idResult instanceof Result.Ok(NamespaceId okId)) {
+        if (keyResult instanceof Result.Ok(Key okKey)) {
             return registry
-                    .get(okId)
+                    .get(okKey)
                     .<Result<ItemAbility>>map(Result.Ok::new)
-                    .orElseGet(() -> new Result.Error<>("Unknown ability ID: " + okId));
+                    .orElseGet(() -> new Result.Error<>("Unknown ability ID: " + okKey));
         }
 
         return new Result.Error<>("Unknown ability: " + value);
@@ -36,6 +36,6 @@ public class ItemAbilityCodec implements Codec<ItemAbility> {
             return new Result.Error<>("Can't encode null ItemAbility");
         }
 
-        return NamespaceId.CODEC.encode(coder, value.id());
+        return Codec.KEY.encode(coder, value.key());
     }
 }

@@ -1,5 +1,6 @@
 package net.unjoinable.skyblock.item.attribute.impls;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
@@ -11,7 +12,7 @@ import net.unjoinable.skyblock.item.service.ItemStatsCalculator;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.statistic.StatProfile;
 import net.unjoinable.skyblock.statistic.Statistic;
-import net.unjoinable.skyblock.utils.NamespaceId;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 
@@ -32,7 +33,7 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
  * external modification after construction.
  */
 public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements ItemAttribute, LoreAttribute {
-    public static final NamespaceId ID = new NamespaceId("attribute", "base_stats");
+    public static final Key KEY = Key.key("attribute:base_stats");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
             "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,
             BaseStatsAttribute::new
@@ -48,16 +49,9 @@ public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements It
         baseStats = Map.copyOf(baseStats);
     }
 
-    /**
-     * Default constructor that creates an empty stats attribute.
-     */
-    public BaseStatsAttribute() {
-        this(new EnumMap<>(Statistic.class));
-    }
-
     @Override
-    public NamespaceId id() {
-        return ID;
+    public @NotNull Key key() {
+        return KEY;
     }
 
     @Override

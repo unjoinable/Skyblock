@@ -1,5 +1,6 @@
 package net.unjoinable.skyblock.item.ability.impls;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.ability.AbilityCostType;
@@ -7,13 +8,13 @@ import net.unjoinable.skyblock.item.ability.ExecutionType;
 import net.unjoinable.skyblock.item.ability.ItemAbility;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.utils.MiniString;
-import net.unjoinable.skyblock.utils.NamespaceId;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 
 public class InstantTransmission implements ItemAbility {
-    private static final NamespaceId ID = NamespaceId.fromString("ability:instant_transmission");
+    private static final Key KEY = Key.key("ability:instant_transmission");
     private static final List<Component> DESCRIPTION = MiniString
             .listBuilder()
             .add("<gray>Teleport <green>8 blocks ahead</green> of you and")
@@ -21,8 +22,8 @@ public class InstantTransmission implements ItemAbility {
             .build();
 
     @Override
-    public NamespaceId id() {
-        return ID;
+    public @NotNull Key key() {
+        return KEY;
     }
 
     @Override

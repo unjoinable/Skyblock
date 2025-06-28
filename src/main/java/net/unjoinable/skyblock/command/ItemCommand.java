@@ -1,5 +1,6 @@
 package net.unjoinable.skyblock.command;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
@@ -7,7 +8,6 @@ import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.registry.registries.ItemRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 /**
  * Admin command for spawning items from the item registry.
@@ -25,15 +25,15 @@ public class ItemCommand extends SkyblockCommand {
         Argument<String> itemArg = ArgumentType.String("item")
                 .setSuggestionCallback((_, _, suggestion) ->
                         registry.values().forEach(item ->
-                                suggestion.addEntry(new SuggestionEntry(item.metadata().id().toString()))
+                                suggestion.addEntry(new SuggestionEntry(item.metadata().key().asString()))
                         )
                 );
 
         addSyntax((sender, context) -> {
             SkyblockPlayer player = ((SkyblockPlayer) sender);
             String idAsStr = context.get(itemArg);
-            NamespaceId id = NamespaceId.fromString(idAsStr);
-            registry.get(id).ifPresent(item -> player.getInventory().addItemStack(itemProcessor.toItemStack(item)));
+            Key key = Key.key(idAsStr);
+            registry.get(key).ifPresent(item -> player.getInventory().addItemStack(itemProcessor.toItemStack(item)));
         }, itemArg);
     }
 

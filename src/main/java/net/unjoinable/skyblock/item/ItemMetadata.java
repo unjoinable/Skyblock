@@ -1,12 +1,12 @@
 package net.unjoinable.skyblock.item;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.item.enums.ItemCategory;
 import net.unjoinable.skyblock.item.enums.Rarity;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * in this class. Use {@code SkyblockItem} or a similar class to associate this
  * metadata with a component system.
  *
- * @param id          Unique identifier for the item, typically in namespaced format (e.g. {@code skyblock:aspect_of_the_end}).
+ * @param key          Unique key for the item, typically in namespaced format (e.g. {@code skyblock:aspect_of_the_end}).
  * @param displayName The name used to render in item's name
  * @param material    The Minecraft {@link Material} used for rendering the item in inventory and hand.
  * @param category    The {@link ItemCategory} of the item (e.g., WEAPON, TOOL, MISC).
@@ -29,7 +29,7 @@ import java.util.List;
  * @param description A list of rich text {@link Component}s that represent the item's lore or detailed description.
  */
 public record ItemMetadata(
-        NamespaceId id,
+        Key key,
         String displayName,
         Material material,
         ItemCategory category,
@@ -37,7 +37,7 @@ public record ItemMetadata(
         List<Component> description) {
 
     public static final Codec<ItemMetadata> CODEC = StructCodec.struct(
-            "id", NamespaceId.CODEC, ItemMetadata::id,
+            "key", Codec.KEY, ItemMetadata::key,
             "name", Codec.STRING, ItemMetadata::displayName,
             "material", Material.CODEC, ItemMetadata::material,
             "category", Codec.Enum(ItemCategory.class), ItemMetadata::category,
@@ -47,7 +47,7 @@ public record ItemMetadata(
     );
 
     public static final ItemMetadata DEFAULT = new ItemMetadata(
-            NamespaceId.fromSkyblock("air"),
+            Key.key("skyblock:air"),
             "",
             Material.AIR,
             ItemCategory.NONE,

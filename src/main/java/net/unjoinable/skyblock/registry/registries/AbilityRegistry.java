@@ -1,9 +1,9 @@
 package net.unjoinable.skyblock.registry.registries;
 
+import net.kyori.adventure.key.Key;
 import net.unjoinable.skyblock.item.ability.ItemAbility;
 import net.unjoinable.skyblock.item.ability.impls.InstantTransmission;
 import net.unjoinable.skyblock.registry.impl.ImmutableRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.List;
 import java.util.function.Function;
@@ -14,18 +14,18 @@ import java.util.stream.Collectors;
  *
  * <p>This registry extends {@link ImmutableRegistry} to provide a type-safe
  * container for {@link ItemAbility} instances, indexed by their
- * {@link NamespaceId} identifiers.</p>
+ * {@link java.security.Key} identifiers.</p>
  *
  * <p>The registry is immutable once constructed and supports efficient
  * lookup operations for abilities by their unique identifiers.</p>
  */
-public class AbilityRegistry extends ImmutableRegistry<NamespaceId, ItemAbility> {
+public class AbilityRegistry extends ImmutableRegistry<Key, ItemAbility> {
 
     /**
      * Constructs a new AbilityRegistry from a list of ItemAbility instances.
      *
      * <p>The constructor processes the provided list and creates an internal
-     * map where each ability is indexed by its {@link ItemAbility#id()}.
+     * map where each ability is indexed by its {@link ItemAbility#key()} )}.
      * This enables fast retrieval and ensures the registry remains read-only
      * after construction.</p>
      *
@@ -37,7 +37,7 @@ public class AbilityRegistry extends ImmutableRegistry<NamespaceId, ItemAbility>
         super(entries
                 .stream()
                 .collect(Collectors.toMap(
-                        ItemAbility::id,
+                        ItemAbility::key,
                         Function.identity()
                 )));
     }
