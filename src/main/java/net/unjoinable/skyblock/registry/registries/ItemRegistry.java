@@ -1,9 +1,9 @@
 package net.unjoinable.skyblock.registry.registries;
 
+import net.kyori.adventure.key.Key;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.service.ItemLoader;
 import net.unjoinable.skyblock.registry.impl.ImmutableRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.List;
 import java.util.function.Function;
@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
  *
  * <p>This registry extends {@link ImmutableRegistry} to provide a type-safe
  * container for {@link SkyblockItem} instances, indexed by their
- * {@link NamespaceId} identifiers.</p>
+ * {@link Key} keys.</p>
  *
  * <p>The registry is immutable once constructed and provides efficient
- * lookup operations for items by their namespace identifiers.</p>
+ * lookup operations for items by their keys.</p>
  */
-public class ItemRegistry extends ImmutableRegistry<NamespaceId, SkyblockItem> {
+public class ItemRegistry extends ImmutableRegistry<Key, SkyblockItem> {
 
     /**
      * Constructs a new ItemRegistry from a list of SkyblockItem instances.
@@ -36,7 +36,7 @@ public class ItemRegistry extends ImmutableRegistry<NamespaceId, SkyblockItem> {
         super(entries
                 .stream()
                 .collect(Collectors.toMap(
-                        item -> item.metadata().id(),
+                        item -> item.metadata().key(),
                         Function.identity()
                 )));
     }

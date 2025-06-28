@@ -1,10 +1,10 @@
 package net.unjoinable.skyblock.item.attribute;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.registry.registries.CodecRegistry;
 import net.unjoinable.skyblock.utils.codec.AttributeContainerCodec;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * An immutable container for item stack attributes.
  *
- * <p>This container stores attributes by their ID and provides
+ * <p>This container stores attributes by their Key and provides
  * methods to retrieve and check for attributes. Modifications are handled
  * through the Builder pattern, ensuring immutability of the main container.</p>
  */
@@ -23,14 +23,14 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
     public static final AttributeContainer EMPTY = new AttributeContainer(Collections.emptyMap());
     public static final Codec<AttributeContainer> CODEC = new AttributeContainerCodec(CodecRegistry.withDefaults());
 
-    private final Map<NamespaceId, ItemAttribute> attributeMap;
+    private final Map<Key, ItemAttribute> attributeMap;
 
     /**
      * Constructs an immutable AttributeContainer using given map.
      *
-     * @param attributeMap map of attribute IDs to attributes
+     * @param attributeMap map of attribute Keys to attributes
      */
-    private AttributeContainer(Map<NamespaceId, ItemAttribute> attributeMap) {
+    private AttributeContainer(Map<Key, ItemAttribute> attributeMap) {
         this.attributeMap = Map.copyOf(attributeMap);
     }
 
@@ -53,13 +53,13 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
     }
 
     /**
-     * Returns the attribute associated with the specified ID, if present.
+     * Returns the attribute associated with the specified Key, if present.
      *
-     * @param id the unique identifier of the attribute
+     * @param key the unique key of the attribute
      * @return an {@code Optional} containing the attribute if found, or an empty {@code Optional} if not present
      */
-    public Optional<ItemAttribute> get(NamespaceId id) {
-        return Optional.ofNullable(attributeMap.get(id));
+    public Optional<ItemAttribute> get(Key key) {
+        return Optional.ofNullable(attributeMap.get(key));
     }
 
     /**
@@ -79,12 +79,12 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
     }
 
     /**
-     * Determines whether an attribute with the specified ID is present in the container.
+     * Determines whether an attribute with the specified Key is present in the container.
      *
-     * @param id the attribute ID to check for presence
-     * @return true if an attribute with the given ID exists; false otherwise
+     * @param id the attribute Key to check for presence
+     * @return true if an attribute with the given Key exists; false otherwise
      */
-    public boolean contains(NamespaceId id) {
+    public boolean contains(Key id) {
         return attributeMap.containsKey(id);
     }
 
@@ -108,7 +108,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      *
      * @return an unmodifiable map of attribute IDs to their corresponding attributes
      */
-    public Map<NamespaceId, ItemAttribute> asMap() {
+    public Map<Key, ItemAttribute> asMap() {
         return attributeMap;
     }
 
@@ -162,7 +162,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
         private final List<ItemAttribute> attributes = new ArrayList<>(8); // Initial capacity for small collections
 
         /**
-         * Adds or replaces an attribute in the builder by both its ID and class type.
+         * Adds or replaces an attribute in the builder by both its Key and class type.
          *
          * @param attribute the attribute to add or replace; must not be null
          * @return this builder instance for chaining
@@ -170,7 +170,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          */
         public Builder with(ItemAttribute attribute) {
             Objects.requireNonNull(attribute, "Attribute cannot be null");
-            attributes.removeIf(a -> a.id().equals(attribute.id()) || a.getClass() == attribute.getClass());
+            attributes.removeIf(a -> a.key().equals(attribute.key()) || a.getClass() == attribute.getClass());
             attributes.add(attribute);
             return this;
         }
@@ -178,11 +178,11 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
         /**
          * Removes the attribute with the specified ID from the builder.
          *
-         * @param id the attribute ID to remove
+         * @param key the attribute Key to remove
          * @return this builder instance for chaining
          */
-        public Builder without(NamespaceId id) {
-            attributes.removeIf(a -> a.id().equals(id));
+        public Builder without(Key key) {
+            attributes.removeIf(a -> a.key().equals(key));
             return this;
         }
 
@@ -203,10 +203,10 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          * @return a new immutable AttributeContainer with the builder's attributes
          */
         public AttributeContainer build() {
-            Map<NamespaceId, ItemAttribute> attributeMap = HashMap.newHashMap(attributes.size());
+            Map<Key, ItemAttribute> attributeMap = HashMap.newHashMap(attributes.size());
 
             for (ItemAttribute attr : attributes) {
-                attributeMap.put(attr.id(), attr);
+                attributeMap.put(attr.key(), attr);
             }
 
             return new AttributeContainer(attributeMap);

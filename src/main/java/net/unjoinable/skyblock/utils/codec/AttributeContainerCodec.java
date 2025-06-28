@@ -1,12 +1,12 @@
 package net.unjoinable.skyblock.utils.codec;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.Result;
 import net.minestom.server.codec.Transcoder;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.registry.registries.CodecRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,11 +24,11 @@ public class AttributeContainerCodec implements Codec<AttributeContainer> {
         }
 
         var builder = AttributeContainer.builder();
-        for (NamespaceId id : registry.secondaryKeys()) {
-            String idStr = id.toString();
+        for (Key key : registry.secondaryKeys()) {
+            String idStr = key.asString();
 
             if (mapLike.hasValue(idStr) && mapLike.getValue(idStr) instanceof Result.Ok<D>(var data)) {
-                registry.getCodecByNamespace(id).ifPresent(codec -> {
+                registry.getCodecByNamespace(key).ifPresent(codec -> {
                     if (codec.decode(coder, data) instanceof Result.Ok(ItemAttribute attr)) {
                         builder.with(attr);
                     }
@@ -47,7 +47,7 @@ public class AttributeContainerCodec implements Codec<AttributeContainer> {
         var mapBuilder = coder.createMap();
         for (ItemAttribute attr : value) {
             if (attr.safeCodec().encode(coder, attr) instanceof Result.Ok<D>(var encoded)) {
-                mapBuilder.put(attr.id().toString(), encoded);
+                mapBuilder.put(attr.key().asString(), encoded);
             }
         }
 

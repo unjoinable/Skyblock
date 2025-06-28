@@ -1,5 +1,6 @@
 package net.unjoinable.skyblock.player.systems;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import net.unjoinable.skyblock.item.SkyblockItem;
@@ -13,7 +14,6 @@ import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.ui.actionbar.ActionBarDisplay;
 import net.unjoinable.skyblock.ui.actionbar.ActionBarPurpose;
 import net.unjoinable.skyblock.ui.actionbar.ActionBarSection;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class AbilitySystem implements PlayerSystem {
 
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
-    private final Map<NamespaceId, Long> cooldowns = new HashMap<>();
+    private final Map<Key, Long> cooldowns = new HashMap<>();
     private boolean initialized;
 
     public AbilitySystem(SkyblockPlayer player, ItemProcessor itemProcessor) {
@@ -103,7 +103,7 @@ public class AbilitySystem implements PlayerSystem {
      * @return true if ability is ready, false if still on cooldown
      */
     public boolean isReady(ItemAbility ability) {
-        Long lastUsed = cooldowns.get(ability.id());
+        Long lastUsed = cooldowns.get(ability.key());
         if (lastUsed == null) return true;
 
         return System.currentTimeMillis() - lastUsed >= ability.cooldown();
@@ -131,7 +131,7 @@ public class AbilitySystem implements PlayerSystem {
      * @return remaining cooldown in milliseconds, or 0 if ready
      */
     public long getRemainingCooldown(ItemAbility ability) {
-        Long lastUsed = cooldowns.get(ability.id());
+        Long lastUsed = cooldowns.get(ability.key());
         if (lastUsed == null) return 0;
 
         long elapsed = System.currentTimeMillis() - lastUsed;
@@ -145,7 +145,7 @@ public class AbilitySystem implements PlayerSystem {
      * @param ability the ability to reset
      */
     public void clearCooldown(ItemAbility ability) {
-        cooldowns.remove(ability.id());
+        cooldowns.remove(ability.key());
     }
 
     /**
@@ -160,7 +160,7 @@ public class AbilitySystem implements PlayerSystem {
      * Executes an ability: starts cooldown, consumes resources, runs action, and shows feedback.
      */
     private void execute(ItemAbility ability, SkyblockItem item) {
-        cooldowns.put(ability.id(), System.currentTimeMillis());
+        cooldowns.put(ability.key(), System.currentTimeMillis());
         consumeResources(ability);
         ability.action().accept(player, item);
         showFeedback(ability);
@@ -197,7 +197,7 @@ public class AbilitySystem implements PlayerSystem {
         switch (ability.costType()) {
             case MANA -> {
                 var display = new ActionBarDisplay(
-                        text(ability.id().toString()),
+                        text(ability.key().asString()),
                         40, 100,
                         ActionBarPurpose.ABILITY
                 );

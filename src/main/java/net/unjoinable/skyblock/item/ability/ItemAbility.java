@@ -1,11 +1,11 @@
 package net.unjoinable.skyblock.item.ability;
 
+import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.registry.registries.AbilityRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 import net.unjoinable.skyblock.utils.codec.ItemAbilityCodec;
 
 import java.util.List;
@@ -16,15 +16,8 @@ import java.util.function.BiConsumer;
  * Abilities have a unique identifier, trigger type, optional resource cost,
  * description lines, and executable logic.
  */
-public interface ItemAbility {
+public interface ItemAbility extends Keyed {
     Codec<ItemAbility> CODEC = new ItemAbilityCodec(AbilityRegistry.withDefaults());
-
-    /**
-     * Returns the unique namespaced identifier of this ability.
-     *
-     * @return the ability's ID
-     */
-    NamespaceId id();
 
     /**
      * Returns how the ability is triggered (e.g., right-click, sneak).

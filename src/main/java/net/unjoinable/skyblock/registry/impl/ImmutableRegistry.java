@@ -1,6 +1,7 @@
 package net.unjoinable.skyblock.registry.impl;
 
 import net.unjoinable.skyblock.registry.Registry;
+import org.intellij.lang.annotations.Subst;
 
 import java.util.*;
 
@@ -67,6 +68,7 @@ public class ImmutableRegistry<K, V> implements Registry<K, V> {
         return entries.keySet(); // Already unmodifiable because of unmodifiableMap
     }
 
+    @Subst("")
     @Override
     public Set<V> values() {
         return Set.copyOf(entries.values());

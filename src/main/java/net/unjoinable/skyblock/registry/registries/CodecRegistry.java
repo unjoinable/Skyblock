@@ -1,12 +1,12 @@
 package net.unjoinable.skyblock.registry.registries;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.attribute.impls.AbilityAttribute;
 import net.unjoinable.skyblock.item.attribute.impls.BaseStatsAttribute;
 import net.unjoinable.skyblock.item.attribute.impls.UpgradedRarityAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.registry.impl.PairedKeyRegistry;
-import net.unjoinable.skyblock.utils.NamespaceId;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,18 +16,18 @@ import java.util.Optional;
  *
  * <p>This registry extends {@link PairedKeyRegistry} to provide a type-safe
  * mapping between {@link ItemAttribute} classes and their corresponding
- * {@link Codec} instances, with additional lookup capability by {@link NamespaceId}.</p>
+ * {@link Codec} instances, with additional lookup capability by {@link net.kyori.adventure.key.Key}.</p>
  *
  * <p>The registry supports dual-key access:
  * <ul>
  *   <li>Primary key: {@link ItemAttribute} class type</li>
- *   <li>Secondary key: {@link NamespaceId} for namespace-based lookups</li>
+ *   <li>Secondary key: {@link net.kyori.adventure.key.Key} for namespace-based lookups</li>
  * </ul></p>
  *
  * <p>This allows for efficient lookup operations for codecs by either their
  * associated attribute class types or their namespace identifiers.</p>
  */
-public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribute>, NamespaceId, Codec<? extends ItemAttribute>> {
+public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribute>, Key, Codec<? extends ItemAttribute>> {
 
     /**
      * Constructs a new CodecRegistry.
@@ -49,7 +49,7 @@ public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribu
      * @param secondaryMap the map to use for namespace-to-class mapping
      */
     public CodecRegistry(Map<Class<? extends ItemAttribute>, Codec<? extends ItemAttribute>> primaryMap,
-                         Map<NamespaceId, Class<? extends ItemAttribute>> secondaryMap) {
+                         Map<Key, Class<? extends ItemAttribute>> secondaryMap) {
         super(primaryMap, secondaryMap);
     }
 
@@ -60,11 +60,11 @@ public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribu
      * by either the attribute class type or the namespace identifier.</p>
      *
      * @param attributeClass the {@link ItemAttribute} class type
-     * @param namespaceId    the {@link NamespaceId} for the attribute
+     * @param namespaceId    the {@link Key} for the attribute
      * @param codec          the {@link Codec} for serialization/deserialization
      */
     public void registerCodec(Class<? extends ItemAttribute> attributeClass,
-                              NamespaceId namespaceId,
+                              Key namespaceId,
                               Codec<? extends ItemAttribute> codec) {
         register(attributeClass, namespaceId, codec);
     }
@@ -76,10 +76,10 @@ public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribu
      * providing an alternative lookup mechanism for when the exact class
      * type is not readily available.</p>
      *
-     * @param namespaceId the {@link NamespaceId} to look up
+     * @param namespaceId the {@link Key} to look up
      * @return an {@link Optional} containing the codec if found, empty otherwise
      */
-    public Optional<Codec<? extends ItemAttribute>> getCodecByNamespace(NamespaceId namespaceId) {
+    public Optional<Codec<? extends ItemAttribute>> getCodecByNamespace(Key namespaceId) {
         return getBySecondaryKey(namespaceId);
     }
 
@@ -95,15 +95,15 @@ public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribu
      * standard use cases where all default attribute codecs are needed.</p>
      *
      * <p><strong>Note:</strong> You'll need to provide the appropriate
-     * {@link NamespaceId} constants for each attribute type.</p>
+     * {@link Key} constants for each attribute type.</p>
      *
      * @return a new {@link CodecRegistry} containing all standard attribute codecs
      */
     public static CodecRegistry withDefaults() {
         CodecRegistry registry = new CodecRegistry();
-        registry.registerCodec(BaseStatsAttribute.class, BaseStatsAttribute.ID, BaseStatsAttribute.CODEC);
-        registry.registerCodec(UpgradedRarityAttribute.class, UpgradedRarityAttribute.ID, UpgradedRarityAttribute.CODEC);
-        registry.registerCodec(AbilityAttribute.class, AbilityAttribute.ID, AbilityAttribute.CODEC);
+        registry.registerCodec(BaseStatsAttribute.class, BaseStatsAttribute.KEY, BaseStatsAttribute.CODEC);
+        registry.registerCodec(UpgradedRarityAttribute.class, UpgradedRarityAttribute.KEY, UpgradedRarityAttribute.CODEC);
+        registry.registerCodec(AbilityAttribute.class, AbilityAttribute.KEY, AbilityAttribute.CODEC);
         return registry;
     }
 }
