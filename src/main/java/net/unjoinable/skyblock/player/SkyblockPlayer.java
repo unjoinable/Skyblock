@@ -6,6 +6,7 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.timer.TaskSchedule;
 import net.unjoinable.skyblock.player.factory.PlayerCreationContext;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
+import net.unjoinable.skyblock.player.systems.AbilitySystem;
 import net.unjoinable.skyblock.player.systems.EconomySystem;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
@@ -21,6 +22,7 @@ public class SkyblockPlayer extends Player {
     private final SystemsManager systemsManager;
     private final PlayerStatSystem statSystem;
     private final EconomySystem economySystem;
+    private final AbilitySystem abilitySystem;
     private final PlayerActionBar actionBar;
     private final MainSidebar sidebar;
     private PlayerRank playerRank;
@@ -32,8 +34,10 @@ public class SkyblockPlayer extends Player {
         this.systemsManager = new SystemsManager();
         this.statSystem = new PlayerStatSystem(this, ctx.itemProcessor());
         this.economySystem = new EconomySystem();
+        this.abilitySystem = new AbilitySystem(this, ctx.itemProcessor());
         this.systemsManager.registerSystem(this.statSystem);
         this.systemsManager.registerSystem(this.economySystem);
+        this.systemsManager.registerSystem(this.abilitySystem);
 
         // UI
         this.actionBar = new PlayerActionBar(this);
@@ -132,6 +136,15 @@ public class SkyblockPlayer extends Player {
      */
     public EconomySystem getEconomySystem() {
         return this.economySystem;
+    }
+
+    /**
+     * Gets the player's ability system instance.
+     *
+     * @return the system responsible for managing this player's item abilities and their usage
+     */
+    public AbilitySystem getAbilitySystem() {
+        return abilitySystem;
     }
 
     /**

@@ -8,7 +8,9 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.player.*;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.unjoinable.skyblock.item.ability.ExecutionType;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
@@ -182,13 +184,17 @@ public class PlayerListener {
      */
     private void registerPlayerUseItemEvent() {
         this.eventHandler.addListener(PlayerUseItemEvent.class, event -> {
-            Material material = event.getItemStack().material();
+            SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+            ItemStack itemStack = event.getItemStack();
+            Material material = itemStack.material();
             ItemSlot slot = ARMOR_SLOT_MAP.get(material);
 
             if (slot != null) {
-                SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
                 MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> player.getStatSystem().updateSlot(slot));
+                return;
             }
+
+            player.getAbilitySystem().tryUse(itemStack, ExecutionType.RIGHT_CLICK);
         });
     }
 

@@ -153,6 +153,23 @@ public class PlayerStatSystem implements PlayerSystem {
     }
 
     /**
+     * Attempts to consume the specified amount of health from the player's current health pool.
+     * <p>
+     * If the player has sufficient health, it will be deducted and the method returns true.
+     * Otherwise, no health is consumed and the method returns false.
+     *
+     * @param amount the amount of health to consume
+     * @return true if the health was successfully consumed, false if insufficient health
+     */
+    public boolean consumeHealth(double amount) {
+        if (currentHealth >= amount) {
+            setCurrentHealth(currentHealth - amount);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Gets the player's current intelligence stat, which determines maximum mana.
      *
      * @return the current intelligence value

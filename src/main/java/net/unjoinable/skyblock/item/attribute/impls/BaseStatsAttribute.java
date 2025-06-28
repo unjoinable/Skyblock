@@ -32,7 +32,7 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
  * external modification after construction.
  */
 public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements ItemAttribute, LoreAttribute {
-    public static final NamespaceId ID = new NamespaceId("attribute", "baseStats");
+    public static final NamespaceId ID = new NamespaceId("attribute", "base_stats");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
             "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,
             BaseStatsAttribute::new
