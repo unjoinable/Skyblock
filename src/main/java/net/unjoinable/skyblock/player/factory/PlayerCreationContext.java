@@ -18,8 +18,7 @@ import net.unjoinable.skyblock.item.service.ItemProcessor;
 public record PlayerCreationContext(
         PlayerConnection connection,
         GameProfile gameProfile,
-        ItemProcessor itemProcessor
-) {
+        ItemProcessor itemProcessor) {
     /**
      * Creates a new {@link Builder} instance to construct a {@link PlayerCreationContext}.
      *

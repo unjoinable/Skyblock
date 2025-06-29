@@ -12,6 +12,8 @@ import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
 import net.unjoinable.skyblock.player.ui.sidebar.MainSidebar;
 
+import static net.unjoinable.skyblock.statistic.Statistic.SPEED;
+
 /**
  * Extended Player class for Skyblock gameplay with custom systems and UI components.
  * <p>
@@ -73,6 +75,7 @@ public class SkyblockPlayer extends Player {
         this.statSystem.regenerateHealth();
         this.statSystem.regenerateMana();
         this.sidebar.update(this);
+        this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(getStatSystem().getStat(SPEED)/1000);
     }
 
     @Override

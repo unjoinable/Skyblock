@@ -8,6 +8,7 @@ import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
+import net.unjoinable.skyblock.item.service.AttributeResolver;
 import net.unjoinable.skyblock.item.service.ItemStatsCalculator;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.statistic.StatProfile;
@@ -15,9 +16,7 @@ import net.unjoinable.skyblock.statistic.Statistic;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
-
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,7 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
  */
 public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements ItemAttribute, LoreAttribute {
     public static final Key KEY = Key.key("attribute:base_stats");
+    private static final Component WHITE_SPACE = text(" ");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(
             "baseStats", Codec.Enum(Statistic.class).mapValue(Codec.DOUBLE), BaseStatsAttribute::baseStats,
             BaseStatsAttribute::new
@@ -68,7 +68,7 @@ public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements It
             double value = addedStats.get(stat);
             if (value == 0D) continue;
 
-            loreLines.add(formatStat(stat, value));
+            loreLines.add(formatStat(container ,stat, value));
         }
 
         return loreLines;
@@ -87,18 +87,25 @@ public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements It
      * <p>
      * The value must be non-zero; this method assumes it has already been filtered out if zero.
      *
+     * @param container The attribute container, used for context
      * @param stat  The statistic to format (e.g. Strength, Crit Chance)
      * @param value The non-zero value of the stat
      * @return A {@link Component} representing the stat line for display
      */
-    private static Component formatStat(Statistic stat, double value) {
+    private static Component formatStat(AttributeContainer container, Statistic stat, double value) {
         boolean isPercent = stat.isPercentage();
         String formattedValue = String.format(isPercent ? "%.1f" : "%.0f", value);
 
-        return text()
+        var basic = text()
                 .append(text(stat.displayName() + ": ", GRAY))
                 .append(text("+" + formattedValue + (isPercent ? "%" : ""), stat.loreColor()))
-                .decoration(ITALIC, false)
-                .build();
+                .decoration(ITALIC, false);
+
+        AttributeResolver.getStatModifiers(container).forEach(statModifiers -> {
+            if (!statModifiers.shouldDisplay()) return;
+            basic.append(WHITE_SPACE).append(statModifiers.display().getOrDefault(stat, Component.empty()));
+        });
+
+        return basic.build();
     }
 }

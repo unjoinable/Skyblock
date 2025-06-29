@@ -17,5 +17,5 @@ dependencies {
     implementation("net.minestom:minestom-snapshots:1_21_6-a40d7115d4")
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("net.kyori:adventure-text-minimessage:4.14.0")
-    compileOnly("org.jspecify:jspecify:1.0.0")
+    implementation("org.jspecify:jspecify:1.0.0")
 }

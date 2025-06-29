@@ -3,6 +3,7 @@ package net.unjoinable.skyblock;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.extras.MojangAuth;
+import net.unjoinable.skyblock.command.ICanHasStormCommand;
 import net.unjoinable.skyblock.command.ItemCommand;
 import net.unjoinable.skyblock.command.RankCommand;
 import net.unjoinable.skyblock.command.TestCommand;
@@ -30,7 +31,7 @@ public class Skyblock {
         MinecraftServer server = MinecraftServer.init();
         MojangAuth.init();
         MinecraftServer.getConnectionManager().setPlayerProvider(new PlayerFactory(itemProcessor));
-        MinecraftServer.setBrandName("Hystom");
+        MinecraftServer.setBrandName("Hystorm");
 
         // Listeners
         new PlayerListener(MinecraftServer.getGlobalEventHandler()).register();
@@ -40,6 +41,7 @@ public class Skyblock {
         cmdMgr.register(new TestCommand());
         cmdMgr.register(new ItemCommand(itemRegistry, itemProcessor));
         cmdMgr.register(new RankCommand());
+        cmdMgr.register(new ICanHasStormCommand());
         server.start("0.0.0.0", 25565);
     }
 }

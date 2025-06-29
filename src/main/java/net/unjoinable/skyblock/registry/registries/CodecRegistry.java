@@ -3,6 +3,7 @@ package net.unjoinable.skyblock.registry.registries;
 import net.kyori.adventure.key.Key;
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.attribute.impls.AbilityAttribute;
+import net.unjoinable.skyblock.item.attribute.impls.ArtOfWarAttribute;
 import net.unjoinable.skyblock.item.attribute.impls.BaseStatsAttribute;
 import net.unjoinable.skyblock.item.attribute.impls.UpgradedRarityAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
@@ -104,6 +105,7 @@ public class CodecRegistry extends PairedKeyRegistry<Class<? extends ItemAttribu
         registry.registerCodec(BaseStatsAttribute.class, BaseStatsAttribute.KEY, BaseStatsAttribute.CODEC);
         registry.registerCodec(UpgradedRarityAttribute.class, UpgradedRarityAttribute.KEY, UpgradedRarityAttribute.CODEC);
         registry.registerCodec(AbilityAttribute.class, AbilityAttribute.KEY, AbilityAttribute.CODEC);
+        registry.registerCodec(ArtOfWarAttribute.class, ArtOfWarAttribute.KEY, ArtOfWarAttribute.CODEC);
         return registry;
     }
 }

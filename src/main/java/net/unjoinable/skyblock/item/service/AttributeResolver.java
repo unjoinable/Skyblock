@@ -2,6 +2,10 @@ package net.unjoinable.skyblock.item.service;
 
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.impls.UpgradedRarityAttribute;
+import net.unjoinable.skyblock.item.attribute.traits.StatModifierAttribute;
+
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 /**
  * Utility class for resolving and querying item attribute states.
@@ -45,5 +49,30 @@ public class AttributeResolver {
                 .get(UpgradedRarityAttribute.class)
                 .map(UpgradedRarityAttribute::isUpgraded)
                 .orElse(false);
+    }
+
+    /**
+     * Retrieves all stat modifier attributes from the given container.
+     * <p>
+     * This method streams through all attributes in the container and filters
+     * for those that implement the {@link StatModifierAttribute} interface.
+     * The returned stream can be used to process stat modifiers in a functional
+     * style, allowing for operations like mapping, filtering, or collecting.
+     * <p>
+     * If no stat modifier attributes are present in the container, an empty
+     * stream is returned. The stream is lazily evaluated, so filtering and
+     * casting operations are only performed when terminal operations are invoked.
+     *
+     * @param container the attribute container to query (must not be null)
+     * @return a stream of all {@link StatModifierAttribute} instances found
+     *         in the container, or an empty stream if none are present
+     * @see StatModifierAttribute
+     */
+    public static Stream<StatModifierAttribute> getStatModifiers(AttributeContainer container) {
+        return container
+                .stream()
+                .filter(StatModifierAttribute.class::isInstance)
+                .map(StatModifierAttribute.class::cast)
+                .sorted(Comparator.comparingInt(StatModifierAttribute::modifierPriority));
     }
 }
