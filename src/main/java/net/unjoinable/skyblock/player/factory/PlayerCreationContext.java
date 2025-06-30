@@ -3,6 +3,7 @@ package net.unjoinable.skyblock.player.factory;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
+import net.unjoinable.skyblock.time.SkyblockStandardTime;
 
 /**
  * Represents all required context to create a Player instance in the game.
@@ -14,11 +15,13 @@ import net.unjoinable.skyblock.item.service.ItemProcessor;
  * @param connection    the player connection to the server (network layer)
  * @param gameProfile   the Minestom game profile containing username, UUID, properties
  * @param itemProcessor a service to manage the player's item-related logic
+ * @param skyblockTime  the game's time system for tracking skyblock time
  */
 public record PlayerCreationContext(
         PlayerConnection connection,
         GameProfile gameProfile,
-        ItemProcessor itemProcessor) {
+        ItemProcessor itemProcessor,
+        SkyblockStandardTime skyblockTime) {
     /**
      * Creates a new {@link Builder} instance to construct a {@link PlayerCreationContext}.
      *
@@ -36,6 +39,7 @@ public record PlayerCreationContext(
         private PlayerConnection connection;
         private GameProfile gameProfile;
         private ItemProcessor itemProcessor;
+        private SkyblockStandardTime skyblockTime;
 
         public Builder connection(PlayerConnection connection) {
             this.connection = connection;
@@ -52,6 +56,11 @@ public record PlayerCreationContext(
             return this;
         }
 
+        public Builder skyblockTime(SkyblockStandardTime skyblockTime) {
+            this.skyblockTime = skyblockTime;
+            return this;
+        }
+
         /**
          * Builds a {@link PlayerCreationContext} after validating all required fields are non-null.
          *
@@ -59,17 +68,19 @@ public record PlayerCreationContext(
          * @throws IllegalStateException if any field is null
          */
         public PlayerCreationContext build() {
-            if (connection == null) {
+            if (this.connection == null) {
                 throw new IllegalStateException("PlayerConnection must not be null.");
             }
-            if (gameProfile == null) {
+            if (this.gameProfile == null) {
                 throw new IllegalStateException("GameProfile must not be null.");
             }
-            if (itemProcessor == null) {
+            if (this.itemProcessor == null) {
                 throw new IllegalStateException("ItemProcessor must not be null.");
             }
-
-            return new PlayerCreationContext(connection, gameProfile, itemProcessor);
+            if (this.skyblockTime == null) {
+                throw new IllegalStateException("SkyblockStandardTime must not be null.");
+            }
+            return new PlayerCreationContext(connection, gameProfile, itemProcessor, skyblockTime);
         }
     }
 }

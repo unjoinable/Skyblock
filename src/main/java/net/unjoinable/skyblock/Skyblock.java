@@ -9,9 +9,11 @@ import net.unjoinable.skyblock.command.RankCommand;
 import net.unjoinable.skyblock.command.TestCommand;
 import net.unjoinable.skyblock.event.listener.PlayerListener;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
+import net.unjoinable.skyblock.level.IslandManager;
 import net.unjoinable.skyblock.player.factory.PlayerFactory;
 import net.unjoinable.skyblock.registry.registries.CodecRegistry;
 import net.unjoinable.skyblock.registry.registries.ItemRegistry;
+import net.unjoinable.skyblock.time.SkyblockStandardTime;
 
 public class Skyblock {
 
@@ -24,17 +26,18 @@ public class Skyblock {
         var itemRegistry = ItemRegistry.withDefaults();
         var attributeCodecRegistry = CodecRegistry.withDefaults();
 
-        // Systems
-        ItemProcessor itemProcessor = new ItemProcessor(attributeCodecRegistry, itemRegistry);
-
-        // Server
         MinecraftServer server = MinecraftServer.init();
         MojangAuth.init();
-        MinecraftServer.getConnectionManager().setPlayerProvider(new PlayerFactory(itemProcessor));
+
+        ItemProcessor itemProcessor = new ItemProcessor(attributeCodecRegistry, itemRegistry);
+        SkyblockStandardTime skyblockTime = new SkyblockStandardTime();
+
+        MinecraftServer.getConnectionManager().setPlayerProvider(new PlayerFactory(itemProcessor, skyblockTime));
         MinecraftServer.setBrandName("Hystorm");
+        IslandManager islandManager = IslandManager.withDefaults();
 
         // Listeners
-        new PlayerListener(MinecraftServer.getGlobalEventHandler()).register();
+        new PlayerListener(islandManager, MinecraftServer.getGlobalEventHandler()).register();
 
         // Commands
         CommandManager cmdMgr = MinecraftServer.getCommandManager();

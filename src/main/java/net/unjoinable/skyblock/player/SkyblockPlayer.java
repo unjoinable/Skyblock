@@ -4,6 +4,8 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.timer.TaskSchedule;
+import net.unjoinable.skyblock.level.Island;
+import net.unjoinable.skyblock.level.SkyblockIsland;
 import net.unjoinable.skyblock.player.factory.PlayerCreationContext;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.player.systems.AbilitySystem;
@@ -27,7 +29,9 @@ public class SkyblockPlayer extends Player {
     private final AbilitySystem abilitySystem;
     private final PlayerActionBar actionBar;
     private final MainSidebar sidebar;
+
     private PlayerRank playerRank;
+    private Island island;
 
     public SkyblockPlayer(PlayerCreationContext ctx) {
         super(ctx.connection(), ctx.gameProfile());
@@ -43,11 +47,12 @@ public class SkyblockPlayer extends Player {
 
         // UI
         this.actionBar = new PlayerActionBar(this);
-        this.sidebar = new MainSidebar();
+        this.sidebar = new MainSidebar(ctx.skyblockTime());
 
         // Attribute
         this.getAttribute(Attribute.MAX_HEALTH).setBaseValue(40);
         this.playerRank = PlayerRank.HYPIXEL_STAFF;
+        this.island = SkyblockIsland.HUB;
     }
 
     /**
@@ -160,5 +165,14 @@ public class SkyblockPlayer extends Player {
      */
     public PlayerActionBar getActionBar() {
         return actionBar;
+    }
+
+    /**
+     * Gets the island where this player is currently located.
+     *
+     * @return the player's current island
+     */
+    public Island getIsland() {
+        return island;
     }
 }

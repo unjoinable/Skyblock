@@ -6,11 +6,14 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.player.*;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.item.ability.ExecutionType;
+import net.unjoinable.skyblock.level.IslandManager;
+import net.unjoinable.skyblock.level.SkyblockIsland;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
@@ -25,14 +28,12 @@ import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 
 /**
- * Registers and handles global player-related events for the Skyblock server.
- * <p>
- * This class listens for events such as player spawning and initializes necessary
- * systems for the player upon joining the world. It also handles equipment changes
- * and inventory interactions to keep player statistics up to date.
+ * Handles player events including spawning, chat, inventory interactions, and item usage.
+ * Manages player initialization, stat updates, and ability execution.
  */
 public class PlayerListener {
     private static final Map<Material, ItemSlot> ARMOR_SLOT_MAP = new ConcurrentHashMap<>();
+    private final IslandManager islandManager;
     private final GlobalEventHandler eventHandler;
 
     static {
@@ -58,20 +59,19 @@ public class PlayerListener {
     }
 
     /**
-     * Constructs a new {@code PlayerListener}
+     * Creates a new PlayerListener.
      *
-     * @param eventHandler the global event handler used to register event listeners
+     * @param islandManager manages island instances for player spawning
+     * @param eventHandler the global event handler for registering listeners
      */
-    public PlayerListener(GlobalEventHandler eventHandler) {
+    public PlayerListener(IslandManager islandManager, GlobalEventHandler eventHandler) {
+        this.islandManager = islandManager;
         this.eventHandler = eventHandler;
     }
 
     /**
-     * Registers all player-related event listeners with the event handler.
-     * <p>
-     * This method must be called to activate all player event handling functionality.
-     * It registers listeners for configuration, spawning, item swapping, inventory clicks,
-     * and item usage events.
+     * Registers all player event listeners.
+     * Must be called to activate player event handling.
      */
     public void register() {
         registerPlayerSpawnListener();
@@ -108,29 +108,22 @@ public class PlayerListener {
     }
 
     /**
-     * Registers a listener for {@link AsyncPlayerConfigurationEvent}.
-     * <p>
-     * This is triggered during the player's configuration phase, before they
-     * enter the game world. It initializes the {@link SkyblockPlayer} instance.
+     * Sets up player spawning instance and initializes player systems.
      */
     private void registerPlayerConfigListener() {
-        InstanceContainer container = MinecraftServer.getInstanceManager().createInstanceContainer();
-        container.setChunkLoader(new AnvilLoader("worlds/hub"));
+        Instance instance = islandManager.getInstance(SkyblockIsland.HUB);
 
         this.eventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
-            event.setSpawningInstance(container);
+            event.setSpawningInstance(instance);
 
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-            player.setRespawnPoint(new Pos(-2, 71, -68).withYaw(-180F));
+            player.setRespawnPoint(SkyblockIsland.HUB.spawnPoint());
             player.getSystemsManager().startAllSystems();
         });
     }
 
     /**
-     * Registers a listener for {@link PlayerSpawnEvent}.
-     * <p>
-     * When a player spawns for the first time, this handler starts all systems associated
-     * with that {@link SkyblockPlayer}.
+     * Initializes player on first spawn.
      */
     private void registerPlayerSpawnListener() {
         this.eventHandler.addListener(PlayerSpawnEvent.class, event -> {
@@ -140,10 +133,7 @@ public class PlayerListener {
     }
 
     /**
-     * Registers a listener for {@link PlayerSwapItemEvent}.
-     * <p>
-     * This event is triggered when a player swaps items between their main hand and off-hand.
-     * Updates the player's statistics for the main hand slot to reflect the newly equipped item.
+     * Updates main hand stats when player swaps items.
      */
     private void registerPlayerSwapItemListener() {
         this.eventHandler.addListener(PlayerSwapItemEvent.class, event -> {
@@ -154,12 +144,7 @@ public class PlayerListener {
     }
 
     /**
-     * Registers a listener for {@link InventoryPreClickEvent}.
-     * <p>
-     * This event fires before an inventory click is processed. It detects clicks on
-     * armor slots or the main hand slot and schedules a stat system update for the
-     * affected slot at the end of the current tick to ensure the inventory change
-     * has been fully processed.
+     * Updates equipment stats when player clicks armor or main hand slots.
      */
     private void registerInventoryPreClickListener() {
         this.eventHandler.addListener(InventoryPreClickEvent.class, event -> {
@@ -176,11 +161,7 @@ public class PlayerListener {
     }
 
     /**
-     * Registers a listener for {@link PlayerUseItemEvent}.
-     * <p>
-     * This event is triggered when a player uses (right-clicks) an item. If the item
-     * is armor, it schedules a stat system update for the corresponding armor slot
-     * at the end of the tick, allowing the armor to be properly equipped and stats updated.
+     * Handles armor equipping and ability usage on right-click.
      */
     private void registerPlayerUseItemEvent() {
         this.eventHandler.addListener(PlayerUseItemEvent.class, event -> {

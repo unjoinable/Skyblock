@@ -1,39 +1,23 @@
 package net.unjoinable.skyblock.time;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.TaskSchedule;
 import org.jspecify.annotations.Nullable;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 /**
  * Represents the standard time system for Skyblock.
  * This class manages and updates the in-game time, including year, month, day, hours, and minutes.
  */
 public class SkyblockStandardTime {
+    private static final char DAY = '☀';
+    private static final char NIGHT = '☽';
     private static final long SKYBLOCK_START = 1560275700000L;
     private static final int SKYBLOCK_TIME_MULTIPLIER = 72;
-
-    // Pre-calculated constants for better performance
-    private static final long MILLIS_TO_GAME_MINUTES = SKYBLOCK_TIME_MULTIPLIER * 60_000L;
-    private static final int MINUTES_IN_HOUR = 60;
-    private static final int HOURS_IN_DAY = 24;
-    private static final int DAYS_IN_MONTH = 31;
-    private static final int MONTHS_IN_YEAR = 12;
-
-    // Cache for formatted strings to avoid repeated allocations
-    private static final String[] HOUR_CACHE = new String[12];
-    private static final String[] MINUTE_CACHE = new String[6];
-
-    static {
-        // Pre-compute hour strings (1-12)
-        for (int i = 0; i < 12; i++) {
-            HOUR_CACHE[i] = String.valueOf(i == 0 ? 12 : i);
-        }
-
-        // Pre-compute minute strings (00, 10, 20, 30, 40, 50)
-        for (int i = 0; i < 6; i++) {
-            MINUTE_CACHE[i] = String.format("%02d", i * 10);
-        }
-    }
 
     private Season season;
     private int year;
@@ -43,10 +27,13 @@ public class SkyblockStandardTime {
     private byte minutes;
 
     private @Nullable String cachedToString;
+    private @Nullable Component cachedTimeComponent;
 
     public SkyblockStandardTime() {
         update();
-        MinecraftServer.getSchedulerManager().scheduleTask(this::update, TaskSchedule.immediate(), TaskSchedule.seconds(8));
+        // Schedule update every 8.3 seconds (8300ms) to match original timing
+        MinecraftServer.getSchedulerManager().scheduleTask(this::update,
+                TaskSchedule.immediate(), TaskSchedule.millis(8300));
     }
 
     /**
@@ -55,25 +42,30 @@ public class SkyblockStandardTime {
      */
     private void update() {
         long currentTime = System.currentTimeMillis();
-
         long elapsedRealMillis = currentTime - SKYBLOCK_START;
-        long elapsedGameMinutes = elapsedRealMillis / MILLIS_TO_GAME_MINUTES;
 
-        // Use more efficient arithmetic
-        long totalGameHours = elapsedGameMinutes / MINUTES_IN_HOUR;
-        long totalGameDays = totalGameHours / HOURS_IN_DAY;
-        int totalGameMonths = (int) (totalGameDays / DAYS_IN_MONTH);
+        // Convert to Skyblock time: 1 real second = 72 Skyblock seconds
+        long skyBlockMillis = elapsedRealMillis * SKYBLOCK_TIME_MULTIPLIER;
 
-        this.year = (totalGameMonths / MONTHS_IN_YEAR) + 1;
-        this.month = (byte) (totalGameMonths % MONTHS_IN_YEAR);
-        this.day = (byte) ((totalGameDays % DAYS_IN_MONTH) + 1);
-        this.hours = (byte) (totalGameHours % HOURS_IN_DAY);
-        this.minutes = (byte) ((elapsedGameMinutes % MINUTES_IN_HOUR) / 10 * 10);
+        // Calculate time units
+        long skyBlockSeconds = skyBlockMillis / 1000;
+        long skyBlockMinutes = skyBlockSeconds / 60;
+        long skyBlockHours = skyBlockMinutes / 60;
+        long skyBlockDays = skyBlockHours / 24;
+        int skyBlockMonths = (int) (skyBlockDays / 31);
+
+        // Set time values
+        this.year = (skyBlockMonths / 12) + 1; // Start from year 1
+        this.month = (byte) (skyBlockMonths % 12);
+        this.day = (byte) ((skyBlockDays % 31) + 1); // Days 1-31
+        this.hours = (byte) (skyBlockHours % 24);
+        this.minutes = (byte) (((skyBlockMinutes % 60) / 10) * 10); // Round to nearest 10
 
         this.season = Season.fromOrdinal(this.month);
 
-        // Invalidate cached string
+        // Invalidate cached strings and components
         this.cachedToString = null;
+        this.cachedTimeComponent = null;
     }
 
     /**
@@ -133,15 +125,33 @@ public class SkyblockStandardTime {
     /**
      * Gets the current time in Skyblock as a formatted string.
      *
-     * @return A string representation of the current time in "HH:MM" format, with AM/PM indicator for afternoon times.
+     * @return A string representation of the current time in "HH:MM" format, with AM/PM indicator.
      */
     public String getTime() {
-        int hourIndex = hours % 12;
-        int minuteIndex = minutes / 10;
-        String period = (hours >= 12) ? "PM" : "AM";
+        int displayHour = hours % 12;
+        if (displayHour == 0) displayHour = 12; // 0 hours = 12 AM/PM
 
-        // Use cached strings to avoid allocations
-        return HOUR_CACHE[hourIndex] + ":" + MINUTE_CACHE[minuteIndex] + " " + period;
+        String period = (hours >= 12) ? "PM" : "AM";
+        return displayHour + ":" + String.format("%02d", minutes) + " " + period;
+    }
+
+    /**
+     * Gets the current time in Skyblock as a formatted Adventure Component.
+     * Returns a colored component with the time and a day/night symbol.
+     * Daytime (6 AM - 6:59 PM) shows a yellow sun symbol, nighttime shows an aqua moon symbol.
+     * The component is cached to avoid recreating expensive Component objects on repeated calls.
+     *
+     * @return A Component with the current time in gray text and a colored day/night symbol.
+     */
+    public Component getTimeComponent() {
+        if (cachedTimeComponent == null) {
+            if (isDayTime()) {
+                cachedTimeComponent = textOfChildren(text(" " + getTime(), GRAY), text(" " + DAY, YELLOW));
+            } else {
+                cachedTimeComponent = textOfChildren(text(" " + getTime(), GRAY), text(" " + NIGHT, AQUA));
+            }
+        }
+        return cachedTimeComponent;
     }
 
     /**
@@ -159,7 +169,7 @@ public class SkyblockStandardTime {
      * @return true if it's nighttime (7:00 PM to 5:59 AM), false otherwise.
      */
     public boolean isNightTime() {
-        return hours < 6 || hours >= 19; // More direct than !isDayTime()
+        return hours < 6 || hours >= 19;
     }
 
     @Override

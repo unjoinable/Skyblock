@@ -6,6 +6,7 @@ import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
+import net.unjoinable.skyblock.time.SkyblockStandardTime;
 
 /**
  * A factory responsible for creating {@link SkyblockPlayer} instances.
@@ -21,14 +22,16 @@ import net.unjoinable.skyblock.player.SkyblockPlayer;
  */
 public class PlayerFactory implements PlayerProvider {
     private final ItemProcessor itemProcessor;
+    private final SkyblockStandardTime skyblockTime;
 
     /**
      * Constructs a new {@code PlayerFactory} with the required {@link ItemProcessor}.
      *
      * @param itemProcessor the service responsible for handling item logic in the game; must not be null
      */
-    public PlayerFactory(ItemProcessor itemProcessor) {
+    public PlayerFactory(ItemProcessor itemProcessor, SkyblockStandardTime skyblockTime) {
         this.itemProcessor = itemProcessor;
+        this.skyblockTime = skyblockTime;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class PlayerFactory implements PlayerProvider {
                 .connection(connection)
                 .gameProfile(gameProfile)
                 .itemProcessor(itemProcessor)
+                .skyblockTime(skyblockTime)
                 .build();
 
         return new SkyblockPlayer(ctx);
