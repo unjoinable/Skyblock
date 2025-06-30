@@ -11,7 +11,6 @@ import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
 import net.minestom.server.utils.time.TimeUnit;
 import net.unjoinable.skyblock.entity.SkyblockEntity;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import net.unjoinable.skyblock.statistic.StatProfile;
 
 import java.time.Duration;
 import java.util.List;

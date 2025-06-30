@@ -185,9 +185,8 @@ public class AbilitySystem implements PlayerSystem {
      * Sends appropriate message when player lacks resources for an ability.
      */
     private void sendInsufficientResourceMessage(AbilityCostType costType) {
-        switch (costType) {
-            case MANA -> player.getActionBar().addReplacement(ActionBarSection.DEFENSE, NOT_ENOUGH_MANA);
-            default -> {} // No message needed atm
+        if (costType == AbilityCostType.MANA) {
+            player.getActionBar().addReplacement(ActionBarSection.DEFENSE, NOT_ENOUGH_MANA);
         }
     }
 
@@ -195,18 +194,15 @@ public class AbilitySystem implements PlayerSystem {
      * Shows visual feedback for ability usage.
      */
     private void showFeedback(ItemAbility ability) {
-        switch (ability.costType()) {
-            case MANA -> {
-                var display = new ActionBarDisplay(
-                        text("-" + ability.cost() + " Mana (", AQUA)
-                                .decoration(ITALIC, false)
-                                .append(text(ability.displayName(), GOLD))
-                                .append(text(")", AQUA)),
-                        40, 100, ActionBarPurpose.ABILITY
-                );
-                player.getActionBar().addReplacement(ActionBarSection.DEFENSE, display);
-            }
-            default -> {}
+        if (ability.costType() == AbilityCostType.MANA) {
+            var display = new ActionBarDisplay(
+                    text("-" + ability.cost() + " Mana (", AQUA)
+                            .decoration(ITALIC, false)
+                            .append(text(ability.displayName(), GOLD))
+                            .append(text(")", AQUA)),
+                    40, 100, ActionBarPurpose.ABILITY
+            );
+            player.getActionBar().addReplacement(ActionBarSection.DEFENSE, display);
         }
     }
 }
