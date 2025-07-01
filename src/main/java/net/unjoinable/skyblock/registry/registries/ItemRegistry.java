@@ -49,9 +49,8 @@ public class ItemRegistry extends ImmutableRegistry<Key, SkyblockItem> {
      * process. It uses an {@link ItemLoader} to discover and load all
      * available items from the configured data sources.</p>
      *
-     * <p>This is the recommended way to create an ItemRegistry for
-     * production use, as it ensures all items are properly loaded
-     * and registered.</p>
+     * <p>Items are loaded on a background thread, but this method will
+     * block until loading is complete.</p>
      *
      * @return a new {@link ItemRegistry} containing all loaded items
      *
