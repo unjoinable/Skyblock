@@ -20,8 +20,8 @@ import static net.unjoinable.skyblock.combat.statistic.Statistic.*;
 
 public class Zombie extends SkyblockEntity {
 
-    public Zombie() {
-        super(EntityType.ZOMBIE);
+    public Zombie(int level) {
+        super(EntityType.ZOMBIE, level);
     }
 
     @Override

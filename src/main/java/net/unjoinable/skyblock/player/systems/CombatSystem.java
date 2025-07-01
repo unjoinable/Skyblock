@@ -22,7 +22,9 @@ public class CombatSystem implements PlayerSystem {
         if (statSystem.isInvulnerable() || player.isDead()) {
             return;
         }
-        statSystem.consumeHealth(damageCalc.calcApplicableDamage(damage));
+        if (!statSystem.consumeHealth(damageCalc.calcApplicableDamage(damage))) {
+            player.kill();
+        }
     }
 
     public SkyblockDamage attack(Entity target) {

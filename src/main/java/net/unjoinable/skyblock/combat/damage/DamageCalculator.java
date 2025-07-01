@@ -66,6 +66,8 @@ public class DamageCalculator {
                 .rawDamage(rawDamage)
                 .damager(player)
                 .target(target)
+                .isCritical(isCritical)
+                .damageReason(DamageReason.PLAYER)
                 .build();
     }
 
@@ -78,8 +80,9 @@ public class DamageCalculator {
      */
     public double calcApplicableDamage(SkyblockDamage damage) {
         double finalDamage = damage.rawDamage();
-        StatProfile stats = statSystem.getFinalStats();
+        if (damage.damageType().bypassesDefense()) return finalDamage;
 
+        StatProfile stats = statSystem.getFinalStats();
         double defense = stats.get(DEFENSE);
         finalDamage = finalDamage * (1.0 - (defense / (defense + 100.0)));
 

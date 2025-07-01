@@ -8,12 +8,16 @@ import org.jspecify.annotations.Nullable;
  *
  * @param rawDamage The raw damage amount before any modifiers
  * @param damageType The type of damage being dealt
+ * @param damageReason The reason or source of the damage
+ * @param isCritical Whether this damage is a critical hit
  * @param damager The entity causing the damage, null if caused by server/environment
  * @param target The entity receiving the damage
  */
 public record SkyblockDamage(
         double rawDamage,
         DamageType damageType,
+        DamageReason damageReason,
+        boolean isCritical,
         @Nullable Entity damager,
         Entity target) {
 
@@ -31,7 +35,9 @@ public record SkyblockDamage(
      */
     public static class Builder {
         private double rawDamage = 0.0;
-        private DamageType damageType = DamageType.SERVER;
+        private DamageType damageType = DamageType.UNKNOWN;
+        private DamageReason damageReason = DamageReason.SERVER;
+        private boolean isCritical = false;
         private @Nullable Entity damager = null;
         private @Nullable Entity target = null;
 
@@ -56,6 +62,28 @@ public record SkyblockDamage(
          */
         public Builder damageType(DamageType damageType) {
             this.damageType = damageType;
+            return this;
+        }
+
+        /**
+         * Sets the damage reason.
+         *
+         * @param damageReason The reason for the damage
+         * @return This builder instance for method chaining
+         */
+        public Builder damageReason(DamageReason damageReason) {
+            this.damageReason = damageReason;
+            return this;
+        }
+
+        /**
+         * Sets whether this damage is critical.
+         *
+         * @param isCritical True if this is a critical hit
+         * @return This builder instance for method chaining
+         */
+        public Builder isCritical(boolean isCritical) {
+            this.isCritical = isCritical;
             return this;
         }
 
@@ -92,7 +120,7 @@ public record SkyblockDamage(
                 throw new IllegalStateException("Target entity cannot be null");
             }
 
-            return new SkyblockDamage(rawDamage, damageType, damager, target);
+            return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);
         }
     }
 }
