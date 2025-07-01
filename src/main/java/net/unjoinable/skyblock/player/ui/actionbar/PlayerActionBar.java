@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 import net.unjoinable.skyblock.ui.actionbar.ActionBar;
 import net.unjoinable.skyblock.ui.actionbar.ActionBarSection;
 

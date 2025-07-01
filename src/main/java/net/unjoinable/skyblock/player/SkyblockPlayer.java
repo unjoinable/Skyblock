@@ -14,7 +14,7 @@ import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
 import net.unjoinable.skyblock.player.ui.sidebar.MainSidebar;
 
-import static net.unjoinable.skyblock.statistic.Statistic.SPEED;
+import static net.unjoinable.skyblock.combat.statistic.Statistic.SPEED;
 
 /**
  * Extended Player class for Skyblock gameplay with custom systems and UI components.
@@ -31,7 +31,7 @@ public class SkyblockPlayer extends Player {
     private final MainSidebar sidebar;
 
     private PlayerRank playerRank;
-    private Island island;
+    private final Island island;
 
     public SkyblockPlayer(PlayerCreationContext ctx) {
         super(ctx.connection(), ctx.gameProfile());

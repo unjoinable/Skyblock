@@ -9,8 +9,8 @@ import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Instance;
-import net.unjoinable.skyblock.statistic.StatProfile;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 import net.unjoinable.skyblock.utils.MiniString;
 
 import java.util.List;

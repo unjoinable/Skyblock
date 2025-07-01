@@ -5,8 +5,8 @@ import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.impls.BaseStatsAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.StatModifierAttribute;
-import net.unjoinable.skyblock.statistic.StatProfile;
-import net.unjoinable.skyblock.statistic.StatValueType;
+import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.combat.statistic.StatValueType;
 
 /**
  * Utility service for calculating item statistics by combining attributes.

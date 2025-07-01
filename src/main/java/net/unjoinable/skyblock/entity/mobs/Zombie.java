@@ -15,8 +15,8 @@ import net.unjoinable.skyblock.player.SkyblockPlayer;
 import java.time.Duration;
 import java.util.List;
 
-import static net.unjoinable.skyblock.statistic.StatValueType.BASE;
-import static net.unjoinable.skyblock.statistic.Statistic.*;
+import static net.unjoinable.skyblock.combat.statistic.StatValueType.BASE;
+import static net.unjoinable.skyblock.combat.statistic.Statistic.*;
 
 public class Zombie extends SkyblockEntity {
 

@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.statistic;
+package net.unjoinable.skyblock.combat.statistic;
 
 import java.util.Arrays;
 import java.util.BitSet;

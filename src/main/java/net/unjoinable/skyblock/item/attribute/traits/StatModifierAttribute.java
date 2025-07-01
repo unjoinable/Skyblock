@@ -4,8 +4,8 @@ import net.kyori.adventure.text.Component;
 import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import net.unjoinable.skyblock.statistic.StatProfile;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;

@@ -3,7 +3,7 @@ package net.unjoinable.skyblock.item.reforge;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import net.unjoinable.skyblock.item.enums.Rarity;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;

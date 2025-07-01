@@ -9,9 +9,9 @@ import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.StatModifierAttribute;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import net.unjoinable.skyblock.statistic.StatProfile;
-import net.unjoinable.skyblock.statistic.StatValueType;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.combat.statistic.StatValueType;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
-import static net.unjoinable.skyblock.statistic.Statistic.STRENGTH;
+import static net.unjoinable.skyblock.combat.statistic.Statistic.STRENGTH;
 
 public record ArtOfWarAttribute(boolean applied) implements StatModifierAttribute {
     public static final Key KEY = Key.key("skyblock:art_of_war");

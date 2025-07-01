@@ -7,8 +7,8 @@ import net.unjoinable.skyblock.player.PlayerSystem;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.ui.inventory.ItemSlot;
 import net.unjoinable.skyblock.player.ui.inventory.VanillaItemSlot;
-import net.unjoinable.skyblock.statistic.StatProfile;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 
 import java.util.HashMap;
 import java.util.Map;

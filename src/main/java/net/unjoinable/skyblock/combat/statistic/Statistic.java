@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.statistic;
+package net.unjoinable.skyblock.combat.statistic;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;

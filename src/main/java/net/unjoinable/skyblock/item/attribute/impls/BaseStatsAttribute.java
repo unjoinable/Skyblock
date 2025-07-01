@@ -11,8 +11,8 @@ import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
 import net.unjoinable.skyblock.item.service.AttributeResolver;
 import net.unjoinable.skyblock.item.service.ItemStatsCalculator;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
-import net.unjoinable.skyblock.statistic.StatProfile;
-import net.unjoinable.skyblock.statistic.Statistic;
+import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.combat.statistic.Statistic;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
