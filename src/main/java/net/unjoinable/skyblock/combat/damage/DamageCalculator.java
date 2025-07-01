@@ -5,7 +5,7 @@ import net.unjoinable.skyblock.combat.statistic.StatProfile;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static net.unjoinable.skyblock.combat.statistic.Statistic.*;
 
@@ -15,7 +15,7 @@ import static net.unjoinable.skyblock.combat.statistic.Statistic.*;
  * strength, critical chance, and critical damage modifiers.
  */
 public class DamageCalculator {
-    private static final Random RANDOM = new Random();
+    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
     private static final double BASE_PHYSICAL_VALUE = 5.0;
 
     private final PlayerStatSystem statSystem;
@@ -46,24 +46,16 @@ public class DamageCalculator {
         double critChance = stats.get(CRIT_CHANCE);
         double critDamage = stats.get(CRIT_DAMAGE);
 
-        boolean isCritical = RANDOM.nextDouble() * 100 <= critChance;
-        double calculatedDamage = (BASE_PHYSICAL_VALUE + baseDamage) * (1 + strength / 100);
-
-        double additiveMultiplier = 1d;
-        double multiplicativeMultiplier = 1d;
-        double bonusModifiers = 1d;
-
-        calculatedDamage =  calculatedDamage * additiveMultiplier * multiplicativeMultiplier + bonusModifiers;
+        boolean isCritical = RANDOM.nextDouble() * 100.0 <= critChance;
+        double calculatedDamage = (BASE_PHYSICAL_VALUE + baseDamage) * (1.0 + strength / 100.0);
 
         if (isCritical) {
-            calculatedDamage *= (1 + critDamage / 100);
+            calculatedDamage *= (1.0 + critDamage / 100.0);
         }
-
-        double rawDamage = calculatedDamage;
 
         return SkyblockDamage
                 .builder()
-                .rawDamage(rawDamage)
+                .rawDamage(calculatedDamage)
                 .damager(player)
                 .target(target)
                 .isCritical(isCritical)
@@ -79,13 +71,11 @@ public class DamageCalculator {
      * @return the final damage after defense calculations
      */
     public double calcApplicableDamage(SkyblockDamage damage) {
-        double finalDamage = damage.rawDamage();
-        if (damage.damageType().bypassesDefense()) return finalDamage;
+        if (damage.damageType().bypassesDefense()) {
+            return damage.rawDamage();
+        }
 
-        StatProfile stats = statSystem.getFinalStats();
-        double defense = stats.get(DEFENSE);
-        finalDamage = finalDamage * (1.0 - (defense / (defense + 100.0)));
-
-        return finalDamage;
+        double defense = statSystem.getFinalStats().get(DEFENSE);
+        return damage.rawDamage() * (1.0 - (defense / (defense + 100.0)));
     }
 }
