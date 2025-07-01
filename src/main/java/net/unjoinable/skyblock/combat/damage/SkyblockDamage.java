@@ -38,10 +38,10 @@ public record SkyblockDamage(
         private DamageType damageType = DamageType.UNKNOWN;
         private DamageReason damageReason = DamageReason.SERVER;
         private boolean isCritical = false;
-        private @Nullable Entity damager = null;
-        private @Nullable Entity target = null;
+        private @Nullable Entity damager;
+        private @Nullable Entity target;
 
-        private Builder() {}
+        Builder() {}
 
         /**
          * Sets the raw damage amount.
@@ -117,7 +117,7 @@ public record SkyblockDamage(
          */
         public SkyblockDamage build() {
             if (target == null) {
-                throw new IllegalStateException("Target entity cannot be null");
+                throw new IllegalStateException("Target entity is required but was null");
             }
 
             return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);

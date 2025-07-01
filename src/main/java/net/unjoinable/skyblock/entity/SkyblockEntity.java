@@ -3,14 +3,12 @@ package net.unjoinable.skyblock.entity;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.component.DataComponents;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.entity.attribute.Attribute;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.play.DamageEventPacket;
 import net.minestom.server.network.packet.server.play.SoundEffectPacket;
 import net.minestom.server.sound.SoundEvent;
@@ -34,12 +32,16 @@ import static net.unjoinable.skyblock.utils.NumberUtils.formatClean;
 public abstract class SkyblockEntity extends EntityCreature {
     private final int level;
     protected final StatProfile statProfile = new StatProfile();
-    private boolean isInvulnerable = true;
+    private boolean isInvulnerable;
 
     private double maxHealth;
     private double currentHealth;
 
-    // Naming Consts
+    // Constants
+    private static final double BASE_DAMAGE_MODIFIER = 5.0;
+    private static final double SPEED_CONVERSION_FACTOR = 2.5 / 1000.0;
+    
+    // Naming Constants
     private static final Component OPENING_BRACKET = MiniString.asComponent("<dark_gray>[");
     private static final Component CLOSING_BRACKET = MiniString.asComponent("<dark_gray>] ");
     private static final Component HEART = MiniString.asComponent("<red>❤");
@@ -54,18 +56,12 @@ public abstract class SkyblockEntity extends EntityCreature {
         this.level = level;
 
         setCustomNameVisible(true);
-        // Configure stats based on level
         configureStats(level);
-
-        // Set max health attribute and initial health from stats
         this.maxHealth = statProfile.get(Statistic.HEALTH);
-        getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
-        setHealth((float)maxHealth);
-        this.isInvulnerable = false;
+        setHealth(maxHealth);
 
-        // Set movement speed based on stats
         double speedStat = statProfile.get(Statistic.SPEED);
-        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((speedStat / 1000) * 2.5);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(speedStat * SPEED_CONVERSION_FACTOR);
 
         set(DataComponents.CUSTOM_NAME, displayName());
         setAutoViewable(true);
@@ -106,16 +102,6 @@ public abstract class SkyblockEntity extends EntityCreature {
     protected abstract void configureStats(int lvl);
 
     /**
-     * Spawns this entity in the specified instance at the specified position with the given level
-     *
-     * @param instance the instance to spawn in
-     * @param spawnPos the position to spawn at
-     */
-    public void spawn(Instance instance, Pos spawnPos) {
-        setInstance(instance, spawnPos);
-    }
-
-    /**
      * Generates the display name component for this entity
      *
      * @return the formatted display name
@@ -126,13 +112,13 @@ public abstract class SkyblockEntity extends EntityCreature {
                 text("Lv" + level, GRAY),
                 CLOSING_BRACKET,
                 text(name() + " ", RED),
-                text(formatClean(getHealth()) + "/" + formatClean(maxHealth), GREEN),
+                text(formatClean(getCurrentHealth()) + "/" + formatClean(maxHealth), GREEN),
                 HEART
         );
     }
 
     /**
-     * Gets the current level of this entity
+     * Gets the current level of this entity.
      *
      * @return the entity level
      */
@@ -140,13 +126,32 @@ public abstract class SkyblockEntity extends EntityCreature {
         return level;
     }
 
-    // Combat Related
+    // Health Management
 
     /**
-     * Override Minestom's setHealth to update our display name when health changes
+     * Gets the current health of this entity.
+     *
+     * @return current health value
      */
-    @Override
-    public void setHealth(float health) {
+    public double getCurrentHealth() {
+        return this.currentHealth;
+    }
+
+    /**
+     * Gets the maximum health of this entity.
+     *
+     * @return maximum health value
+     */
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
+    /**
+     * Sets the current health of this entity and updates display name.
+     *
+     * @param health the new health value
+     */
+    public void setHealth(double health) {
         this.currentHealth = Math.min(health, maxHealth);
 
         if (this.currentHealth <= 0 && !isDead && !isInvulnerable) {
@@ -156,9 +161,17 @@ public abstract class SkyblockEntity extends EntityCreature {
         set(DataComponents.CUSTOM_NAME, displayName());
     }
 
-    @Override
-    public float getHealth() {
-        return (float) this.currentHealth;
+    /**
+     * Sets the maximum health of this entity.
+     *
+     * @param maxHealth the new maximum health value
+     * @throws IllegalArgumentException if maxHealth is negative or zero
+     */
+    public void setMaxHealth(double maxHealth) {
+        if (maxHealth <= 0) {
+            throw new IllegalArgumentException("Max health must be positive, got: " + maxHealth);
+        }
+        this.maxHealth = maxHealth;
     }
 
     @Override
@@ -171,9 +184,56 @@ public abstract class SkyblockEntity extends EntityCreature {
         this.isInvulnerable = invulnerable;
     }
 
+    // Minestom Health System Overrides (Disabled)
+
+    @Override
+    public float getHealth() {
+        throw new UnsupportedOperationException("Use getCurrentHealth() instead - Minestom health system is disabled");
+    }
+
+    @Override
+    public void setHealth(float health) {
+        throw new UnsupportedOperationException("Use setHealth(double) instead - Minestom health system is disabled");
+    }
+
+    // Combat System
+
+    /**
+     * Creates a melee attack damage object targeting the specified entity.
+     *
+     * @param target the entity to attack
+     * @return configured damage object
+     */
+    public SkyblockDamage attackMelee(Entity target) {
+        return SkyblockDamage
+                .builder()
+                .rawDamage(calculateAbsoluteDamage())
+                .target(target)
+                .damager(this)
+                .damageReason(DamageReason.ENTITY)
+                .damageType(DamageType.MELEE_ENTITY)
+                .build();
+    }
+
+    /**
+     * Applies damage to this entity with visual and audio effects.
+     *
+     * @param damage the damage to apply
+     */
+    public void damage(SkyblockDamage damage) {
+        if (isInvulnerable() || isDead()) return;
+
+        double finalDamage = applyDefenseReduction(damage.rawDamage(), damage.damageType());
+        
+        spawnDamageIndicator(finalDamage, damage.isCritical());
+        sendDamagePacket(damage);
+        applyHealthDamage(finalDamage);
+        playHurtSound();
+    }
+
     /**
      * Calculates the absolute damage that would be dealt by this entity
-     * based on its base damage and strength stats
+     * based on its base damage and strength stats.
      *
      * @return the calculated damage value
      */
@@ -181,11 +241,11 @@ public abstract class SkyblockEntity extends EntityCreature {
         double baseDamage = statProfile.get(Statistic.DAMAGE);
         double strength = statProfile.get(Statistic.STRENGTH);
 
-        return (5.0 + baseDamage) * (1.0 + strength / 100.0);
+        return (BASE_DAMAGE_MODIFIER + baseDamage) * (1.0 + strength / 100.0);
     }
 
     /**
-     * Calculates the damage reduction from defense
+     * Calculates the damage reduction from defense.
      *
      * @param damage the incoming damage amount
      * @param damageType the type of damage being dealt
@@ -198,37 +258,43 @@ public abstract class SkyblockEntity extends EntityCreature {
         return damage * (1.0 - (defense / (defense + 100.0)));
     }
 
-    public SkyblockDamage attackMelee(Entity target) {
-        return SkyblockDamage
-                .builder()
-                .rawDamage(calculateAbsoluteDamage())
-                .target(target)
-                .damageReason(DamageReason.ENTITY)
-                .damageType(DamageType.MELEE_ENTITY)
-                .build();
+    /**
+     * Spawns a damage indicator at the entity's position.
+     */
+    private void spawnDamageIndicator(double damage, boolean isCritical) {
+        new DamageIndicator(damage, isCritical).spawn(getPosition(), getInstance());
     }
 
-    public void damage(SkyblockDamage damage) {
-        if (isInvulnerable() || isDead()) return;
-
-        double damageAmount = damage.rawDamage();
-        damageAmount = applyDefenseReduction(damageAmount, damage.damageType());
-
-        new DamageIndicator(damageAmount, damage.isCritical()).spawn(getPosition(), getInstance());
-
+    /**
+     * Sends damage packet to all viewers.
+     */
+    private void sendDamagePacket(SkyblockDamage damage) {
         sendPacketToViewersAndSelf(new DamageEventPacket(
-                getEntityId(), damage.damageType().typeId(),
+                getEntityId(), 
+                damage.damageType().typeId(),
                 0,
                 damage.damager() == null ? 0 : damage.damager().getEntityId() + 1,
-                damage.damager().getPosition()
+                damage.damager() == null ? getPosition() : damage.damager().getPosition()
         ));
+    }
 
-        setHealth((float) (currentHealth - damageAmount));
+    /**
+     * Applies health reduction from damage.
+     */
+    private void applyHealthDamage(double damage) {
+        setHealth(this.currentHealth - damage);
+    }
 
-        final SoundEvent sound = SoundEvent.ENTITY_GENERIC_HURT;
-        if (sound != null) {
-            sendPacketToViewersAndSelf(new SoundEffectPacket(sound, Sound.Source.HOSTILE, getPosition(), 1.0f, 1.0f, 0));
-        }
+    /**
+     * Plays hurt sound effect to all viewers.
+     */
+    private void playHurtSound() {
+        sendPacketToViewersAndSelf(new SoundEffectPacket(
+                SoundEvent.ENTITY_GENERIC_HURT,
+                Sound.Source.HOSTILE, 
+                getPosition(), 
+                1.0f, 1.0f, 0
+        ));
     }
 
     @Override
