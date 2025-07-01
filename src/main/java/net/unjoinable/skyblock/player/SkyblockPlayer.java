@@ -13,7 +13,7 @@ import net.unjoinable.skyblock.player.systems.CombatSystem;
 import net.unjoinable.skyblock.player.systems.EconomySystem;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
-import net.unjoinable.skyblock.player.ui.sidebar.MainSidebar;
+import net.unjoinable.skyblock.player.ui.sidebar.PlayerSidebar;
 
 import static net.unjoinable.skyblock.combat.statistic.Statistic.SPEED;
 
@@ -30,7 +30,7 @@ public class SkyblockPlayer extends Player {
     private final AbilitySystem abilitySystem;
     private final CombatSystem combatSystem;
     private final PlayerActionBar actionBar;
-    private final MainSidebar sidebar;
+    private final PlayerSidebar sidebar;
 
     private PlayerRank playerRank;
     private final Island island;
@@ -51,7 +51,7 @@ public class SkyblockPlayer extends Player {
 
         // UI
         this.actionBar = new PlayerActionBar(this);
-        this.sidebar = new MainSidebar(ctx.skyblockTime());
+        this.sidebar = new PlayerSidebar(this, ctx.skyblockTime());
 
         // Attribute
         this.getAttribute(Attribute.MAX_HEALTH).setBaseValue(40);
@@ -68,7 +68,7 @@ public class SkyblockPlayer extends Player {
      */
     public void init() {
         this.statSystem.resetHealthAndMana();
-        this.sidebar.send(this);
+        this.sidebar.send();
         MinecraftServer.getSchedulerManager().scheduleTask(
                 this::gameLoop, TaskSchedule.immediate(), TaskSchedule.seconds(1));
     }
@@ -83,7 +83,7 @@ public class SkyblockPlayer extends Player {
         this.actionBar.update();
         this.statSystem.regenerateHealth();
         this.statSystem.regenerateMana();
-        this.sidebar.update(this);
+        this.sidebar.update();
         this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(getStatSystem().getStat(SPEED)/1000);
     }
 

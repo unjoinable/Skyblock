@@ -2,18 +2,19 @@ package net.unjoinable.skyblock.player.ui.sidebar;
 
 import net.kyori.adventure.text.format.TextDecoration;
 import net.unjoinable.skyblock.level.Region;
+import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.time.SkyblockStandardTime;
-import net.unjoinable.skyblock.ui.sidebar.SkyblockSidebar;
+import net.unjoinable.skyblock.ui.sidebar.Sidebar;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.unjoinable.skyblock.utils.NumberUtils.formatDate;
 
-public class MainSidebar extends SkyblockSidebar {
+public class PlayerSidebar extends Sidebar {
 
-    public MainSidebar(SkyblockStandardTime skyblockTime) {
-        super(text("SKYBLOCK", YELLOW).decorate(TextDecoration.BOLD));
+    public PlayerSidebar(SkyblockPlayer sPlayer, SkyblockStandardTime skyblockTime) {
+        super(sPlayer, text("SKYBLOCK", YELLOW).decorate(TextDecoration.BOLD));
 
         addStaticLine(text("24/06/25", GRAY).append(text(" mini696f", DARK_GRAY)));
         addEmptyLine();

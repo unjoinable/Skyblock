@@ -1,7 +1,6 @@
 package net.unjoinable.skyblock.ui.sidebar;
 
 import net.kyori.adventure.text.Component;
-import net.minestom.server.scoreboard.Sidebar;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import org.jspecify.annotations.Nullable;
 
@@ -13,18 +12,19 @@ import java.util.function.Function;
  * Enhanced sidebar implementation for Skyblock that supports both static and dynamic lines.
  * Dynamic lines can update their content based on player data, while static lines remain constant.
  */
-public class SkyblockSidebar {
-    private final Sidebar sidebar;
+public class Sidebar {
+    private final SkyblockPlayer player;
+    private final net.minestom.server.scoreboard.Sidebar sidebar;
     private final List<SidebarLine> lines;
 
     /**
      * Creates a new SkyblockSidebar with the specified title.
      *
      * @param title The title component to display at the top of the sidebar
-     * @throws NullPointerException if title is null
      */
-    public SkyblockSidebar(Component title) {
-        this.sidebar = new Sidebar(title);
+    public Sidebar(SkyblockPlayer player, Component title) {
+        this.player = player;
+        this.sidebar = new net.minestom.server.scoreboard.Sidebar(title);
         this.lines = new ArrayList<>();
     }
 
@@ -32,7 +32,6 @@ public class SkyblockSidebar {
      * Adds a static line that never changes its content.
      *
      * @param component The static component to display
-     * @throws NullPointerException if component is null
      */
     public void addStaticLine(Component component) {
         lines.add(new SidebarLine(component, null));
@@ -43,22 +42,9 @@ public class SkyblockSidebar {
      * The function will be called each time the sidebar is updated for a player.
      *
      * @param lineFunction Function that takes a SkyblockPlayer and returns the component to display
-     * @throws NullPointerException if lineFunction is null
      */
     public void addDynamicLine(Function<SkyblockPlayer, Component> lineFunction) {
         lines.add(new SidebarLine(null, lineFunction));
-    }
-
-    /**
-     * Adds multiple static lines at once.
-     *
-     * @param components List of static components to add
-     * @throws NullPointerException if components is null or contains null elements
-     */
-    public void addStaticLines(List<Component> components) {
-        for (Component component : components) {
-            addStaticLine(component);
-        }
     }
 
     public void addEmptyLine() {
@@ -71,16 +57,14 @@ public class SkyblockSidebar {
     public void clearLines() {
         lines.clear();
         sidebar.getLines().forEach(line -> sidebar.removeLine(line.getId()));
+        fullUpdate();
     }
 
     /**
      * Updates the sidebar content for a specific player.
      * This method evaluates all dynamic lines and refreshes the display.
-     *
-     * @param player The player whose sidebar should be updated
-     * @throws NullPointerException if player is null
      */
-    public void update(SkyblockPlayer player) {
+    public void update() {
         for (int i = 0; i < lines.size(); i++) {
             SidebarLine line = lines.get(i);
 
@@ -91,7 +75,7 @@ public class SkyblockSidebar {
         }
     }
 
-    public void fullUpdate(SkyblockPlayer player) {
+    public void fullUpdate() {
         sidebar.getLines().forEach(line -> sidebar.removeLine(line.getId()));
 
         for (int i = 0; i < lines.size(); i++) {
@@ -100,11 +84,11 @@ public class SkyblockSidebar {
 
             String lineId = generateLineId(i);
 
-            Sidebar.ScoreboardLine line = new Sidebar.ScoreboardLine(
+            net.minestom.server.scoreboard.Sidebar.ScoreboardLine line = new net.minestom.server.scoreboard.Sidebar.ScoreboardLine(
                     lineId,
                     component,
                     lines.size() - i,
-                    Sidebar.NumberFormat.blank()
+                    net.minestom.server.scoreboard.Sidebar.NumberFormat.blank()
             );
             sidebar.createLine(line);
         }
@@ -112,42 +96,10 @@ public class SkyblockSidebar {
 
     /**
      * Sends the sidebar to a player and performs initial update.
-     *
-     * @param player The player to send the sidebar to
-     * @throws NullPointerException if player is null
      */
-    public void send(SkyblockPlayer player) {
-        fullUpdate(player);
+    public void send() {
+        fullUpdate();
         sidebar.addViewer(player);
-    }
-
-    /**
-     * Removes the sidebar from a player.
-     *
-     * @param player The player to remove the sidebar from
-     * @throws NullPointerException if player is null
-     */
-    public void remove(SkyblockPlayer player) {
-        sidebar.removeViewer(player);
-    }
-
-    /**
-     * Gets the underlying Minestom Sidebar instance.
-     * Use with caution as direct modifications may interfere with this wrapper's functionality.
-     *
-     * @return The underlying sidebar
-     */
-    public Sidebar getSidebar() {
-        return sidebar;
-    }
-
-    /**
-     * Gets the number of lines currently in the sidebar.
-     *
-     * @return The number of lines
-     */
-    public int getLineCount() {
-        return lines.size();
     }
 
     /**
@@ -191,6 +143,7 @@ public class SkyblockSidebar {
          * @return The component to display
          */
         Component getComponent(SkyblockPlayer player) {
+            assert staticComponent != null || dynamicFunction != null;
             return staticComponent != null ? staticComponent : dynamicFunction.apply(player);
         }
 
