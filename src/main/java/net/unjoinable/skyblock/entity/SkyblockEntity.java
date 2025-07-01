@@ -3,12 +3,15 @@ package net.unjoinable.skyblock.entity;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Instance;
+import net.unjoinable.skyblock.combat.damage.DamageType;
+import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
 import net.unjoinable.skyblock.combat.statistic.StatProfile;
 import net.unjoinable.skyblock.combat.statistic.Statistic;
 import net.unjoinable.skyblock.utils.MiniString;
@@ -155,5 +158,48 @@ public abstract class SkyblockEntity extends EntityCreature {
      */
     public int getLevel() {
         return level;
+    }
+
+    // COMBAT SPECIFIC
+    /**
+     * Calculates the absolute damage that would be dealt by this entity
+     * based on its base damage and strength stats
+     *
+     * @return the calculated damage value
+     */
+    protected double calculateAbsoluteDamage() {
+        double baseDamage = statProfile.get(Statistic.DAMAGE);
+        double strength = statProfile.get(Statistic.STRENGTH);
+
+        return (5.0 + baseDamage) * (1.0 + strength / 100.0);
+    }
+
+    /**
+     * Calculates the damage reduction from defense
+     *
+     * @param damage the incoming damage amount
+     * @param damageType the type of damage being dealt
+     * @return the amount of damage after defense reduction
+     */
+    protected double applyDefenseReduction(double damage, DamageType damageType) {
+        double defense = statProfile.get(Statistic.DEFENSE);
+        return damage * (1.0 - (defense / (defense + 100.0)));
+    }
+
+    public SkyblockDamage attackMelee(Entity target) {
+        return SkyblockDamage
+                .builder()
+                .rawDamage(calculateAbsoluteDamage())
+                .target(target)
+                .build();
+    }
+
+    public void damage(SkyblockDamage damage) {
+        if (isInvulnerable() || isDead()) return;
+
+        double damageAmount = damage.rawDamage();
+        damageAmount = applyDefenseReduction(damageAmount, damage.damageType());
+
+        setHealth(getHealth() - (float)damageAmount);
     }
 }

@@ -9,6 +9,7 @@ import net.unjoinable.skyblock.level.SkyblockIsland;
 import net.unjoinable.skyblock.player.factory.PlayerCreationContext;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
 import net.unjoinable.skyblock.player.systems.AbilitySystem;
+import net.unjoinable.skyblock.player.systems.CombatSystem;
 import net.unjoinable.skyblock.player.systems.EconomySystem;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 import net.unjoinable.skyblock.player.ui.actionbar.PlayerActionBar;
@@ -27,6 +28,7 @@ public class SkyblockPlayer extends Player {
     private final PlayerStatSystem statSystem;
     private final EconomySystem economySystem;
     private final AbilitySystem abilitySystem;
+    private final CombatSystem combatSystem;
     private final PlayerActionBar actionBar;
     private final MainSidebar sidebar;
 
@@ -41,9 +43,11 @@ public class SkyblockPlayer extends Player {
         this.statSystem = new PlayerStatSystem(this, ctx.itemProcessor());
         this.economySystem = new EconomySystem();
         this.abilitySystem = new AbilitySystem(this, ctx.itemProcessor());
+        this.combatSystem = new CombatSystem(this);
         this.systemsManager.registerSystem(this.statSystem);
         this.systemsManager.registerSystem(this.economySystem);
         this.systemsManager.registerSystem(this.abilitySystem);
+        this.systemsManager.registerSystem(this.combatSystem);
 
         // UI
         this.actionBar = new PlayerActionBar(this);
@@ -153,6 +157,16 @@ public class SkyblockPlayer extends Player {
      */
     public AbilitySystem getAbilitySystem() {
         return abilitySystem;
+    }
+
+    /**
+     * Gets the player's combat system instance.
+     *
+     * @return the system responsible for managing this player's combat behavior, including attacks,
+     *         damage calculations, and related mechanics
+     */
+    public CombatSystem getCombatSystem() {
+        return combatSystem;
     }
 
     /**

@@ -7,6 +7,7 @@ import net.unjoinable.skyblock.command.ICanHasStormCommand;
 import net.unjoinable.skyblock.command.ItemCommand;
 import net.unjoinable.skyblock.command.RankCommand;
 import net.unjoinable.skyblock.command.TestCommand;
+import net.unjoinable.skyblock.event.listener.EntityListener;
 import net.unjoinable.skyblock.event.listener.PlayerListener;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.level.IslandManager;
@@ -74,6 +75,7 @@ public final class ServerBootstrapper {
             // Register event listeners
             LOGGER.info("Registering event listeners...");
             new PlayerListener(islandManager, MinecraftServer.getGlobalEventHandler()).register();
+            new EntityListener(MinecraftServer.getGlobalEventHandler()).register();
 
             // Register commands
             LOGGER.info("Registering commands...");
