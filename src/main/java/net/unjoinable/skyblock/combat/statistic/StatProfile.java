@@ -37,10 +37,6 @@ public class StatProfile {
     private final double[] bonus = new double[STAT_COUNT];
     private final double[] cached = new double[STAT_COUNT];
 
-    // BitSet flags for boolean states (no more 64 stat limit)
-    private final BitSet cappedFlags = new BitSet(STAT_COUNT);
-    private final double[] capValue = new double[STAT_COUNT];
-
     // BitSet dirty flag tracking
     private final BitSet dirtyFlags = new BitSet(STAT_COUNT);
 
@@ -58,12 +54,6 @@ public class StatProfile {
         for (Statistic stat : STATS) {
             int id = stat.ordinal();
             multiplicative[id] = 1.0;
-
-            // Use BitSet operations for boolean state
-            if (stat.isCapped()) {
-                setCapped(id, true);
-                capValue[id] = stat.capValue();
-            }
         }
 
         // Mark all stats as dirty initially
@@ -153,15 +143,10 @@ public class StatProfile {
         System.arraycopy(multiplicative, 0, copy.multiplicative, 0, STAT_COUNT);
         System.arraycopy(bonus, 0, copy.bonus, 0, STAT_COUNT);
         System.arraycopy(cached, 0, copy.cached, 0, STAT_COUNT);
-        System.arraycopy(capValue, 0, copy.capValue, 0, STAT_COUNT);
 
         // Copy BitSet flags
         copy.dirtyFlags.clear();
         copy.dirtyFlags.or(this.dirtyFlags);
-
-        copy.cappedFlags.clear();
-        copy.cappedFlags.or(this.cappedFlags);
-
         return copy;
     }
 
@@ -206,9 +191,7 @@ public class StatProfile {
      */
     private void recalculate(int id) {
         final double additiveFactor = 1.0 + additive[id];
-        final double calculated = (base[id] * additiveFactor) * multiplicative[id] + bonus[id];
-
-        cached[id] = isCapped(id) ? Math.min(calculated, capValue[id]) : calculated;
+        cached[id] = (base[id] * additiveFactor) * multiplicative[id] + bonus[id];
         clearDirty(id);
     }
 
@@ -256,28 +239,6 @@ public class StatProfile {
         return dirtyFlags.get(statId);
     }
 
-    /* BitSet Boolean Flag Management for Capped Status */
-
-    /**
-     * Sets the capped status for a statistic using BitSet operations.
-     *
-     * @param statId Target statistic ID
-     * @param capped Whether the statistic is capped
-     */
-    private void setCapped(int statId, boolean capped) {
-        cappedFlags.set(statId, capped);
-    }
-
-    /**
-     * Checks if a statistic has a capped maximum value.
-     *
-     * @param statId Target statistic ID
-     * @return True if the statistic has a capped maximum
-     */
-    private boolean isCapped(int statId) {
-        return cappedFlags.get(statId);
-    }
-
     /**
      * Loads statistic values from a map into this profile.
      *
@@ -318,19 +279,8 @@ public class StatProfile {
         Arrays.fill(multiplicative, 1.0);
         Arrays.fill(bonus, 0.0);
         Arrays.fill(cached, 0.0);
-        Arrays.fill(capValue, 0.0);
 
-        cappedFlags.clear();
         dirtyFlags.clear();
-
-        for (Statistic stat : STATS) {
-            int id = stat.ordinal();
-            if (stat.isCapped()) {
-                setCapped(id, true);
-                capValue[id] = stat.capValue();
-            }
-        }
-
         dirtyFlags.set(0, STAT_COUNT);
         return this;
     }
