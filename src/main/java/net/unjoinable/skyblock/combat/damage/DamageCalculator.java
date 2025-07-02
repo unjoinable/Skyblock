@@ -15,7 +15,7 @@ import static net.unjoinable.skyblock.combat.statistic.Statistic.*;
  * strength, critical chance, and critical damage modifiers.
  */
 public class DamageCalculator {
-    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
+    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current(); //NOSONAR
     private static final double BASE_PHYSICAL_VALUE = 5.0;
 
     private final PlayerStatSystem statSystem;

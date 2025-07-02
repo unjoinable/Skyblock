@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @param <T> the type of items stored in this drop table
  */
 public class DropTable<T> {
-    private final Random random = ThreadLocalRandom.current();
+    private final Random random = ThreadLocalRandom.current(); //NOSONAR
     private final Map<T, Double> weights = new ConcurrentHashMap<>();
     private volatile double totalWeight = 0.0;
 
