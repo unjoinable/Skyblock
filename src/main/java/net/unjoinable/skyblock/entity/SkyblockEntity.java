@@ -3,12 +3,13 @@ package net.unjoinable.skyblock.entity;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.component.DataComponents;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityCreature;
-import net.minestom.server.entity.EntityType;
+import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.*;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.event.entity.EntityDeathEvent;
 import net.minestom.server.network.packet.server.play.DamageEventPacket;
 import net.minestom.server.network.packet.server.play.SoundEffectPacket;
 import net.minestom.server.sound.SoundEvent;
@@ -184,6 +185,21 @@ public abstract class SkyblockEntity extends EntityCreature {
         this.isInvulnerable = invulnerable;
     }
 
+    @Override
+    public void kill() {
+        refreshIsDead(true);
+        triggerStatus((byte) EntityStatuses.LivingEntity.PLAY_DEATH_SOUND);
+        setPose(EntityPose.DYING);
+        setHealth(0D);
+        this.velocity = Vec.ZERO;
+
+        if (hasPassenger()) {
+            getPassengers().forEach(this::removePassenger);
+        }
+        EntityDeathEvent entityDeathEvent = new EntityDeathEvent(this);
+        EventDispatcher.call(entityDeathEvent);
+    }
+
     // Minestom Health System Overrides (Disabled)
 
     @Override
@@ -298,7 +314,5 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     @Override
-    public void heal() {
-
-    }
+    public void heal() {/*Empty to disable Minestom health operations*/}
 }

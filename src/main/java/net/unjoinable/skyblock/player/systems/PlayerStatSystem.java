@@ -168,6 +168,20 @@ public class PlayerStatSystem implements PlayerSystem {
         }
         return false;
     }
+    
+    /**
+     * Consumes the specified amount of health or kills the player if insufficient health.
+     * <p>
+     * This method attempts to consume health using {@link #consumeHealth(double)}.
+     * If the consumption fails due to insufficient health, the player is immediately killed.
+     *
+     * @param amount the amount of health to consume
+     */
+    public void consumeHealthOrKill(double amount) {
+        if (!consumeHealth(amount)) {
+            player.kill();
+        }
+    }
 
     /**
      * Gets the player's current intelligence stat, which determines maximum mana.

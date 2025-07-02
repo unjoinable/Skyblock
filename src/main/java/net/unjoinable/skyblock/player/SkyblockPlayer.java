@@ -92,6 +92,12 @@ public class SkyblockPlayer extends Player {
         return statSystem.isInvulnerable();
     }
 
+    @Override
+    public void kill() {
+        super.kill();
+        this.statSystem.resetHealthAndMana();
+    }
+
     /**
      * Sets the player's rank.
      *
