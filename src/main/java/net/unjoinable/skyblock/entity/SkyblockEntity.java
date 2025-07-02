@@ -13,6 +13,7 @@ import net.minestom.server.event.entity.EntityDeathEvent;
 import net.minestom.server.network.packet.server.play.DamageEventPacket;
 import net.minestom.server.network.packet.server.play.SoundEffectPacket;
 import net.minestom.server.sound.SoundEvent;
+import net.minestom.server.utils.time.TimeUnit;
 import net.unjoinable.skyblock.combat.damage.DamageReason;
 import net.unjoinable.skyblock.combat.damage.DamageType;
 import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
@@ -20,6 +21,7 @@ import net.unjoinable.skyblock.combat.statistic.StatProfile;
 import net.unjoinable.skyblock.combat.statistic.Statistic;
 import net.unjoinable.skyblock.utils.MiniString;
 
+import java.time.Duration;
 import java.util.List;
 
 import static net.kyori.adventure.text.Component.text;
@@ -39,6 +41,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     private double currentHealth;
 
     // Constants
+    private static final int REMOVAL_ANIMATION_DELAY = 1000;
     private static final double BASE_DAMAGE_MODIFIER = 5.0;
     private static final double SPEED_CONVERSION_FACTOR = 2.5 / 1000.0;
     
@@ -198,6 +201,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         }
         EntityDeathEvent entityDeathEvent = new EntityDeathEvent(this);
         EventDispatcher.call(entityDeathEvent);
+        scheduleRemove(Duration.of(REMOVAL_ANIMATION_DELAY, TimeUnit.MILLISECOND));
     }
 
     // Minestom Health System Overrides (Disabled)
