@@ -34,7 +34,7 @@ public class EntityListener {
             switch (target) {
                 case SkyblockPlayer player -> player.getCombatSystem().damage(damage);
                 case SkyblockEntity entity -> entity.damage(damage);
-                default -> {}
+                default -> {/*Do nothing for non-skyblock mob entity*/}
             }
         });
     }

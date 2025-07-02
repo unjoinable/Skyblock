@@ -7,7 +7,6 @@ import net.minestom.server.instance.Instance;
 
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -19,7 +18,7 @@ public class DamageIndicator extends Hologram {
     private static final TextColor[] COLORS = {WHITE, WHITE, YELLOW, GOLD, RED, RED};
     private static final Component CRIT = Component.text('✧', WHITE);
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getNumberInstance(Locale.US);
-    private static final Random RANDOM = new Random();
+    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current(); //NOSONAR
 
     private final double damage;
     private final boolean criticalDamage;
@@ -108,8 +107,8 @@ public class DamageIndicator extends Hologram {
      * @return A new position with random offsets on X and Z axes
      */
     private Pos randomizePosition(Pos pos) {
-        double offsetX = ThreadLocalRandom.current().nextDouble(-1, 1);
-        double offsetZ = ThreadLocalRandom.current().nextDouble(-1, 1);
+        double offsetX = RANDOM.nextDouble(-1, 1);
+        double offsetZ = RANDOM.nextDouble(-1, 1);
         return pos.add(offsetX, 0, offsetZ);
     }
 }
