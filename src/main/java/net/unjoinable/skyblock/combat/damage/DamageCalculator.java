@@ -2,6 +2,7 @@ package net.unjoinable.skyblock.combat.damage;
 
 import net.minestom.server.entity.Entity;
 import net.unjoinable.skyblock.combat.statistic.StatProfile;
+import net.unjoinable.skyblock.item.ability.MagicAbility;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 
@@ -60,6 +61,34 @@ public class DamageCalculator {
                 .target(target)
                 .isCritical(isCritical)
                 .damageReason(DamageReason.PLAYER)
+                .damageType(DamageType.MELEE_PLAYER)
+                .build();
+    }
+
+    /**
+     * Calculates magic ability damage against a target entity.
+     * Applies base ability damage, intelligence scaling, and ability damage multipliers.
+     *
+     * @param target the entity being attacked
+     * @param ability the magic ability being used
+     * @return SkyblockDamage object containing damage details
+     */
+    public SkyblockDamage calcAbilityDamage(Entity target, MagicAbility ability) {
+        StatProfile stats = statSystem.getFinalStats();
+        double baseAbilityDamage = ability.baseAbilityDamage();
+        double intelligence = stats.get(INTELLIGENCE);
+        double abilityScaling = ability.abilityScalling();
+        double abilityDamage = stats.get(ABILITY_DAMAGE);
+        double multiplier = 1 + (abilityDamage / 100);
+
+        double rawDamage = baseAbilityDamage * (1 + (intelligence / 100) * abilityScaling) * multiplier;
+        return SkyblockDamage
+                .builder()
+                .rawDamage(rawDamage)
+                .damager(player)
+                .target(target)
+                .damageReason(DamageReason.PLAYER)
+                .damageType(DamageType.MAGIC_DAMAGE)
                 .build();
     }
 

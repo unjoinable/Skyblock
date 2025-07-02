@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
 import net.unjoinable.skyblock.item.ItemMetadata;
+import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.StatModifierAttribute;
@@ -48,6 +49,11 @@ public record ArtOfWarAttribute(boolean applied) implements StatModifierAttribut
     @Override
     public boolean shouldDisplay() {
         return applied;
+    }
+
+    @Override
+    public boolean canBeApplied(SkyblockItem item) {
+        return false;
     }
 
     @Override

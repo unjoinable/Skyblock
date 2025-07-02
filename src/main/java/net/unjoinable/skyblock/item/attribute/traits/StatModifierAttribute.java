@@ -2,6 +2,7 @@ package net.unjoinable.skyblock.item.attribute.traits;
 
 import net.kyori.adventure.text.Component;
 import net.unjoinable.skyblock.item.ItemMetadata;
+import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.combat.statistic.StatProfile;
@@ -58,20 +59,47 @@ public interface StatModifierAttribute extends ItemAttribute {
     StatProfile modifierStats(@Nullable SkyblockPlayer player, AttributeContainer container, ItemMetadata metadata);
 
     /**
-     * Returns a display component for this attribute.
+     * Returns display components for this attribute's stat modifications.
      *
-     * <p>This method should return a human-readable representation of the attribute
-     * that can be shown in item tooltips, GUIs, or other user interfaces. The
-     * component should clearly describe what statistical effect this attribute provides.
+     * <p>This method provides a human-readable representation of the statistical
+     * effects this attribute provides, mapped by the specific statistic being modified.
+     * The components can be shown in item tooltips, GUIs, or other user interfaces.
      *
-     * <p>Implementations should use appropriate formatting, colors, and text styling
-     * to make the display informative and visually appealing.
-     *
-     * @return a Component representing this attribute for display purposes, never {@code null}
+     * @return a map of statistics to their display components, never {@code null}
      */
     Map<Statistic, Component> display();
 
+    /**
+     * Returns the priority order for applying this stat modifier.
+     *
+     * <p>When multiple stat modifiers are present on an item or player, they are
+     * applied in priority order. Lower values indicate higher priority (applied first).
+     * This allows for proper layering of stat effects where order matters.
+     *
+     * @return the priority value for this modifier, lower values = higher priority
+     */
     int modifierPriority();
 
+    /**
+     * Determines whether this attribute should be displayed in item tooltips or UI.
+     *
+     * <p>Some stat modifiers may be internal or hidden from players, while others
+     * should be prominently displayed. This method controls the visibility of the
+     * attribute in user-facing interfaces.
+     *
+     * @return {@code true} if this attribute should be displayed to players, {@code false} otherwise
+     */
     boolean shouldDisplay();
+
+    /**
+     * Determines whether this attribute can be applied to the specified item.
+     *
+     * <p>This method validates if the attribute is compatible with the given item
+     * based on item type, properties, or other constraints. For example, certain
+     * stat modifiers might only be applicable to weapons, armor, or specific item categories.
+     *
+     * @param item the item to check compatibility with
+     * @return {@code true} if this attribute can be applied to the item, {@code false} otherwise
+     */
+    boolean canBeApplied(SkyblockItem item);
 }
