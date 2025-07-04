@@ -2,6 +2,7 @@ package net.unjoinable.skyblock.registry.registries;
 
 import net.kyori.adventure.key.Key;
 import net.unjoinable.skyblock.item.ability.ItemAbility;
+import net.unjoinable.skyblock.item.ability.impls.GravityStorm;
 import net.unjoinable.skyblock.item.ability.impls.InstantTransmission;
 import net.unjoinable.skyblock.item.ability.impls.WitherImpact;
 import net.unjoinable.skyblock.registry.impl.ImmutableRegistry;
@@ -55,7 +56,8 @@ public class AbilityRegistry extends ImmutableRegistry<Key, ItemAbility> {
     public static AbilityRegistry withDefaults() {
         return new AbilityRegistry(List.of(
                 new InstantTransmission(),
-                new WitherImpact()
+                new WitherImpact(),
+                new GravityStorm()
         ));
     }
 }
