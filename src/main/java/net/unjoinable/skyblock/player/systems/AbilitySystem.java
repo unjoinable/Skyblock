@@ -6,6 +6,7 @@ import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.ability.AbilityCostType;
 import net.unjoinable.skyblock.item.ability.ExecutionType;
 import net.unjoinable.skyblock.item.ability.ItemAbility;
+import net.unjoinable.skyblock.item.ability.traits.ShortbowAbility;
 import net.unjoinable.skyblock.item.attribute.impls.AbilityAttribute;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.player.PlayerSystem;
@@ -21,6 +22,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
+import static net.unjoinable.skyblock.combat.statistic.Statistic.BONUS_ATTACK_SPEED;
 
 /**
  * Manages ability cooldowns and execution for players.
@@ -109,7 +111,14 @@ public class AbilitySystem implements PlayerSystem {
         Long lastUsed = cooldowns.get(ability.key());
         if (lastUsed == null) return true;
 
-        return System.currentTimeMillis() - lastUsed >= ability.cooldown();
+        long cooldown = ability.cooldown();
+
+        if (ability instanceof ShortbowAbility) {
+            double atkSpeed = player.getStatSystem().getStat(BONUS_ATTACK_SPEED);
+            cooldown = calcShortBowCooldown((int) atkSpeed);
+        }
+
+        return System.currentTimeMillis() - lastUsed >= cooldown;
     }
 
     /**
@@ -186,7 +195,7 @@ public class AbilitySystem implements PlayerSystem {
      */
     private void sendInsufficientResourceMessage(AbilityCostType costType) {
         if (costType == AbilityCostType.MANA) {
-            player.getActionBar().addReplacement(ActionBarSection.DEFENSE, NOT_ENOUGH_MANA);
+            player.getActionBar().addReplacement(ActionBarSection.MANA, NOT_ENOUGH_MANA);
         }
     }
 
@@ -204,5 +213,27 @@ public class AbilitySystem implements PlayerSystem {
             );
             player.getActionBar().addReplacement(ActionBarSection.DEFENSE, display);
         }
+    }
+
+    /**
+     * Calculates the cooldown time for a short bow based on attack speed.
+     * - Cooldown is 0.5s when attack speed <= 0
+     * - Cooldown is 0.25s when attack speed >= 100
+     * - Cooldown decreases linearly between 0 and 100
+     *
+     * @param attackSpeed The attack speed value (can be below 0 or above 100)
+     * @return The cooldown time in seconds.
+     */
+    private static long calcShortBowCooldown(int attackSpeed) {
+        long startCooldown = 500;
+        long endCooldown = 250;
+
+        if (attackSpeed <= 0) {
+            return startCooldown;
+        } else if (attackSpeed >= 100) {
+            return endCooldown;
+        }
+
+        return (long) (startCooldown - (attackSpeed / 100.0) * (startCooldown - endCooldown));
     }
 }

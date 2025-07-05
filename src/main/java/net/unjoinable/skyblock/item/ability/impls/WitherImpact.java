@@ -9,7 +9,7 @@ import net.unjoinable.skyblock.entity.SkyblockEntity;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.ability.AbilityCostType;
 import net.unjoinable.skyblock.item.ability.ExecutionType;
-import net.unjoinable.skyblock.item.ability.MagicAbility;
+import net.unjoinable.skyblock.item.ability.traits.MagicAbility;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.utils.MiniString;
 import org.jetbrains.annotations.NotNull;

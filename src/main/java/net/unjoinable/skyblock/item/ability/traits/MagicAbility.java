@@ -1,4 +1,6 @@
-package net.unjoinable.skyblock.item.ability;
+package net.unjoinable.skyblock.item.ability.traits;
+
+import net.unjoinable.skyblock.item.ability.ItemAbility;
 
 /**
  * An item ability that deals magic-based damage with scaling properties.

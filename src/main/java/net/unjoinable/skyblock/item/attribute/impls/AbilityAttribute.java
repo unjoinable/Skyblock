@@ -6,6 +6,7 @@ import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
 import net.unjoinable.skyblock.item.ItemMetadata;
 import net.unjoinable.skyblock.item.ability.ItemAbility;
+import net.unjoinable.skyblock.item.ability.traits.SilentAbility;
 import net.unjoinable.skyblock.item.attribute.AttributeContainer;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
 import net.unjoinable.skyblock.item.attribute.traits.LoreAttribute;
@@ -56,6 +57,7 @@ public record AbilityAttribute(List<ItemAbility> abilities) implements LoreAttri
 
         for (int i = 0; i < abilities.size(); i++) {
             ItemAbility ability = abilities.get(i);
+            if (ability instanceof SilentAbility) continue;
             lore.addAll(formatAbility(ability));
 
             if (i < abilities.size() - 1) {

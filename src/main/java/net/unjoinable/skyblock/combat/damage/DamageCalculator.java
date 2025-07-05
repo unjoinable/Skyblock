@@ -2,7 +2,7 @@ package net.unjoinable.skyblock.combat.damage;
 
 import net.minestom.server.entity.Entity;
 import net.unjoinable.skyblock.combat.statistic.StatProfile;
-import net.unjoinable.skyblock.item.ability.MagicAbility;
+import net.unjoinable.skyblock.item.ability.traits.MagicAbility;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.systems.PlayerStatSystem;
 

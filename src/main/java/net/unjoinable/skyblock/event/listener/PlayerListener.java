@@ -2,12 +2,19 @@ package net.unjoinable.skyblock.event.listener;
 
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.GlobalEventHandler;
+import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
+import net.minestom.server.event.item.ItemDropEvent;
+import net.minestom.server.event.item.PlayerBeginItemUseEvent;
 import net.minestom.server.event.player.*;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.tag.Tag;
+import net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent;
 import net.unjoinable.skyblock.item.ability.ExecutionType;
 import net.unjoinable.skyblock.level.IslandManager;
 import net.unjoinable.skyblock.level.SkyblockIsland;
@@ -29,6 +36,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
  * Manages player initialization, stat updates, and ability execution.
  */
 public class PlayerListener {
+    private static final Tag<Boolean> IGNORE_ANIMATION = Tag.Boolean("leftclick:dropping");
+    private static final Tag<Boolean> IS_DIGGING = Tag.Boolean("player:isdigging");
     private static final Map<Material, ItemSlot> ARMOR_SLOT_MAP = new ConcurrentHashMap<>();
     private final IslandManager islandManager;
     private final GlobalEventHandler eventHandler;
@@ -78,6 +87,80 @@ public class PlayerListener {
         registerPlayerUseItemEvent();
         registerPlayerYapListener();
         registerPlayerChangeHeldSlotListener();
+        registerPlayerHandAnimationListener();
+        registerItemDropEvent();
+        registerPlayerBlockInteractEvent();
+        registerInventoryClickEvent();
+        registerPlayerEntityInteractEvent();
+        registerPlayerLeftClickEvent();
+        registerStartDiggingEvent();
+        registerStopDiggingEvent();
+        registerFinishDiggingEvent();
+        registerBeginUseItemEvent();
+    }
+
+    private void registerBeginUseItemEvent() {
+        this.eventHandler.addListener(PlayerBeginItemUseEvent.class, event -> {
+            if (event.getItemStack().material() == Material.BOW) {
+                event.setCancelled(true);
+            }
+        } );
+    }
+
+    private void registerFinishDiggingEvent() {
+        this.eventHandler.addListener(PlayerFinishDiggingEvent.class, event -> event.getPlayer().removeTag(IS_DIGGING));
+    }
+
+    private void registerStopDiggingEvent() {
+        this.eventHandler.addListener(PlayerCancelDiggingEvent.class, event -> event.getPlayer().removeTag(IS_DIGGING));
+    }
+
+    private void registerStartDiggingEvent() {
+        this.eventHandler.addListener(PlayerStartDiggingEvent.class, event -> event.getPlayer().setTag(IS_DIGGING, true));
+    }
+
+    private void registerPlayerLeftClickEvent() {
+        this.eventHandler.addListener(PlayerLeftClickEvent.class, event -> {
+            SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+            player.getAbilitySystem().tryUse(event.getItemStack(), ExecutionType.LEFT_CLICK);
+        });
+    }
+
+    private void registerPlayerEntityInteractEvent() {
+        this.eventHandler.addListener(PlayerEntityInteractEvent.class, event -> event.getPlayer().setTag(IGNORE_ANIMATION, true));
+    }
+
+    private void registerInventoryClickEvent() {
+        this.eventHandler.addListener(InventoryClickEvent.class, event -> {
+            if (event.getClickType() == ClickType.DROP) {
+                event.getPlayer().setTag(IGNORE_ANIMATION, true);
+            }
+        });
+    }
+
+    private void registerPlayerBlockInteractEvent() {
+        this.eventHandler.addListener(PlayerBlockInteractEvent.class, event -> event.getPlayer().setTag(IGNORE_ANIMATION, true));
+    }
+
+    private void registerItemDropEvent() {
+        this.eventHandler.addListener(ItemDropEvent.class, event -> event.getPlayer().setTag(IGNORE_ANIMATION, true));
+    }
+
+    private void registerPlayerHandAnimationListener() {
+        this.eventHandler.addListener(PlayerHandAnimationEvent.class, event -> {
+            SkyblockPlayer player = ((SkyblockPlayer) event.getPlayer());
+
+            if (player.hasTag(IGNORE_ANIMATION)) {
+                player.removeTag(IGNORE_ANIMATION);
+                return;
+            }
+
+            if (player.hasTag(IS_DIGGING)) return;
+
+            if (event.getHand() == PlayerHand.MAIN) {
+                eventHandler.call(new PlayerLeftClickEvent(player, player.getItemInMainHand()));
+            }
+        });
     }
 
     private void registerPlayerChangeHeldSlotListener() {

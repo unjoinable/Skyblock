@@ -3,7 +3,7 @@ package net.unjoinable.skyblock.player.systems;
 import net.minestom.server.entity.Entity;
 import net.unjoinable.skyblock.combat.damage.DamageCalculator;
 import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
-import net.unjoinable.skyblock.item.ability.MagicAbility;
+import net.unjoinable.skyblock.item.ability.traits.MagicAbility;
 import net.unjoinable.skyblock.player.PlayerSystem;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 

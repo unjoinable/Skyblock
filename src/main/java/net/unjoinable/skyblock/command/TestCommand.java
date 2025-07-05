@@ -8,8 +8,9 @@ public class TestCommand extends SkyblockCommand {
 
     public TestCommand() {
         super("test");
+
         addSyntax((sender, _) -> {
-            SkyblockPlayer player = ((SkyblockPlayer) sender);
+            SkyblockPlayer player = (SkyblockPlayer) sender;
             new Zombie(100).setInstance(player.getInstance(), player.getPosition().add(2));
         });
     }
