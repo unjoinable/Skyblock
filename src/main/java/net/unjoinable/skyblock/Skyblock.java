@@ -2,13 +2,19 @@ package net.unjoinable.skyblock;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
+import net.minestom.server.event.inventory.InventoryClickEvent;
+import net.minestom.server.event.inventory.InventoryPreClickEvent;
+import net.minestom.server.event.item.ItemDropEvent;
+import net.minestom.server.event.item.PlayerBeginItemUseEvent;
+import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
 import net.unjoinable.skyblock.command.ICanHasStormCommand;
 import net.unjoinable.skyblock.command.ItemCommand;
 import net.unjoinable.skyblock.command.RankCommand;
 import net.unjoinable.skyblock.command.TestCommand;
+import net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent;
 import net.unjoinable.skyblock.event.listener.EntityListener;
-import net.unjoinable.skyblock.event.listener.PlayerListener;
+import net.unjoinable.skyblock.event.listener.player.*;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.level.IslandManager;
 import net.unjoinable.skyblock.player.factory.PlayerFactory;
@@ -53,7 +59,7 @@ public final class Skyblock {
 
             // Register event listeners
             LOGGER.info("Registering event listeners...");
-            new PlayerListener(islandManager, MinecraftServer.getGlobalEventHandler()).register();
+            registerEvents(islandManager);
             new EntityListener(MinecraftServer.getGlobalEventHandler()).register();
 
             // Register commands
@@ -77,5 +83,26 @@ public final class Skyblock {
         cmdMgr.register(new ItemCommand(itemRegistry, itemProcessor));
         cmdMgr.register(new RankCommand());
         cmdMgr.register(new ICanHasStormCommand());
+    }
+
+    private static void registerEvents(IslandManager islandManager) {
+        MinecraftServer.getGlobalEventHandler()
+                .addListener(PlayerSpawnEvent.class, new PlayerSpawnListener())
+                .addListener(AsyncPlayerConfigurationEvent.class, new AsyncPlayerConfigurationListener(islandManager))
+                .addListener(PlayerSwapItemEvent.class, new PlayerSwapItemListener())
+                .addListener(InventoryPreClickEvent.class, new InventoryPreClickListener())
+                .addListener(PlayerUseItemEvent.class, new PlayerUseItemListener())
+                .addListener(PlayerChatEvent.class, new PlayerChatListener())
+                .addListener(PlayerChangeHeldSlotEvent.class, new PlayerChangeHeldSlotListener())
+                .addListener(PlayerHandAnimationEvent.class, new PlayerHandAnimationListener())
+                .addListener(ItemDropEvent.class, new ItemDropListener())
+                .addListener(PlayerBlockInteractEvent.class, new PlayerBlockInteractListener())
+                .addListener(InventoryClickEvent.class, new InventoryClickListener())
+                .addListener(PlayerEntityInteractEvent.class, new PlayerEntityInteractListener())
+                .addListener(PlayerLeftClickEvent.class, new PlayerLeftClickListener())
+                .addListener(PlayerStartDiggingEvent.class, new PlayerStartDiggingListener())
+                .addListener(PlayerCancelDiggingEvent.class, new PlayerCancelDiggingListener())
+                .addListener(PlayerFinishDiggingEvent.class, new PlayerFinishDiggingListener())
+                .addListener(PlayerBeginItemUseEvent.class, new PlayerBeginItemUseListener());
     }
 }
