@@ -18,7 +18,6 @@ public class CombatSystem implements PlayerSystem {
     private final SkyblockPlayer player;
     private final PlayerStatSystem statSystem;
     private final DamageCalculator damageCalc;
-    private boolean initialized;
 
     public CombatSystem(SkyblockPlayer player) {
         this.player = player;
@@ -56,15 +55,5 @@ public class CombatSystem implements PlayerSystem {
 
     public SkyblockDamage magicAttack(Entity target, MagicAbility ability) {
         return this.damageCalc.calcAbilityDamage(target, ability);
-    }
-
-    @Override
-    public void start() {
-        this.initialized = true;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
     }
 }

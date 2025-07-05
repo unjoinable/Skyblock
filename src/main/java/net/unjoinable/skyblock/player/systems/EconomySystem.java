@@ -11,19 +11,8 @@ import net.unjoinable.skyblock.player.PlayerSystem;
  * for debt scenarios and flexible economic mechanics.
  */
 public class EconomySystem implements PlayerSystem {
-    private boolean isInitialized;
     private long coins;
     private long bits;
-
-    @Override
-    public void start() {
-        this.isInitialized = true;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return isInitialized;
-    }
 
     /**
      * Sets the player's coin balance to the specified amount.

@@ -29,7 +29,6 @@ public class PlayerStatSystem implements PlayerSystem {
     private final StatProfile cachedFinalStats;
 
     private boolean isDirty;
-    private boolean isInitialized;
 
     private double currentHealth;
     private double currentMana;
@@ -49,7 +48,10 @@ public class PlayerStatSystem implements PlayerSystem {
         this.cachedItemStats = new HashMap<>();
         this.cachedFinalStats = new StatProfile();
         this.isDirty = true;
-        this.isInitialized = false;
+
+        for (VanillaItemSlot slot : VanillaItemSlot.values()) {
+            updateSlot(slot);
+        }
     }
 
     /**
@@ -62,31 +64,10 @@ public class PlayerStatSystem implements PlayerSystem {
      * @throws IllegalStateException if the system has not been initialized
      */
     public void updateSlot(ItemSlot slot) {
-        if (!this.isInitialized) throw new IllegalStateException("PlayerStatSystem has not been initialized");
         SkyblockItem item = slot.getItem(this.player, this.itemProcessor);
         StatProfile itemStats = ItemStatsCalculator.computeItemStats(item);
         this.cachedItemStats.put(slot, itemStats);
         this.isDirty = true;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return this.isInitialized;
-    }
-
-    @Override
-    public void start() {
-        this.isInitialized = true;
-
-        for (VanillaItemSlot slot : VanillaItemSlot.values()) {
-            updateSlot(slot);
-        }
-    }
-
-    @Override
-    public void shutdown() {
-        this.cachedItemStats.clear();
-        this.isInitialized = false;
     }
 
     /**

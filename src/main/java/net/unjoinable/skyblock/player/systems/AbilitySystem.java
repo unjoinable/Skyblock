@@ -2,6 +2,7 @@ package net.unjoinable.skyblock.player.systems;
 
 import net.kyori.adventure.key.Key;
 import net.minestom.server.item.ItemStack;
+import net.unjoinable.skyblock.event.custom.PlayerUseAbilityEvent;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.ability.AbilityCostType;
 import net.unjoinable.skyblock.item.ability.ExecutionType;
@@ -22,6 +23,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
+import static net.minestom.server.MinecraftServer.getGlobalEventHandler;
 import static net.unjoinable.skyblock.combat.statistic.Statistic.BONUS_ATTACK_SPEED;
 
 /**
@@ -29,39 +31,17 @@ import static net.unjoinable.skyblock.combat.statistic.Statistic.BONUS_ATTACK_SP
  */
 public class AbilitySystem implements PlayerSystem {
     private static final ActionBarDisplay NOT_ENOUGH_MANA = new ActionBarDisplay(
-            text("NOT ENOUGH MANA", RED, BOLD),
-            40,
-            90,
-            ActionBarPurpose.ABILITY
+            text("NOT ENOUGH MANA", RED, BOLD), 40, 90, ActionBarPurpose.ABILITY
     );
 
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
     private final Map<Key, Long> cooldowns = new HashMap<>();
-    private boolean initialized;
 
     public AbilitySystem(SkyblockPlayer player, ItemProcessor itemProcessor) {
         this.player = player;
         this.itemProcessor = itemProcessor;
     }
-
-    /**
-     * Initializes the ability system.
-     */
-    @Override
-    public void start() {
-        initialized = true;
-    }
-
-    /**
-     * Checks if the ability system has been initialized.
-     */
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    // Main ability execution methods
 
     /**
      * Attempts to use an ability if it's ready and player has sufficient resources.
@@ -79,7 +59,7 @@ public class AbilitySystem implements PlayerSystem {
             return;
         }
 
-        execute(ability, item);
+        getGlobalEventHandler().callCancellable(new PlayerUseAbilityEvent(player, ability), () -> execute(ability, item));
     }
 
     /**

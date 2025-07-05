@@ -4,9 +4,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.minestom.server.codec.Codec;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.minestom.server.codec.Codec.STRING;
 
 /**
  * Utility class for handling MiniMessage text formatting with custom statistic tags.
@@ -16,9 +19,9 @@ import java.util.List;
  * automatic italic disabling.
  */
 public final class MiniString {
-
     private static final TagResolver RESOLVER = createResolver();
     private static final MiniMessage MINI_MESSAGE = createMiniMessage();
+    public static final Codec<Component> CODEC = STRING.transform(MINI_MESSAGE::deserialize, MINI_MESSAGE::serialize);
 
     private MiniString() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
