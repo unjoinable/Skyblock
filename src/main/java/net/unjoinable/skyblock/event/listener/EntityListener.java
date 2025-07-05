@@ -5,6 +5,7 @@ import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
 import net.unjoinable.skyblock.entity.SkyblockEntity;
+import net.unjoinable.skyblock.event.custom.PlayerDamageEvent;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 
 public class EntityListener {
@@ -33,7 +34,11 @@ public class EntityListener {
 
             switch (target) {
                 case SkyblockPlayer player -> player.getCombatSystem().damage(damage);
-                case SkyblockEntity entity -> entity.damage(damage);
+                case SkyblockEntity entity -> {
+                    if (!(damager instanceof SkyblockPlayer player)) return;
+                    PlayerDamageEvent dmgEvt = new PlayerDamageEvent(player, entity, damage);
+                    eventHandler.callCancellable(dmgEvt, () -> entity.damage(damage));
+                }
                 default -> {/*Do nothing for non-skyblock mob entity*/}
             }
         });
