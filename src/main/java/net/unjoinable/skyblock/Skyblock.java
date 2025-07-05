@@ -49,9 +49,10 @@ public final class Skyblock {
     }
 
     private static MinecraftServer initializeServer() {
+        var server = MinecraftServer.init();
         var registries = createRegistries();
         var services = createServices(registries);
-        var server = configureServer(services);
+        configureServer(services);
 
         registerEventListeners(services.islandManager());
         registerCommands(registries.itemRegistry(), services.itemProcessor());
@@ -73,13 +74,10 @@ public final class Skyblock {
         return new ServerServices(itemProcessor, skyblockTime, islandManager);
     }
 
-    private static MinecraftServer configureServer(ServerServices services) {
-        var server = MinecraftServer.init();
+    private static void configureServer(ServerServices services) {
         MojangAuth.init();
         getConnectionManager().setPlayerProvider(new PlayerFactory(services.itemProcessor(), services.skyblockTime()));
         MinecraftServer.setBrandName(BRAND_NAME);
-
-        return server;
     }
 
     private static void registerCommands(ItemRegistry itemRegistry, ItemProcessor itemProcessor) {
