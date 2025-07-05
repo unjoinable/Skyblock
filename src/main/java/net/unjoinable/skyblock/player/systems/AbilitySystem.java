@@ -31,39 +31,17 @@ import static net.unjoinable.skyblock.combat.statistic.Statistic.BONUS_ATTACK_SP
  */
 public class AbilitySystem implements PlayerSystem {
     private static final ActionBarDisplay NOT_ENOUGH_MANA = new ActionBarDisplay(
-            text("NOT ENOUGH MANA", RED, BOLD),
-            40,
-            90,
-            ActionBarPurpose.ABILITY
+            text("NOT ENOUGH MANA", RED, BOLD), 40, 90, ActionBarPurpose.ABILITY
     );
 
     private final SkyblockPlayer player;
     private final ItemProcessor itemProcessor;
     private final Map<Key, Long> cooldowns = new HashMap<>();
-    private boolean initialized;
 
     public AbilitySystem(SkyblockPlayer player, ItemProcessor itemProcessor) {
         this.player = player;
         this.itemProcessor = itemProcessor;
     }
-
-    /**
-     * Initializes the ability system.
-     */
-    @Override
-    public void start() {
-        initialized = true;
-    }
-
-    /**
-     * Checks if the ability system has been initialized.
-     */
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    // Main ability execution methods
 
     /**
      * Attempts to use an ability if it's ready and player has sufficient resources.

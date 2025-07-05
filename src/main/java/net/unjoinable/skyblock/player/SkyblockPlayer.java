@@ -24,7 +24,6 @@ import static net.unjoinable.skyblock.combat.statistic.Statistic.SPEED;
  * including stat systems, action bar management, and invulnerability handling.
  */
 public class SkyblockPlayer extends Player {
-    private final SystemsManager systemsManager;
     private final PlayerStatSystem statSystem;
     private final EconomySystem economySystem;
     private final AbilitySystem abilitySystem;
@@ -39,15 +38,10 @@ public class SkyblockPlayer extends Player {
         super(ctx.connection(), ctx.gameProfile());
 
         // Systems
-        this.systemsManager = new SystemsManager();
         this.statSystem = new PlayerStatSystem(this, ctx.itemProcessor());
         this.economySystem = new EconomySystem();
         this.abilitySystem = new AbilitySystem(this, ctx.itemProcessor());
         this.combatSystem = new CombatSystem(this);
-        this.systemsManager.registerSystem(this.statSystem);
-        this.systemsManager.registerSystem(this.economySystem);
-        this.systemsManager.registerSystem(this.abilitySystem);
-        this.systemsManager.registerSystem(this.combatSystem);
 
         // UI
         this.actionBar = new PlayerActionBar(this);
@@ -120,18 +114,6 @@ public class SkyblockPlayer extends Player {
      */
     public PlayerRank getPlayerRank() {
         return playerRank;
-    }
-    /**
-     * Gets the systems manager responsible for managing this player's systems.
-     * <p>
-     * The systems manager coordinates all player-related systems such as stats,
-     * inventory, abilities, and other gameplay mechanics.
-     *
-     * @return the systems manager for this player
-     * @throws NullPointerException if the systems manager has not been set
-     */
-    public SystemsManager getSystemsManager() {
-        return systemsManager;
     }
 
     /**

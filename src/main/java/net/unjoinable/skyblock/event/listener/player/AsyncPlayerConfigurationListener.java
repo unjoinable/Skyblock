@@ -25,6 +25,5 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
 
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         player.setRespawnPoint(SkyblockIsland.HUB.spawnPoint());
-        player.getSystemsManager().startAllSystems();
     }
 }
