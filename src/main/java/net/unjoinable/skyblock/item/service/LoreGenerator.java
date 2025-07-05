@@ -54,19 +54,12 @@ public class LoreGenerator {
     private List<Component> generateCombinedLore(List<LoreAttribute> attributes) {
         List<Component> result = new ArrayList<>(metadata.description());
 
-        for (int i = 0; i < attributes.size(); i++) {
-            List<Component> attrLore = attributes.get(i).loreLines(container, metadata);
-
-            if (!attrLore.isEmpty()) {
-                result.addAll(attrLore);
-
-                // Add spacing between sections except after the last one
-                if (i < attributes.size() - 1) {
-                    result.add(Component.empty());
-                }
-            }
+        for (LoreAttribute attribute : attributes) {
+            List<Component> attrLore = attribute.loreLines(container, metadata);
+            if (attrLore.isEmpty()) continue;
+            result.addAll(attrLore);
+            result.add(Component.empty());
         }
-        result.add(Component.empty());
         result.add(formatRarity(metadata.rarity(), metadata.category(), AttributeResolver.isRarityUpgraded(container)));
         return result;
     }
