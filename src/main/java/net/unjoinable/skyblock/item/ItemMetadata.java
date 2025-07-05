@@ -7,6 +7,7 @@ import net.minestom.server.codec.StructCodec;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.item.enums.ItemCategory;
 import net.unjoinable.skyblock.item.enums.Rarity;
+import net.unjoinable.skyblock.utils.MiniString;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public record ItemMetadata(
             "material", Material.CODEC, ItemMetadata::material,
             "category", Codec.Enum(ItemCategory.class), ItemMetadata::category,
             "rarity", Codec.Enum(Rarity.class), ItemMetadata::rarity,
-            "description", Codec.COMPONENT.list(), ItemMetadata::description,
+            "description", MiniString.CODEC.list(), ItemMetadata::description,
             ItemMetadata::new
     );
 
