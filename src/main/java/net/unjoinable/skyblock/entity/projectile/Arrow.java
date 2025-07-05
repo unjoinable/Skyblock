@@ -1,5 +1,6 @@
 package net.unjoinable.skyblock.entity.projectile;
 
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerFlag;
 import net.minestom.server.collision.*;
@@ -10,7 +11,9 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.chunk.ChunkCache;
 import net.minestom.server.utils.chunk.ChunkUtils;
@@ -180,6 +183,7 @@ public final class Arrow extends Entity {
      */
     private boolean processEntityCollision(EntityCollisionResult collision) {
         if (shooter instanceof SkyblockPlayer player && collision.entity() instanceof SkyblockEntity entity) {
+            player.playSound(Sound.sound(SoundEvent.ENTITY_ARROW_HIT_PLAYER, Sound.Source.PLAYER, 1f, 1f), player);
             entity.damage(player.getCombatSystem().attack(entity));
             remove();
             return true;
@@ -249,15 +253,20 @@ public final class Arrow extends Entity {
      * @param spread the accuracy spread (higher = less accurate)
      */
     public void shoot(Point from, Point to, double power, double spread) {
-        if (shooter.getInstance() == null) {
+        Instance shooterInstance = shooter.getInstance();
+        if (shooterInstance == null) {
             return;
+        }
+
+        if (shooter instanceof SkyblockPlayer player) {
+            shooterInstance.playSound(Sound.sound(SoundEvent.ENTITY_ARROW_SHOOT, Sound.Source.PLAYER, 1f, 1f), player);
         }
         
         Vec trajectory = calculateTrajectory(from, to, power, spread);
         float yaw = -shooter.getPosition().yaw();
         float pitch = -shooter.getPosition().pitch();
         
-        setInstance(shooter.getInstance(), new Pos(from.x(), from.y(), from.z(), yaw, pitch))
+        setInstance(shooterInstance, new Pos(from.x(), from.y(), from.z(), yaw, pitch))
             .whenComplete((_, throwable) -> {
                 if (throwable != null) {
                     throwable.printStackTrace();
