@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.event.listener.player;
+package net.unjoinable.skyblock.event.listener.player.chat;
 
 import net.kyori.adventure.text.Component;
 import net.minestom.server.event.player.PlayerChatEvent;

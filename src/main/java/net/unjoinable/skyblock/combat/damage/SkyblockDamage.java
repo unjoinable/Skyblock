@@ -21,6 +21,10 @@ public record SkyblockDamage(
         @Nullable Entity damager,
         Entity target) {
 
+    public SkyblockDamage withReason(DamageReason reason) {
+        return new SkyblockDamage(rawDamage, damageType, reason, isCritical, damager, target);
+    }
+
     /**
      * Creates a new builder instance for constructing SkyblockDamage objects.
      *

@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.event.listener.player;
+package net.unjoinable.skyblock.event.listener.player.interaction;
 
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 

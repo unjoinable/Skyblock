@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.event.listener.player;
+package net.unjoinable.skyblock.event.listener.player.combat;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.PlayerHand;

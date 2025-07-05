@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.event.listener.player;
+package net.unjoinable.skyblock.event.listener.player.connection;
 
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.unjoinable.skyblock.player.SkyblockPlayer;

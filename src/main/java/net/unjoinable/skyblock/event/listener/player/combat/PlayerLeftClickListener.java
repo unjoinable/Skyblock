@@ -1,4 +1,4 @@
-package net.unjoinable.skyblock.event.listener.player;
+package net.unjoinable.skyblock.event.listener.player.combat;
 
 import net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent;
 import net.unjoinable.skyblock.item.ability.ExecutionType;

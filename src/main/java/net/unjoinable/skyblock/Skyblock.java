@@ -12,9 +12,14 @@ import net.unjoinable.skyblock.command.ICanHasStormCommand;
 import net.unjoinable.skyblock.command.ItemCommand;
 import net.unjoinable.skyblock.command.RankCommand;
 import net.unjoinable.skyblock.command.TestCommand;
+import net.unjoinable.skyblock.event.custom.PlayerDamageEvent;
 import net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent;
 import net.unjoinable.skyblock.event.listener.EntityListener;
-import net.unjoinable.skyblock.event.listener.player.*;
+import net.unjoinable.skyblock.event.listener.player.chat.PlayerChatListener;
+import net.unjoinable.skyblock.event.listener.player.combat.*;
+import net.unjoinable.skyblock.event.listener.player.connection.*;
+import net.unjoinable.skyblock.event.listener.player.interaction.*;
+import net.unjoinable.skyblock.event.listener.player.inventory.*;
 import net.unjoinable.skyblock.item.service.ItemProcessor;
 import net.unjoinable.skyblock.level.IslandManager;
 import net.unjoinable.skyblock.player.factory.PlayerFactory;
@@ -116,7 +121,8 @@ public final class Skyblock {
                 .addListener(PlayerStartDiggingEvent.class, new PlayerStartDiggingListener())
                 .addListener(PlayerCancelDiggingEvent.class, new PlayerCancelDiggingListener())
                 .addListener(PlayerFinishDiggingEvent.class, new PlayerFinishDiggingListener())
-                .addListener(PlayerBeginItemUseEvent.class, new PlayerBeginItemUseListener());
+                .addListener(PlayerBeginItemUseEvent.class, new PlayerBeginItemUseListener())
+                .addListener(PlayerDamageEvent.class, new PlayerDamageListener());
     }
 
     private static void registerInventoryEvents(GlobalEventHandler eventHandler) {

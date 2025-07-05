@@ -149,7 +149,7 @@ public class PlayerStatSystem implements PlayerSystem {
         }
         return false;
     }
-    
+
     /**
      * Consumes the specified amount of health or kills the player if insufficient health.
      * <p>
