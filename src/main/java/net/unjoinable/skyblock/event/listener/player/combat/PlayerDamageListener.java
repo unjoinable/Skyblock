@@ -10,9 +10,19 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
+/**
+ * Handles player damage events and applies ferocity-based additional hits.
+ * Ferocity grants guaranteed extra hits (100 ferocity = 1 guaranteed hit)
+ * and a chance for additional hits based on the remainder.
+ */
 public class PlayerDamageListener implements Consumer<PlayerDamageEvent> {
     private static final Random RANDOM = ThreadLocalRandom.current();
 
+    /**
+     * Processes player damage events and applies ferocity mechanics.
+     * 
+     * @param event The player damage event to process
+     */
     @Override
     public void accept(PlayerDamageEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
