@@ -2,6 +2,7 @@ package net.unjoinable.skyblock.player.systems;
 
 import net.kyori.adventure.key.Key;
 import net.minestom.server.item.ItemStack;
+import net.unjoinable.skyblock.event.custom.PlayerUseAbilityEvent;
 import net.unjoinable.skyblock.item.SkyblockItem;
 import net.unjoinable.skyblock.item.ability.AbilityCostType;
 import net.unjoinable.skyblock.item.ability.ExecutionType;
@@ -22,6 +23,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
+import static net.minestom.server.MinecraftServer.getGlobalEventHandler;
 import static net.unjoinable.skyblock.combat.statistic.Statistic.BONUS_ATTACK_SPEED;
 
 /**
@@ -79,7 +81,7 @@ public class AbilitySystem implements PlayerSystem {
             return;
         }
 
-        execute(ability, item);
+        getGlobalEventHandler().callCancellable(new PlayerUseAbilityEvent(player, ability), () -> execute(ability, item));
     }
 
     /**
