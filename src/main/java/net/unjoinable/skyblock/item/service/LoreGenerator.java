@@ -52,7 +52,7 @@ public class LoreGenerator {
      * @return a list of lore components with spacing between attribute sections
      */
     private List<Component> generateCombinedLore(List<LoreAttribute> attributes) {
-        List<Component> result = new ArrayList<>(metadata.description());
+        List<Component> result = new ArrayList<>();
 
         for (LoreAttribute attribute : attributes) {
             List<Component> attrLore = attribute.loreLines(container, metadata);

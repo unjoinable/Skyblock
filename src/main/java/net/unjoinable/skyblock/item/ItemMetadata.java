@@ -1,15 +1,11 @@
 package net.unjoinable.skyblock.item;
 
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.codec.Codec;
 import net.minestom.server.codec.StructCodec;
 import net.minestom.server.item.Material;
 import net.unjoinable.skyblock.item.enums.ItemCategory;
 import net.unjoinable.skyblock.item.enums.Rarity;
-import net.unjoinable.skyblock.utils.MiniString;
-
-import java.util.List;
 
 /**
  * Represents static metadata associated with a Skyblock-style item.
@@ -27,15 +23,13 @@ import java.util.List;
  * @param material    The Minecraft {@link Material} used for rendering the item in inventory and hand.
  * @param category    The {@link ItemCategory} of the item (e.g., WEAPON, TOOL, MISC).
  * @param rarity      The {@link Rarity}, which may determine color coding, drop rates, or progression level.
- * @param description A list of rich text {@link Component}s that represent the item's lore or detailed description.
  */
 public record ItemMetadata(
         Key key,
         String displayName,
         Material material,
         ItemCategory category,
-        Rarity rarity,
-        List<Component> description) {
+        Rarity rarity) {
 
     public static final Codec<ItemMetadata> CODEC = StructCodec.struct(
             "key", Codec.KEY, ItemMetadata::key,
@@ -43,7 +37,6 @@ public record ItemMetadata(
             "material", Material.CODEC, ItemMetadata::material,
             "category", Codec.Enum(ItemCategory.class), ItemMetadata::category,
             "rarity", Codec.Enum(Rarity.class), ItemMetadata::rarity,
-            "description", MiniString.CODEC.list(), ItemMetadata::description,
             ItemMetadata::new
     );
 
@@ -52,6 +45,5 @@ public record ItemMetadata(
             "",
             Material.AIR,
             ItemCategory.NONE,
-            Rarity.UNOBTAINABLE,
-            List.of());
+            Rarity.UNOBTAINABLE);
 }
