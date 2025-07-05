@@ -5,7 +5,7 @@ import net.minestom.server.inventory.click.ClickType;
 
 import java.util.function.Consumer;
 
-import static net.unjoinable.skyblock.event.listener.player.PlayerListenerConstants.IGNORE_ANIMATION;
+import static net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent.IGNORE_ANIMATION;
 
 /**
  * Handles inventory click events.

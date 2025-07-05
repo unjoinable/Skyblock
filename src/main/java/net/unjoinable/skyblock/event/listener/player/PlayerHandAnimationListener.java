@@ -8,8 +8,8 @@ import net.unjoinable.skyblock.player.SkyblockPlayer;
 
 import java.util.function.Consumer;
 
-import static net.unjoinable.skyblock.event.listener.player.PlayerListenerConstants.IGNORE_ANIMATION;
-import static net.unjoinable.skyblock.event.listener.player.PlayerListenerConstants.IS_DIGGING;
+import static net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent.IGNORE_ANIMATION;
+import static net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent.IS_DIGGING;
 
 /**
  * Handles player hand animation events and left-click detection.

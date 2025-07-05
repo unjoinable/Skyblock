@@ -4,7 +4,7 @@ import net.minestom.server.event.player.PlayerBlockInteractEvent;
 
 import java.util.function.Consumer;
 
-import static net.unjoinable.skyblock.event.listener.player.PlayerListenerConstants.IGNORE_ANIMATION;
+import static net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent.IGNORE_ANIMATION;
 
 /**
  * Handles player block interaction events.

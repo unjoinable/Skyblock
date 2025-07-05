@@ -1,7 +1,7 @@
 package net.unjoinable.skyblock;
 
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.command.CommandManager;
+import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.ItemDropEvent;
@@ -24,80 +24,95 @@ import net.unjoinable.skyblock.time.SkyblockStandardTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static net.minestom.server.MinecraftServer.*;
+
 public final class Skyblock {
     private static final Logger LOGGER = LoggerFactory.getLogger(Skyblock.class);
+    private static final String DEFAULT_HOST = "0.0.0.0";
+    private static final int DEFAULT_PORT = 25565;
+    private static final String BRAND_NAME = "Hystorm";
 
     private Skyblock() {
         throw new AssertionError("Utility class cannot be instantiated");
     }
 
     public static void main(String[] args) {
-        String host = "0.0.0.0";
-        int port = 25565;
-
         LOGGER.info("Starting Skyblock server bootstrap...");
 
         try {
-            // Load registries
-            LOGGER.info("Loading registries...");
-            ItemRegistry itemRegistry = ItemRegistry.withDefaults();
-            CodecRegistry codecRegistry = CodecRegistry.withDefaults();
-
-            // Initialize core server components
-            LOGGER.info("Initializing server components...");
-            MinecraftServer server = MinecraftServer.init();
-            MojangAuth.init();
-
-            // Setup services and managers
-            ItemProcessor itemProcessor = new ItemProcessor(codecRegistry, itemRegistry);
-            SkyblockStandardTime skyblockTime = new SkyblockStandardTime();
-            IslandManager islandManager = IslandManager.withDefaults();
-
-            // Configure server
-            MinecraftServer.getConnectionManager().setPlayerProvider(new PlayerFactory(itemProcessor, skyblockTime));
-            MinecraftServer.setBrandName("Hystorm");
-
-            // Register event listeners
-            LOGGER.info("Registering event listeners...");
-            registerEvents(islandManager);
-            new EntityListener(MinecraftServer.getGlobalEventHandler()).register();
-
-            // Register commands
-            LOGGER.info("Registering commands...");
-            registerCommands(itemRegistry, itemProcessor);
-
-            // Start the server
-            LOGGER.info("Starting server on {}:{}", host, port);
-            server.start(host, port);
+            var server = initializeServer();
+            server.start(DEFAULT_HOST, DEFAULT_PORT);
         } catch (Exception e) {
             LOGGER.error("Failed to bootstrap server", e);
-            MinecraftServer.stopCleanly();
             System.exit(1);
         }
     }
 
-    private static void registerCommands(ItemRegistry itemRegistry, ItemProcessor itemProcessor) {
-        CommandManager cmdMgr = MinecraftServer.getCommandManager();
+    private static MinecraftServer initializeServer() {
+        var registries = createRegistries();
+        var services = createServices(registries);
+        var server = configureServer(services);
 
-        cmdMgr.register(new TestCommand());
-        cmdMgr.register(new ItemCommand(itemRegistry, itemProcessor));
-        cmdMgr.register(new RankCommand());
-        cmdMgr.register(new ICanHasStormCommand());
+        registerEventListeners(services.islandManager());
+        registerCommands(registries.itemRegistry(), services.itemProcessor());
+
+        return server;
     }
 
-    private static void registerEvents(IslandManager islandManager) {
-        MinecraftServer.getGlobalEventHandler()
+    private static ServerRegistries createRegistries() {
+        LOGGER.info("Loading registries...");
+        return new ServerRegistries(ItemRegistry.withDefaults(), CodecRegistry.withDefaults());
+    }
+
+    private static ServerServices createServices(ServerRegistries registries) {
+        LOGGER.info("Initializing server components...");
+        var itemProcessor = new ItemProcessor(registries.codecRegistry(), registries.itemRegistry());
+        var skyblockTime = new SkyblockStandardTime();
+        var islandManager = IslandManager.withDefaults();
+
+        return new ServerServices(itemProcessor, skyblockTime, islandManager);
+    }
+
+    private static MinecraftServer configureServer(ServerServices services) {
+        var server = MinecraftServer.init();
+        MojangAuth.init();
+        getConnectionManager().setPlayerProvider(new PlayerFactory(services.itemProcessor(), services.skyblockTime()));
+        MinecraftServer.setBrandName(BRAND_NAME);
+
+        return server;
+    }
+
+    private static void registerCommands(ItemRegistry itemRegistry, ItemProcessor itemProcessor) {
+        LOGGER.info("Registering commands...");
+        var commandManager = getCommandManager();
+
+        commandManager.register(new TestCommand());
+        commandManager.register(new ItemCommand(itemRegistry, itemProcessor));
+        commandManager.register(new RankCommand());
+        commandManager.register(new ICanHasStormCommand());
+    }
+
+    private static void registerEventListeners(IslandManager islandManager) {
+        LOGGER.info("Registering event listeners...");
+        var eventHandler = getGlobalEventHandler();
+
+        registerPlayerEvents(eventHandler, islandManager);
+        registerInventoryEvents(eventHandler);
+        registerItemEvents(eventHandler);
+
+        new EntityListener(eventHandler).register();
+    }
+
+    private static void registerPlayerEvents(GlobalEventHandler eventHandler, IslandManager islandManager) {
+        eventHandler
                 .addListener(PlayerSpawnEvent.class, new PlayerSpawnListener())
                 .addListener(AsyncPlayerConfigurationEvent.class, new AsyncPlayerConfigurationListener(islandManager))
                 .addListener(PlayerSwapItemEvent.class, new PlayerSwapItemListener())
-                .addListener(InventoryPreClickEvent.class, new InventoryPreClickListener())
                 .addListener(PlayerUseItemEvent.class, new PlayerUseItemListener())
                 .addListener(PlayerChatEvent.class, new PlayerChatListener())
                 .addListener(PlayerChangeHeldSlotEvent.class, new PlayerChangeHeldSlotListener())
                 .addListener(PlayerHandAnimationEvent.class, new PlayerHandAnimationListener())
-                .addListener(ItemDropEvent.class, new ItemDropListener())
                 .addListener(PlayerBlockInteractEvent.class, new PlayerBlockInteractListener())
-                .addListener(InventoryClickEvent.class, new InventoryClickListener())
                 .addListener(PlayerEntityInteractEvent.class, new PlayerEntityInteractListener())
                 .addListener(PlayerLeftClickEvent.class, new PlayerLeftClickListener())
                 .addListener(PlayerStartDiggingEvent.class, new PlayerStartDiggingListener())
@@ -105,4 +120,23 @@ public final class Skyblock {
                 .addListener(PlayerFinishDiggingEvent.class, new PlayerFinishDiggingListener())
                 .addListener(PlayerBeginItemUseEvent.class, new PlayerBeginItemUseListener());
     }
+
+    private static void registerInventoryEvents(GlobalEventHandler eventHandler) {
+        eventHandler
+                .addListener(InventoryPreClickEvent.class, new InventoryPreClickListener())
+                .addListener(InventoryClickEvent.class, new InventoryClickListener());
+    }
+
+    private static void registerItemEvents(GlobalEventHandler eventHandler) {
+        eventHandler.addListener(ItemDropEvent.class, new ItemDropListener());
+    }
+
+    private record ServerRegistries(
+            ItemRegistry itemRegistry,
+            CodecRegistry codecRegistry) {}
+
+    private record ServerServices(
+            ItemProcessor itemProcessor,
+            SkyblockStandardTime skyblockTime,
+            IslandManager islandManager) {}
 }

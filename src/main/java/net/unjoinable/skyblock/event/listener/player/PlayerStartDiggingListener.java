@@ -4,7 +4,7 @@ import net.minestom.server.event.player.PlayerStartDiggingEvent;
 
 import java.util.function.Consumer;
 
-import static net.unjoinable.skyblock.event.listener.player.PlayerListenerConstants.IS_DIGGING;
+import static net.unjoinable.skyblock.event.custom.PlayerLeftClickEvent.IS_DIGGING;
 
 /**
  * Handles player start digging events.
