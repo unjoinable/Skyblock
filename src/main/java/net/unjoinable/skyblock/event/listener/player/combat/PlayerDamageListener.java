@@ -42,13 +42,11 @@ public class PlayerDamageListener implements Consumer<PlayerDamageEvent> {
         for (int i = 0; i < guaranteedHits; i++) {
             event.getTarget().damage(ferocityDamage);
             combatSys.playFerocitySound();
-            if (ferocityDamage.damageType() == DamageType.RANGED) combatSys.playArrowHitSound();
         }
 
         if (RANDOM.nextDouble(100) < chanceForExtraHit) {
             event.getTarget().damage(ferocityDamage);
             combatSys.playFerocitySound();
-            if (ferocityDamage.damageType() == DamageType.RANGED) combatSys.playArrowHitSound();
         }
     }
 }

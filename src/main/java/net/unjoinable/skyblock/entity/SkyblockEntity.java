@@ -43,7 +43,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     // Constants
     private static final int REMOVAL_ANIMATION_DELAY = 1000;
     private static final double BASE_DAMAGE_MODIFIER = 5.0;
-    private static final double SPEED_CONVERSION_FACTOR = 2.5 / 1000.0;
+    private static final double SPEED_CONVERSION_FACTOR = 1 / 1000.0;
     
     // Naming Constants
     private static final Component OPENING_BRACKET = MiniString.asComponent("<dark_gray>[");

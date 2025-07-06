@@ -40,9 +40,7 @@ public class CombatSystem implements PlayerSystem {
         if (statSystem.isInvulnerable() || player.isDead()) {
             return;
         }
-        if (!statSystem.consumeHealth(damageCalc.calcApplicableDamage(damage))) {
-            player.kill();
-        }
+        statSystem.consumeHealthOrKill(damageCalc.calcApplicableDamage(damage));
     }
 
     /**
