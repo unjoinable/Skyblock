@@ -46,4 +46,54 @@ public record ItemMetadata(
             Material.AIR,
             ItemCategory.NONE,
             Rarity.UNOBTAINABLE);
+
+    /**
+     * Creates a new ItemMetadata instance with the specified key, keeping all other properties unchanged.
+     *
+     * @param newKey the new unique key for the item
+     * @return a new ItemMetadata instance with the updated key
+     */
+    public ItemMetadata withKey(Key newKey) {
+        return new ItemMetadata(newKey, displayName, material, category, rarity);
+    }
+
+    /**
+     * Creates a new ItemMetadata instance with the specified display name, keeping all other properties unchanged.
+     *
+     * @param newDisplayName the new display name for the item
+     * @return a new ItemMetadata instance with the updated display name
+     */
+    public ItemMetadata withDisplayName(String newDisplayName) {
+        return new ItemMetadata(key, newDisplayName, material, category, rarity);
+    }
+
+    /**
+     * Creates a new ItemMetadata instance with the specified material, keeping all other properties unchanged.
+     *
+     * @param newMaterial the new Minecraft material for rendering the item
+     * @return a new ItemMetadata instance with the updated material
+     */
+    public ItemMetadata withMaterial(Material newMaterial) {
+        return new ItemMetadata(key, displayName, newMaterial, category, rarity);
+    }
+
+    /**
+     * Creates a new ItemMetadata instance with the specified category, keeping all other properties unchanged.
+     *
+     * @param newCategory the new item category (e.g., WEAPON, TOOL, MISC)
+     * @return a new ItemMetadata instance with the updated category
+     */
+    public ItemMetadata withCategory(ItemCategory newCategory) {
+        return new ItemMetadata(key, displayName, material, newCategory, rarity);
+    }
+
+    /**
+     * Creates a new ItemMetadata instance with the specified rarity, keeping all other properties unchanged.
+     *
+     * @param newRarity the new rarity level for the item
+     * @return a new ItemMetadata instance with the updated rarity
+     */
+    public ItemMetadata withRarity(Rarity newRarity) {
+        return new ItemMetadata(key, displayName, material, category, newRarity);
+    }
 }
