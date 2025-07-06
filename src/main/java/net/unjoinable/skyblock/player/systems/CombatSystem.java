@@ -1,6 +1,8 @@
 package net.unjoinable.skyblock.player.systems;
 
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.sound.SoundEvent;
 import net.unjoinable.skyblock.combat.damage.DamageCalculator;
 import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
 import net.unjoinable.skyblock.item.ability.traits.MagicAbility;
@@ -55,5 +57,14 @@ public class CombatSystem implements PlayerSystem {
 
     public SkyblockDamage magicAttack(Entity target, MagicAbility ability) {
         return this.damageCalc.calcAbilityDamage(target, ability);
+    }
+
+    public void playFerocitySound() {
+        player.playSound(Sound.sound(SoundEvent.ITEM_FLINTANDSTEEL_USE, Sound.Source.PLAYER, 0.5f, 1f), player);
+        player.playSound(Sound.sound(SoundEvent.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.Source.PLAYER, 0.5f, 1f), player);
+    }
+
+    public void playArrowHitSound() {
+        player.playSound(Sound.sound(SoundEvent.ENTITY_ARROW_HIT_PLAYER, Sound.Source.PLAYER, 1f, 1f), player);
     }
 }

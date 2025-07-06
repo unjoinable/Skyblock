@@ -1,7 +1,6 @@
 package net.unjoinable.skyblock.entity.projectile;
 
 import net.kyori.adventure.sound.Sound;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerFlag;
 import net.minestom.server.collision.*;
 import net.minestom.server.coordinate.Point;
@@ -17,12 +16,17 @@ import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.chunk.ChunkCache;
 import net.minestom.server.utils.chunk.ChunkUtils;
+import net.unjoinable.skyblock.combat.damage.DamageType;
+import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
 import net.unjoinable.skyblock.entity.SkyblockEntity;
+import net.unjoinable.skyblock.event.custom.PlayerDamageEvent;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static net.minestom.server.MinecraftServer.getGlobalEventHandler;
+import static net.minestom.server.MinecraftServer.getSchedulerManager;
 import static net.minestom.server.collision.CollisionUtils.handlePhysics;
 
 /**
@@ -151,8 +155,7 @@ public final class Arrow extends Entity {
         Vec currentVelocity = velocity.div(ServerFlag.SERVER_TICKS_PER_SECOND);
         Vec newVelocity = updateVelocity(position, currentVelocity, blockGetter, getAerodynamics(), onGround);
         
-        previousPhysicsResult = handlePhysics(blockGetter, boundingBox, position, 
-            newVelocity, previousPhysicsResult, true);
+        previousPhysicsResult = handlePhysics(blockGetter, boundingBox, position, newVelocity, previousPhysicsResult, true);
         return previousPhysicsResult;
     }
 
@@ -183,8 +186,9 @@ public final class Arrow extends Entity {
      */
     private boolean processEntityCollision(EntityCollisionResult collision) {
         if (shooter instanceof SkyblockPlayer player && collision.entity() instanceof SkyblockEntity entity) {
-            player.playSound(Sound.sound(SoundEvent.ENTITY_ARROW_HIT_PLAYER, Sound.Source.PLAYER, 1f, 1f), player);
-            entity.damage(player.getCombatSystem().attack(entity));
+            player.getCombatSystem().playArrowHitSound();
+            SkyblockDamage damage = player.getCombatSystem().attack(entity).withDamageType(DamageType.RANGED);
+            getGlobalEventHandler().callCancellable(new PlayerDamageEvent(player, entity, damage), () -> entity.damage(damage));
             remove();
             return true;
         }
@@ -205,14 +209,10 @@ public final class Arrow extends Entity {
             setNoGravity(true);
             inBlock = true;
             
-            position = new Pos(hitPoint.x(), hitPoint.y(), hitPoint.z(), 
-                lastKnownPosition.yaw(), lastKnownPosition.pitch());
+            position = new Pos(hitPoint.x(), hitPoint.y(), hitPoint.z(), lastKnownPosition.yaw(), lastKnownPosition.pitch());
             
-            MinecraftServer.getSchedulerManager().scheduleNextTick(this::synchronizePosition);
-            MinecraftServer.getSchedulerManager()
-                .buildTask(this::remove)
-                .delay(TaskSchedule.tick(REMOVAL_DELAY_TICKS))
-                .schedule();
+            getSchedulerManager().scheduleNextTick(this::synchronizePosition);
+            getSchedulerManager().buildTask(this::remove).delay(TaskSchedule.tick(REMOVAL_DELAY_TICKS)).schedule();
         }
     }
 
@@ -267,13 +267,9 @@ public final class Arrow extends Entity {
         float pitch = -shooter.getPosition().pitch();
         
         setInstance(shooterInstance, new Pos(from.x(), from.y(), from.z(), yaw, pitch))
-            .whenComplete((_, throwable) -> {
-                if (throwable != null) {
-                    throwable.printStackTrace();
-                } else {
+            .whenComplete((_, _) -> {
                     synchronizePosition();
                     setVelocity(trajectory);
-                }
             });
     }
 

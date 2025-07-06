@@ -1,6 +1,5 @@
 package net.unjoinable.skyblock.command;
 
-import net.unjoinable.skyblock.entity.mobs.Zombie;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
 import net.unjoinable.skyblock.player.rank.PlayerRank;
 
@@ -11,7 +10,6 @@ public class TestCommand extends SkyblockCommand {
 
         addSyntax((sender, _) -> {
             SkyblockPlayer player = (SkyblockPlayer) sender;
-            new Zombie(100).setInstance(player.getInstance(), player.getPosition().add(2));
         });
     }
 

@@ -1,10 +1,12 @@
 package net.unjoinable.skyblock.event.listener.player.combat;
 
 import net.unjoinable.skyblock.combat.damage.DamageReason;
+import net.unjoinable.skyblock.combat.damage.DamageType;
 import net.unjoinable.skyblock.combat.damage.SkyblockDamage;
 import net.unjoinable.skyblock.combat.statistic.Statistic;
 import net.unjoinable.skyblock.event.custom.PlayerDamageEvent;
 import net.unjoinable.skyblock.player.SkyblockPlayer;
+import net.unjoinable.skyblock.player.systems.CombatSystem;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,6 +28,7 @@ public class PlayerDamageListener implements Consumer<PlayerDamageEvent> {
     @Override
     public void accept(PlayerDamageEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        CombatSystem combatSys = player.getCombatSystem();
         SkyblockDamage originalDamage = event.getDamage();
 
         if (originalDamage.damageReason() == DamageReason.FEROCITY) return;
@@ -38,10 +41,14 @@ public class PlayerDamageListener implements Consumer<PlayerDamageEvent> {
 
         for (int i = 0; i < guaranteedHits; i++) {
             event.getTarget().damage(ferocityDamage);
+            combatSys.playFerocitySound();
+            if (ferocityDamage.damageType() == DamageType.RANGED) combatSys.playArrowHitSound();
         }
 
         if (RANDOM.nextDouble(100) < chanceForExtraHit) {
             event.getTarget().damage(ferocityDamage);
+            combatSys.playFerocitySound();
+            if (ferocityDamage.damageType() == DamageType.RANGED) combatSys.playArrowHitSound();
         }
     }
 }

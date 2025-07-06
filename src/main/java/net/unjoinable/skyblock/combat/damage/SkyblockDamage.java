@@ -22,6 +22,26 @@ public record SkyblockDamage(
         Entity target) {
 
     /**
+     * Creates a new SkyblockDamage instance with a different raw damage amount.
+     *
+     * @param rawDamage The new raw damage amount
+     * @return A new SkyblockDamage instance with the updated raw damage
+     */
+    public SkyblockDamage withRawDamage(double rawDamage) {
+        return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);
+    }
+
+    /**
+     * Creates a new SkyblockDamage instance with a different damage type.
+     *
+     * @param damageType The new damage type
+     * @return A new SkyblockDamage instance with the updated damage type
+     */
+    public SkyblockDamage withDamageType(DamageType damageType) {
+        return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);
+    }
+
+    /**
      * Creates a new SkyblockDamage instance with a different damage reason.
      *
      * @param reason The new damage reason to apply
@@ -29,6 +49,36 @@ public record SkyblockDamage(
      */
     public SkyblockDamage withReason(DamageReason reason) {
         return new SkyblockDamage(rawDamage, damageType, reason, isCritical, damager, target);
+    }
+
+    /**
+     * Creates a new SkyblockDamage instance with a different critical status.
+     *
+     * @param isCritical Whether this damage is critical
+     * @return A new SkyblockDamage instance with the updated critical status
+     */
+    public SkyblockDamage withCritical(boolean isCritical) {
+        return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);
+    }
+
+    /**
+     * Creates a new SkyblockDamage instance with a different damager entity.
+     *
+     * @param damager The new damager entity (can be null)
+     * @return A new SkyblockDamage instance with the updated damager
+     */
+    public SkyblockDamage withDamager(@Nullable Entity damager) {
+        return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);
+    }
+
+    /**
+     * Creates a new SkyblockDamage instance with a different target entity.
+     *
+     * @param target The new target entity
+     * @return A new SkyblockDamage instance with the updated target
+     */
+    public SkyblockDamage withTarget(Entity target) {
+        return new SkyblockDamage(rawDamage, damageType, damageReason, isCritical, damager, target);
     }
 
     /**
@@ -50,8 +100,6 @@ public record SkyblockDamage(
         private boolean isCritical = false;
         private @Nullable Entity damager;
         private @Nullable Entity target;
-
-        Builder() {}
 
         /**
          * Sets the raw damage amount.
