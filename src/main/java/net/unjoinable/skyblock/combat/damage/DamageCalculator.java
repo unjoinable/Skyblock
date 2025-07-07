@@ -66,6 +66,17 @@ public class DamageCalculator {
     }
 
     /**
+     * Calculates ranged damage against a target entity.
+     * Uses the same calculation as melee damage but with ranged damage type.
+     *
+     * @param target the entity being attacked
+     * @return SkyblockDamage object containing damage details with ranged type
+     */
+    public SkyblockDamage calcRangedDamage(Entity target) {
+        return calcMeleeDamage(target).withDamageType(DamageType.RANGED);
+    }
+
+    /**
      * Calculates magic ability damage against a target entity.
      * Applies base ability damage, intelligence scaling, and ability damage multipliers.
      *

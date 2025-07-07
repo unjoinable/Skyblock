@@ -1,5 +1,7 @@
 package net.unjoinable.skyblock.item.attribute;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.key.Key;
 import net.minestom.server.codec.Codec;
 import net.unjoinable.skyblock.item.attribute.traits.ItemAttribute;
@@ -20,18 +22,19 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
     /**
      * Retrieves the shared immutable instance of an empty attribute container.
      */
-    public static final AttributeContainer EMPTY = new AttributeContainer(Collections.emptyMap());
+    public static final AttributeContainer EMPTY = new AttributeContainer(new Object2ObjectOpenHashMap<>());
     public static final Codec<AttributeContainer> CODEC = new AttributeContainerCodec(CodecRegistry.withDefaults());
 
-    private final Map<Key, ItemAttribute> attributeMap;
+    private final Object2ObjectOpenHashMap<Key, ItemAttribute> attributeMap;
 
     /**
      * Constructs an immutable AttributeContainer using given map.
      *
      * @param attributeMap map of attribute Keys to attributes
      */
-    private AttributeContainer(Map<Key, ItemAttribute> attributeMap) {
-        this.attributeMap = Map.copyOf(attributeMap);
+    private AttributeContainer(Object2ObjectOpenHashMap<Key, ItemAttribute> attributeMap) {
+        this.attributeMap = new Object2ObjectOpenHashMap<>(attributeMap);
+        this.attributeMap.trim(); // Optimize memory usage
     }
 
     /**
@@ -109,7 +112,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * @return an unmodifiable map of attribute IDs to their corresponding attributes
      */
     public Map<Key, ItemAttribute> asMap() {
-        return attributeMap;
+        return Collections.unmodifiableMap(attributeMap);
     }
 
     /**
@@ -159,7 +162,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
      * Mutable builder for creating AttributeContainer instances.
      */
     public static final class Builder {
-        private final List<ItemAttribute> attributes = new ArrayList<>(8); // Initial capacity for small collections
+        private final ObjectArrayList<ItemAttribute> attributes = new ObjectArrayList<>(8); // Initial capacity for small collections
 
         /**
          * Adds or replaces an attribute in the builder by both its Key and class type.
@@ -203,7 +206,7 @@ public final class AttributeContainer implements Iterable<ItemAttribute> {
          * @return a new immutable AttributeContainer with the builder's attributes
          */
         public AttributeContainer build() {
-            Map<Key, ItemAttribute> attributeMap = HashMap.newHashMap(attributes.size());
+            Object2ObjectOpenHashMap<Key, ItemAttribute> attributeMap = new Object2ObjectOpenHashMap<>(attributes.size());
 
             for (ItemAttribute attr : attributes) {
                 attributeMap.put(attr.key(), attr);

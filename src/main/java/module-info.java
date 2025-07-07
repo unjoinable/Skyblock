@@ -14,4 +14,5 @@ module net.unjoinable.skyblock {
     requires net.kyori.adventure.text.serializer.plain;
     requires com.google.gson;
     requires net.kyori.adventure.key;
+    requires it.unimi.dsi.fastutil;
 }

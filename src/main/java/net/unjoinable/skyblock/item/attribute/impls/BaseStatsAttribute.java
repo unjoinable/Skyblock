@@ -31,7 +31,7 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
  * The attribute performs defensive copying of the statistics map to prevent
  * external modification after construction.
  */
-public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements ItemAttribute, LoreAttribute {
+public record BaseStatsAttribute(Map<Statistic, Double> baseStats) implements LoreAttribute {
     public static final Key KEY = Key.key("attribute:base_stats");
     private static final Component WHITE_SPACE = text(" ");
     public static final Codec<BaseStatsAttribute> CODEC = StructCodec.struct(

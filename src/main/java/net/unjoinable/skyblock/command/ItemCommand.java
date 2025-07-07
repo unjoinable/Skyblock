@@ -22,12 +22,7 @@ public class ItemCommand extends SkyblockCommand {
      */
     public ItemCommand(ItemRegistry registry, ItemProcessor itemProcessor) {
         super("item");
-        Argument<String> itemArg = ArgumentType.String("item")
-                .setSuggestionCallback((_, _, suggestion) ->
-                        registry.values().forEach(item ->
-                                suggestion.addEntry(new SuggestionEntry(item.metadata().key().asString()))
-                        )
-                );
+        Argument<String> itemArg = ArgumentType.String("item").setSuggestionCallback((_, _, suggestion) -> registry.values().forEach(item -> suggestion.addEntry(new SuggestionEntry(item.metadata().key().asString()))));
 
         addSyntax((sender, context) -> {
             SkyblockPlayer player = ((SkyblockPlayer) sender);
